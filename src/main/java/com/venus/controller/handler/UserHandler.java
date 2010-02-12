@@ -1,4 +1,4 @@
-package com.venus.controller;
+package com.venus.controller.handler;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,20 +26,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.venus.controller.service.UserService;
+
 @Controller
 @Path(UserHandler.USERS_URL)
 public class UserHandler
 {
- 
   public static final String USERS_URL = "/venus";
+  @Autowired
+  UserService service;
 
    @GET
    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-   @Path("/data/{lastName}")
-   public void get(@PathParam("lastName") String lastName)
+   @Path("/data/{username}")
+   public ModelAndView get(@PathParam("username") String userName)
    {
-     System.out.println("I am in /data/lastname: " + lastName);
-     return;
+     System.out.println("I am in /data/username: " + userName);
+     Object user = (Object)service.getUser(userName);
+     List resp = new ArrayList<Object>();
+     if (user != null) {
+       resp.add(user);
+     }
+     return new ModelAndView("users", "users", resp);     
    }
 
    @GET
@@ -47,11 +55,11 @@ public class UserHandler
    public ModelAndView viewAll()
    {
      System.out.println("I am in  req");
-     List resp = new ArrayList<Map>();
-     Map obj = new HashMap<String, String>();
-     obj.put("firstName", "ravi");
-     obj.put("lastName", "sandy");
-     resp.add(obj);
+     Object user = (Object)service.getUser("ravi-ZDNbYrLqMlAyvvfswjSDNa3o6");
+     List resp = new ArrayList<Object>();
+     if (user != null) {
+       resp.add(user);
+     }
      return new ModelAndView("users", "users", resp);
    }
 }
