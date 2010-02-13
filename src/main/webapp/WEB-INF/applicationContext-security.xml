@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	     xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
+  <!-- Allow secured annotations -->
+  <global-method-security secured-annotations="enabled" />
+
+   <!-- Add our own log out filter to invalidate session and cookies -->
+  <beans:bean id="logoutFilter" class="org.springframework.security.ui.logout.LogoutFilter">
+    <custom-filter position="LOGOUT_FILTER"/>
+    <beans:constructor-arg value="/app/home"></beans:constructor-arg>
+    <beans:constructor-arg>
+      <beans:list>
+<!-- 	<beans:ref bean="tokenbasedRememberMeHandler"/> -->
+	<beans:ref bean="logoutHandler"/>
+      </beans:list>
+    </beans:constructor-arg>
+    <beans:property name="filterProcessesUrl" value="/j_spring_security_logout" />
+  </beans:bean>
+      
+  <!-- <beans:bean id="tokenbasedRememberMeHandler" class="org.springframework.security.ui.rememberme.TokenBasedRememberMeServices"></beans:bean> -->
+  <beans:bean id="logoutHandler" class="org.springframework.security.ui.logout.SecurityContextLogoutHandler"></beans:bean>
+
+  <authentication-manager alias="authenticationManager" />
+
+  <!-- Set auto-config to 'false' to add custom stuff -->
+  <http auto-config="false" session-fixation-protection="none"
+	entry-point-ref="formLoginAuthenticationEntryPoint">
+    <intercept-url pattern="/app/home" access="ROLE_ANONYMOUS, ROLE_USER, ROLE_ADMIN" />
+    <intercept-url pattern="/app/users" access="ROLE_USER, ROLE_ADMIN" />
+    <intercept-url pattern="/app/admin" access="ROLE_ADMIN" />
+    <intercept-url pattern="/app/admin/*" access="ROLE_ADMIN" />
+    <intercept-url pattern="/**"
+		   access="ROLE_ANONYMOUS, ROLE_USER, ROLE_ADMIN" />
+
+    <!--XXX: Do we need this? -->
+    <anonymous />
+
+    <concurrent-session-control
+       exception-if-maximum-exceeded="true" />
+  </http>
+
+  <!-- entry point for FormBased login -->
+  <beans:bean id="formLoginAuthenticationEntryPoint"
+	      class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+    <beans:property name="loginFormUrl" value="/app/login" />
+  </beans:bean>
+
+  <!-- Our own authentication filter -->
+  <beans:bean id="customAuthenticationProcessingFilter"
+	      class="org.springframework.security.ui.webapp.AuthenticationProcessingFilter">
+    <custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
+    <beans:property name="defaultTargetUrl" value="/app/home" />
+    <beans:property name="authenticationManager" ref="authenticationMgr" />
+    <beans:property name="authenticationFailureUrl" value="/app/login.jsp?authfailed=true" />
+    <beans:property name="allowSessionCreation" value="true" />
+    <beans:property name="exceptionMappings">
+      <beans:props>
+	<beans:prop
+	   key="org.springframework.security.CredentialsExpiredException">
+	  /app/login.jsp?newpassword=true
+	</beans:prop>
+	<beans:prop key="org.springframework.security.LockedException">
+	  /app/login.jsp?acclocked=true
+	</beans:prop>
+	<beans:prop key="org.springframework.security.DisabledException">
+	  /app/login.jsp?accdisabled=true
+	</beans:prop>
+      </beans:props>
+    </beans:property>
+
+  </beans:bean>
+
+  <!-- The authentication manager with list of custom handlers -->
+  <beans:bean id="authenticationMgr" class="org.springframework.security.providers.ProviderManager">
+    <beans:property name="providers">
+      <beans:list>
+	<beans:ref bean="authnProvider"/>
+      </beans:list>
+    </beans:property>
+  </beans:bean>
+
+  <!-- auth provider which actually does low level work for authentication -->
+  <beans:bean id="authnProvider" class="com.venus.controller.auth.authnProvider"/>
+
+
+</beans:beans>

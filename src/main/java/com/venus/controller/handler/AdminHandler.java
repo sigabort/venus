@@ -31,34 +31,19 @@ import org.apache.log4j.Logger;
 import com.venus.controller.service.UserService;
 
 @Controller
-@Path(UserHandler.USERS_URL)
-public class UserHandler
+@Path(AdminHandler.ADMIN_URL)
+public class AdminHandler
 {
-  public static final String USERS_URL = "/app";
+  public static final String ADMIN_URL = "/app/admin";
   @Autowired
   UserService service;
-
-  private static final Logger log = Logger.getLogger(UserHandler.class);
-
-   @GET
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-   @Path("/data/{username}")
-   public ModelAndView get(@PathParam("username") String userName)
-   {
-     System.out.println("I am in /data/username: " + userName);
-     Object user = (Object)service.getUser(userName);
-     List resp = new ArrayList<Object>();
-     if (user != null) {
-       resp.add(user);
-     }
-     return new ModelAndView("users", "users", resp);     
-   }
+  private static final Logger log = Logger.getLogger(AdminHandler.class);
 
    @GET
    @Produces(MediaType.TEXT_HTML)
    public ModelAndView viewAll()
    {
-     log.info("I am in  req");
+     System.out.println("I am in admin  req");
      Object user = (Object)service.getUser("ravi-ZDNbYrLqMlAyvvfswjSDNa3o6");
      List resp = new ArrayList<Object>();
      if (user != null) {
@@ -72,7 +57,7 @@ public class UserHandler
    @Path("/{resource}")
    public ModelAndView defaultHandler(@PathParam("resource") String resource)
    {
-     log.info("I am in default req: " + resource);
+     System.out.println("I am in default admin req: " + resource);
      return new ModelAndView(resource);
    }
 
