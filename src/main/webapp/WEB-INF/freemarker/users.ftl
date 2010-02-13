@@ -7,6 +7,7 @@
       <#list users as user>
         <h2> FirstName: ${user.firstName} </h2>
         <h2> LastName: ${user.lastName} </h2>
+        <h2> Username: ${user.username} </h2>
       </#list>
     </div>
   </#if>

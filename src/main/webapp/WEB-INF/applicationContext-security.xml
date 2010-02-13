@@ -29,6 +29,8 @@
 	entry-point-ref="formLoginAuthenticationEntryPoint">
     <intercept-url pattern="/app/home" access="ROLE_ANONYMOUS, ROLE_USER, ROLE_ADMIN" />
     <intercept-url pattern="/app/users" access="ROLE_USER, ROLE_ADMIN" />
+    <intercept-url pattern="/app/users/*" access="ROLE_USER, ROLE_ADMIN" />
+    <intercept-url pattern="/app/createuser" access="ROLE_ADMIN" />
     <intercept-url pattern="/app/admin" access="ROLE_ADMIN" />
     <intercept-url pattern="/app/admin/*" access="ROLE_ADMIN" />
     <intercept-url pattern="/**"

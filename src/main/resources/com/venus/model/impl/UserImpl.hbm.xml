@@ -18,14 +18,14 @@
     </property>
 
     <property name="username" type="string" update="true" insert="true">
-      <column name="username" not-null="true" unique="true"/>
+      <column name="username" not-null="true" unique="true" index="IDX_USERIMPL_USERNAME"/>
     </property>
 
     <property name="password" type="string" update="true" insert="true"
       column="password" unique="false" />
 
     <property name="email" type="string" update="true" insert="true"
-      column="email" unique="true" not-null="false" />
+      column="email" unique="true" not-null="false" index="IDX_USERIMPL_EMAIL"/>
 
     <property name="address" type="string" update="true" insert="true"
       column="address" unique="false" />

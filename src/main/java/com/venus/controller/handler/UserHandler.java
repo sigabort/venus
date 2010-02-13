@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.resteasy.annotations.Form;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,51 +30,49 @@ import org.springframework.web.servlet.ModelAndView;
 import org.apache.log4j.Logger;
 
 import com.venus.controller.service.UserService;
+import com.venus.controller.request.UserRequest;
 
 @Controller
 @Path(UserHandler.USERS_URL)
 public class UserHandler
 {
-  public static final String USERS_URL = "/app";
+  public static final String USERS_URL = "/app/users";
   @Autowired
   UserService service;
 
   private static final Logger log = Logger.getLogger(UserHandler.class);
 
-   @GET
+   @POST
+   @PUT
    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-   @Path("/data/{username}")
-   public ModelAndView get(@PathParam("username") String userName)
+   public ModelAndView createUpdateUser(@Form UserRequest req, @Context HttpServletRequest servletReq)
    {
-     System.out.println("I am in /data/username: " + userName);
-     Object user = (Object)service.getUser(userName);
-     List resp = new ArrayList<Object>();
-     if (user != null) {
-       resp.add(user);
-     }
-     return new ModelAndView("users", "users", resp);     
+     log.info("I am going to create/update user: " + req.getUsername());
+     Object user = service.createUpdateUser(req);
+     return  new ModelAndView("redirect:" + USERS_URL + "/" + req.getUsername());     
    }
 
    @GET
    @Produces(MediaType.TEXT_HTML)
-   public ModelAndView viewAll()
+   public ModelAndView viewAll(@Form UserRequest req, @Context HttpServletRequest servletReq)
    {
      log.info("I am in  req");
-     Object user = (Object)service.getUser("ravi-ZDNbYrLqMlAyvvfswjSDNa3o6");
+     List users = service.getUsers(req.getOffset(), req.getMaxReturn());
+     return new ModelAndView("users", "users", users);
+   }
+
+   @GET
+   @Produces(MediaType.TEXT_HTML)
+   @Path("/{username}")
+   public ModelAndView defaultHandler(@PathParam("username") String username)
+   {
+     log.info("I am in default req: " + username);
+     Object user = (Object) service.getUser(username);
      List resp = new ArrayList<Object>();
      if (user != null) {
        resp.add(user);
      }
      return new ModelAndView("users", "users", resp);
-   }
-
-   @GET
-   @Produces(MediaType.TEXT_HTML)
-   @Path("/{resource}")
-   public ModelAndView defaultHandler(@PathParam("resource") String resource)
-   {
-     log.info("I am in default req: " + resource);
-     return new ModelAndView(resource);
    }
 
 }

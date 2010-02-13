@@ -1,14 +1,10 @@
-<#assign pageTitle="Users">
+<#assign pageTitle="Welcome to Venus">
 <#include "header.ftl">
 
-  <h3> welcome users!</h3>
-  <#if users?? && users?size gt 0>
-    <div class="users">
-      <#list users as user>
-        <h2> FirstName: ${user.firstName} </h2>
-        <h2> LastName: ${user.lastName} </h2>
-      </#list>
-    </div>
-  </#if>
+  <h1> welcome to Venus!</h1>
+  <div id="navigation"> 
+    <a href="createuser">Create User</a>
+    <a href="users">Get all users</a>    
+  </div>
 
 <#include "footer.ftl">

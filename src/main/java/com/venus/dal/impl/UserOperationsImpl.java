@@ -1,6 +1,7 @@
 package com.venus.dal.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import com.venus.model.User;
 import com.venus.model.impl.UserImpl;
@@ -144,5 +145,14 @@ public class UserOperationsImpl implements UserOperations {
     query.setString(0, username);
     return (User)query.uniqueResult();
   }
+
+  public List<User> getUsers(int offset, int maxRet, VenusSession vs) {
+    Session sess = vs.getSession();
+    Query query = sess.createQuery("from UserImpl");
+    query.setFirstResult(offset);
+    query.setMaxResults(maxRet);
+    return query.list();
+  }
   
+
 }

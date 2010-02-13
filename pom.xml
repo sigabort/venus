@@ -124,6 +124,11 @@
       <artifactId>aspectjtools</artifactId>
       <version>1.5.4</version>
     </dependency>
+    <dependency>
+      <groupId>net.sf.oval</groupId>
+      <artifactId>oval</artifactId>
+      <version>1.32</version>
+    </dependency>
   </dependencies>
   <build>
     <finalName>venus</finalName>
