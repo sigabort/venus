@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.venus</groupId>
   <artifactId>venus</artifactId>
@@ -36,7 +36,7 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
       <version>2.0.4</version>
-            <exclusions>
+      <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
@@ -100,12 +100,12 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-spring</artifactId>
-      <version>1.1-RC2</version>
+      <version>1.2.RC1</version>
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxb-provider</artifactId>
-      <version>1.1-RC2</version>
+      <version>1.2.RC1</version>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
@@ -119,7 +119,7 @@
       <version>2.0-beta-1</version>
       <scope>test</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjtools</artifactId>
       <version>1.5.4</version>
@@ -128,6 +128,12 @@
       <groupId>net.sf.oval</groupId>
       <artifactId>oval</artifactId>
       <version>1.32</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.3</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <build>
@@ -189,10 +195,30 @@
       </plugin>
     </plugins>
   </reporting>
-
-<properties>
-  <org.springframework.version>3.0.0.RELEASE</org.springframework.version>
-  <org.hibernate.version>3.2.6.ga</org.hibernate.version>
-</properties>
+  <repositories>
+    <repository>
+      <id>jboss</id>
+      <name>jboss repo</name>
+      <url>http://repository.jboss.org/maven2</url>
+    </repository>
+    <repository>
+      <id>scannotation</id>
+      <url>http://scannotation.sf.net/maven2</url>
+    </repository>
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/1</url>
+      <layout>legacy</layout>
+    </repository>
+    <repository>
+      <id>maven repo</id>
+      <name>maven repo</name>
+      <url>http://repo1.maven.org/maven2/</url>
+    </repository>
+  </repositories>
+  <properties>
+    <org.springframework.version>3.0.0.RELEASE</org.springframework.version>
+    <org.hibernate.version>3.2.6.ga</org.hibernate.version>
+  </properties>
 
 </project>
