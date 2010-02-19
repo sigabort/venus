@@ -3,8 +3,8 @@
 
   <h1> welcome to Venus!</h1>
   <div id="navigation"> 
-    <a href="createuser">Create User</a>
-    <a href="users">Get all users</a>    
+    <a href="/venus/app/createuser">Create User</a>
+    <a href="/venus/app/users">Get all users</a>    
   </div>
 
 <#include "footer.ftl">

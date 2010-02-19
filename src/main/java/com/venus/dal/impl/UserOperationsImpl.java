@@ -15,27 +15,31 @@ import org.hibernate.SQLQuery;
 public class UserOperationsImpl implements UserOperations {
   private String FIND_USER_BY_USERNAME_STR = "findUserByUsername";
   
-  public User createUpdateUser(String username, String password, String firstName, String lastName, String email, String address, String gender, Date birthDate, String url, VenusSession session) {
+  public User createUpdateUser(String username, String userId, String password, String firstName, String lastName, String email, String gender, String url, String phone, String address1, String address2, String city, String country, String postalCode, String photoUrl, Date birthDate, Date joinDate, Date created, Date lastModified, VenusSession session) {
     if (username == null) {
       throw new IllegalArgumentException("Username must be supplied");
     }
     User user = findUserByUsername(username, session);
     if (user != null) {
-      user = updateUser(user, password, firstName, lastName, email, address, gender, birthDate, url, session);
+      user = updateUser(user, userId, password, firstName, lastName, email, gender, url, phone, address1, address2, city, country, postalCode, photoUrl, birthDate, joinDate, session);
     }
     else {
-      user = createUser(username, password, firstName, lastName, email, address, gender, birthDate, url, session);
+      user = createUser(username, userId, password, firstName, lastName, email, gender, url, phone, address1, address2, city, country, postalCode, photoUrl, birthDate, joinDate, created, lastModified, session);
     }
     return user;
   }
 
-  private User createUser(String username, String password, String firstName, String lastName, String email, String address, String gender, Date birthDate, String url, VenusSession session) {
+  private User createUser(String username, String userId, String password, String firstName, String lastName, String email, String gender, String url, String phone, String address1, String address2, String city, String country, String postalCode, String photoUrl, Date birthDate, Date joinDate, Date created, Date lastModified, VenusSession session) {
     if (username == null) {
       throw new IllegalArgumentException("Username must be supplied");
     }
     User user = new UserImpl();
     if (username != null) {
       user.setUsername(username);
+    }
+
+    if (userId != null) {
+      user.setUserId(userId);
     }
 
     if (password != null) {
@@ -54,10 +58,6 @@ public class UserOperationsImpl implements UserOperations {
       user.setEmail(email);
     }
 
-    if (address != null) {
-      user.setAddress(address);
-    }
-
     if (gender != null) {
       user.setGender(gender);
     }
@@ -66,20 +66,61 @@ public class UserOperationsImpl implements UserOperations {
       user.setUrl(url);
     }
 
+    if (phone != null) {
+      user.setPhone(phone);
+    }
+
+    if (address1 != null) {
+      user.setAddress1(address1);
+    }
+
+    if (address2 != null) {
+      user.setAddress2(address2);
+    }
+
+    if (city != null) {
+      user.setCity(city);
+    }
+
+    if (country != null) {
+      user.setCountry(country);
+    }
+
+    if (postalCode != null) {
+      user.setPostalCode(postalCode);
+    }
+
+    if (photoUrl != null) {
+      user.setPhotoUrl(photoUrl);
+    }
+
     if (birthDate != null) {
       user.setBirthDate(birthDate);
     }
+
+    if (joinDate != null) {
+      user.setJoinDate(joinDate);
+    }
+
+    user.setCreated((created != null)? created : new Date());
+    user.setLastModified((lastModified != null)? lastModified : new Date());
 
     Session sess = session.getSession();
     sess.save(user);
     return user;
   }
 
-  private User updateUser(User user, String password, String firstName, String lastName, String email, String address, String gender, Date birthDate, String url, VenusSession session) {
+  private User updateUser(User user, String userId, String password, String firstName, String lastName, String email, String gender, String url, String phone, String address1, String address2, String city, String country, String postalCode, String photoUrl, Date birthDate, Date joinDate, VenusSession session) {
     if (user == null) {
       return null;
     }
     boolean update = false;
+
+    String oldUserId = user.getUserId();
+    if (oldUserId == null || !oldUserId.equals(userId)) {
+      user.setUserId(userId);
+      update = true;
+    }
 
     String oldPassword = user.getPassword();
     if (oldPassword == null || !oldPassword.equals(password)) {
@@ -105,9 +146,9 @@ public class UserOperationsImpl implements UserOperations {
       update = true;
     }
 
-    String oldAddress = user.getAddress();
-    if (oldAddress == null || !oldAddress.equals(address)) {
-      user.setAddress(address);
+    String oldGender = user.getGender();
+    if (oldGender == null || !oldGender.equals(gender)) {
+      user.setGender(gender);
       update = true;
     }
 
@@ -117,9 +158,45 @@ public class UserOperationsImpl implements UserOperations {
       update = true;
     }
 
-    String oldGender = user.getGender();
-    if (oldGender == null || !oldGender.equals(gender)) {
-      user.setGender(gender);
+    String oldPhone = user.getPhone();
+    if (oldPhone == null || !oldPhone.equals(phone)) {
+      user.setPhone(phone);
+      update = true;
+    }
+
+    String oldAddress1 = user.getAddress1();
+    if (oldAddress1 == null || !oldAddress1.equals(address1)) {
+      user.setAddress1(address1);
+      update = true;
+    }
+
+    String oldAddress2 = user.getAddress2();
+    if (oldAddress2 == null || !oldAddress2.equals(address2)) {
+      user.setAddress2(address2);
+      update = true;
+    }
+
+    String oldCity = user.getCity();
+    if (oldCity == null || !oldCity.equals(city)) {
+      user.setCity(city);
+      update = true;
+    }
+
+    String oldCountry = user.getCountry();
+    if (oldCountry == null || !oldCountry.equals(country)) {
+      user.setCountry(country);
+      update = true;
+    }
+
+    String oldPostalCode = user.getPostalCode();
+    if (oldPostalCode == null || !oldPostalCode.equals(postalCode)) {
+      user.setPostalCode(postalCode);
+      update = true;
+    }
+
+    String oldPhotoUrl = user.getPhotoUrl();
+    if (oldPhotoUrl == null || !oldPhotoUrl.equals(photoUrl)) {
+      user.setPhotoUrl(photoUrl);
       update = true;
     }
 
@@ -129,7 +206,14 @@ public class UserOperationsImpl implements UserOperations {
       update = true;
     }
 
+    Date oldJoinDate = user.getJoinDate();
+    if (oldJoinDate == null || !oldJoinDate.equals(joinDate)) {
+      user.setJoinDate(joinDate);
+      update = true;
+    }
+
     if (update) {
+      user.setLastModified(new Date());
       Session sess = session.getSession();
       sess.update(user);
     }

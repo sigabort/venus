@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.junit.Before;
 import org.junit.Assert;
 
+import java.util.Date;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -29,9 +31,12 @@ public class UserImplTest extends BaseImplTest {
    user.setUsername("ravi-" + getUniqueName());
    user.setFirstName("ravi");
    user.setLastName("ravi");
+   user.setCreated(new Date());
+   user.setLastModified(new Date());
 
    sess.save(user);
    trans.commit();
+   
   }
 
 }

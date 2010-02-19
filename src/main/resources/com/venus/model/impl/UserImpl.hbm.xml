@@ -9,35 +9,70 @@
       <generator class="native"/>
     </id>
 
-    <property name="firstName" type="string" update="true" insert="true">
-      <column name="firstname" unique="false"/>
+    <property name="username" type="string" length="128" update="true" insert="true">
+      <column name="username" not-null="true" sql-type="varchar(128)" unique="true" index="IDX_USERIMPL_USERNAME"/>
     </property>
 
-    <property name="lastName" type="string" update="true" insert="true">
-      <column name="lastname" unique="false"/>
-    </property>
-
-    <property name="username" type="string" update="true" insert="true">
-      <column name="username" not-null="true" unique="true" index="IDX_USERIMPL_USERNAME"/>
+    <property name="userId" type="string" length="128" update="true" insert="true">
+      <column name="userid" not-null="false" sql-type="varchar(128)" unique="true" index="IDX_USERIMPL_USERID"/>
     </property>
 
     <property name="password" type="string" update="true" insert="true"
       column="password" unique="false" />
 
+    <property name="firstName" type="string" length="128" update="true" insert="true">
+      <column name="firstname" unique="false" sql-type="varchar(128)"/>
+    </property>
+
+    <property name="lastName" type="string" length="128" update="true" insert="true">
+      <column name="lastname" unique="false" sql-type="varchar(128)"/>
+    </property>
+
     <property name="email" type="string" update="true" insert="true"
       column="email" unique="true" not-null="false" index="IDX_USERIMPL_EMAIL"/>
 
-    <property name="address" type="string" update="true" insert="true"
-      column="address" unique="false" />
+    <property name="gender" type="string" length="128" update="true" insert="true">
+      <column name="gender" unique="false" sql-type="varchar(128)"/>
+    </property>
 
-    <property name="gender" type="string" update="true" insert="true"
-      column="gender" unique="false" />
+    <property name="url" type="string" update="true" insert="true"
+      column="url" unique="false" />    
 
+    <property name="phone" type="string" update="true" insert="true"
+      column="phone" unique="false" />        
+
+    <property name="address1" type="string" update="true" insert="true"
+      column="address1" unique="false" />
+
+    <property name="address2" type="string" update="true" insert="true"
+      column="address2" unique="false" />
+
+    <property name="city" type="string" length="128" update="true" insert="true">
+      <column name="city" unique="false" sql-type="varchar(128)"/>
+    </property>
+
+    <property name="country" type="string" length="128" update="true" insert="true">
+      <column name="country" unique="false" sql-type="varchar(128)"/>
+    </property>
+    
+    <property name="postalCode" type="string" length="128" update="true" insert="true">
+      <column name="postalcode" unique="false" sql-type="varchar(128)"/>
+    </property>
+
+    <property name="photoUrl" type="string" update="true" insert="true"
+      column="photourl" unique="false" />    
+    
     <property name="birthDate" type="java.util.Date" update="true" insert="true"
       column="birthdate" unique="false" />
 
-    <property name="url" type="string" update="true" insert="true"
-      column="url" unique="false" />
+    <property name="joinDate" type="java.util.Date" update="true" insert="true"
+	      column="joindate" unique="false" not-null="false" />
+    
+    <property name="created" type="java.util.Date" update="true" insert="true"
+	      column="created" unique="false" not-null="true" />
+    
+    <property name="lastModified" type="java.util.Date" update="true"
+      insert="true" column="lastmodified" unique="false" not-null="true" />
 
   </class>
 

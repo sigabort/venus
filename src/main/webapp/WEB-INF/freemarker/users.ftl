@@ -5,9 +5,9 @@
   <#if users?? && users?size gt 0>
     <div class="users">
       <#list users as user>
-        <h2> FirstName: ${user.firstName} </h2>
-        <h2> LastName: ${user.lastName} </h2>
-        <h2> Username: ${user.username} </h2>
+        <h4> FirstName: ${user.firstName} </h2>
+        <h4> LastName: ${user.lastName} </h2>
+        <h4> Username: ${user.username} </h2>
       </#list>
     </div>
   </#if>
