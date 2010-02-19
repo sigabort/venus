@@ -68,6 +68,10 @@
     <property name="joinDate" type="java.util.Date" update="true" insert="true"
 	      column="joindate" unique="false" not-null="false" />
     
+    <!-- the status of user -->
+    <property name="status" type="int" update="true" insert="true" 
+	      column="status" not-null="true" unique="false" />
+
     <property name="created" type="java.util.Date" update="true" insert="true"
 	      column="created" unique="false" not-null="true" />
     

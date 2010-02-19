@@ -2,35 +2,16 @@ package com.venus.controller.request;
 
 import java.util.Date;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.FormParam;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import net.sf.oval.constraint.NotNull;
 import net.sf.oval.constraint.NotBlank;
-import net.sf.oval.constraint.Max;
-import net.sf.oval.constraint.Min;
-
-import com.venus.controller.adapters.VenusDateAdapter;
+import net.sf.oval.constraint.NotNull;
 
 @XmlRootElement
-public class UserRequest {
-
-  @QueryParam("offset")
-  @DefaultValue("0")
-  @Min(value = 0, message= "offset must be greater than or equal to 0")
-  private Integer offset;
-
-  @QueryParam("maxReturn")
-  @DefaultValue("20")
-  @Max(value = 200, message = "maxReturn may be no greater than 200")
-  @Min(value = 1, message= "maxReturn must be not be less than 1")
-  private Integer maxReturn;
-
-  @NotBlank
+public class UserRequest extends BaseRequest {
+  @NotNull(message = "Username should not be null")
+  @NotBlank(message = "Username should not be left blank")
   @FormParam("username")
   private String username;
 
@@ -194,21 +175,4 @@ public class UserRequest {
   public void setJoinDate(String joinDate) {
     this.joinDate = joinDate;
   }
-
-  public void setOffset(Integer offset) {
-    this.offset = offset;
-  }
-  
-  public Integer getOffset() {
-    return this.offset;
-  }
-
-  public void setMaxReturn(Integer maxReturn) {
-    this.maxReturn = maxReturn;
-  }
-  
-  public Integer getMaxReturn() {
-    return this.maxReturn;
-  }
-
 }

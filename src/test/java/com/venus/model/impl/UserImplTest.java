@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.venus.model.User;
+import com.venus.model.Status;
 import com.venus.util.VenusSession;
 import com.venus.util.VenusSessionFactory;
 
@@ -31,6 +32,7 @@ public class UserImplTest extends BaseImplTest {
    user.setUsername("ravi-" + getUniqueName());
    user.setFirstName("ravi");
    user.setLastName("ravi");
+   user.setStatus(Status.Active.ordinal());
    user.setCreated(new Date());
    user.setLastModified(new Date());
 

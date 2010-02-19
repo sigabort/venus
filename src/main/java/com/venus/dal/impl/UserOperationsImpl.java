@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.venus.model.User;
+import com.venus.model.Status;
 import com.venus.model.impl.UserImpl;
 import com.venus.util.VenusSession;
 import com.venus.dal.UserOperations;
@@ -21,7 +22,7 @@ public class UserOperationsImpl implements UserOperations {
     }
     User user = findUserByUsername(username, session);
     if (user != null) {
-      user = updateUser(user, userId, password, firstName, lastName, email, gender, url, phone, address1, address2, city, country, postalCode, photoUrl, birthDate, joinDate, session);
+      user = updateUser(user, userId, password, firstName, lastName, email, gender, url, phone, address1, address2, city, country, postalCode, photoUrl, birthDate, joinDate, Status.Active, session);
     }
     else {
       user = createUser(username, userId, password, firstName, lastName, email, gender, url, phone, address1, address2, city, country, postalCode, photoUrl, birthDate, joinDate, created, lastModified, session);
@@ -102,6 +103,7 @@ public class UserOperationsImpl implements UserOperations {
       user.setJoinDate(joinDate);
     }
 
+    user.setStatus(Status.Active.ordinal());
     user.setCreated((created != null)? created : new Date());
     user.setLastModified((lastModified != null)? lastModified : new Date());
 
@@ -110,7 +112,7 @@ public class UserOperationsImpl implements UserOperations {
     return user;
   }
 
-  private User updateUser(User user, String userId, String password, String firstName, String lastName, String email, String gender, String url, String phone, String address1, String address2, String city, String country, String postalCode, String photoUrl, Date birthDate, Date joinDate, VenusSession session) {
+  private User updateUser(User user, String userId, String password, String firstName, String lastName, String email, String gender, String url, String phone, String address1, String address2, String city, String country, String postalCode, String photoUrl, Date birthDate, Date joinDate, Status status, VenusSession session) {
     if (user == null) {
       return null;
     }
@@ -209,6 +211,12 @@ public class UserOperationsImpl implements UserOperations {
     Date oldJoinDate = user.getJoinDate();
     if (oldJoinDate == null || !oldJoinDate.equals(joinDate)) {
       user.setJoinDate(joinDate);
+      update = true;
+    }
+
+    Integer oldStatus = user.getStatus();
+    if (oldStatus == null || !oldStatus.equals(status.ordinal())) {
+      user.setStatus(status.ordinal());
       update = true;
     }
 

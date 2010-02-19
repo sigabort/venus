@@ -2,12 +2,8 @@ package com.venus.model;
 
 import java.util.Date;
 
-public interface User {
+public interface User extends BaseModel {
 
-  public abstract void setID(Integer id);
-
-  public abstract Integer getID();
-  
   public abstract String getUsername();
 
   public abstract void setUsername(String username);

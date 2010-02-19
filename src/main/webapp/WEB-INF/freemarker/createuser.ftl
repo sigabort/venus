@@ -51,10 +51,10 @@
         <label for="photoUrl">PhotoUrl:</label><input type="text" name="photoUrl" id="photoUrl"/>
       </div>
       <div class='row'>
-        <label for="birthDate">BirthDate:</label><input type="date" name="birthDate" id="birthDate"/>
+        <label for="birthDate">BirthDate:</label><input type="text" name="birthDate" id="birthDate"/>
       </div>
       <div class='row'>
-        <label for="joinDate">JoinDate:</label><input type="date" name="joinDate" id="joinDate"/>
+        <label for="joinDate">JoinDate:</label><input type="text" name="joinDate" id="joinDate"/>
       </div>
       <button type='submit'>Create</button>
     </form>

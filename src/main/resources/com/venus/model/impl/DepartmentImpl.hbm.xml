@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="com.venus.model.impl.DepartmentImpl" table="departments">
+
+    <!-- auto generated id -->
+    <id name="ID" type="int" column="id" >
+      <generator class="native"/>
+    </id>
+
+    <!-- Unique department name in the institute -->
+    <property name="name" type="string" length="128" update="true" insert="true">
+      <column name="name" not-null="true" sql-type="varchar(128)" unique="true" index="IDX_DEPTIMPL_NAME"/>
+    </property>
+
+    <!-- department description in the institute -->
+    <property name="description" type="string" update="true" insert="true">
+      <column name="description" not-null="false" unique="false"/>
+    </property>
+
+    <!-- Unique department code in the institute, if not specified name will be used -->
+    <property name="code" type="string" length="128" update="true" insert="true">
+      <column name="code" not-null="false" sql-type="varchar(128)" unique="true" index="IDX_DEPTIMPL_CODENAME"/>
+    </property>
+
+    <!-- department's photo url -->
+    <property name="photoUrl" type="string" update="true" insert="true">
+      <column name="photourl" not-null="false" unique="false"/>
+    </property>
+
+    <!-- department's email id -->
+    <property name="email" type="string" update="true" insert="true">
+      <column name="email" not-null="false" unique="false"/>
+    </property>
+
+    <!-- the status of department -->
+    <property name="status" type="int" update="true" insert="true" 
+	      column="status" not-null="true" unique="false" />
+
+    <!-- created time of the object  -->
+    <property name="created" type="java.util.Date" update="true" insert="true"
+	      column="created" unique="false" not-null="true" />
+    
+    <!-- last modified time of the object  -->
+    <property name="lastModified" type="java.util.Date" update="true"
+      insert="true" column="lastmodified" unique="false" not-null="true" />
+
+  </class>
+
+  <query name="findDepartmentByName">
+    <![CDATA[
+  	from DepartmentImpl as dept
+  	where dept.name=? and status=0
+      ]]>
+  </query>
+  <query name="findDepartmentByCode">
+    <![CDATA[
+  	from DepartmentImpl as dept
+  	where dept.code=? and status=0
+      ]]>
+  </query>
+
+</hibernate-mapping>

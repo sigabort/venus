@@ -4,8 +4,7 @@ import com.venus.model.User;
 
 import java.util.Date;
 
-public class UserImpl implements User {
-  private Integer ID;
+public class UserImpl extends BaseModelImpl implements User {
   private String username;
   private String userId;
   private String password;
@@ -26,12 +25,6 @@ public class UserImpl implements User {
   private Date created;
   private Date lastModified;
 
-  public Integer getID() {
-    return ID;
-  }
-  public void setID(Integer id) {
-    ID = id;
-  }
   public String getUsername() {
     return username;
   }
