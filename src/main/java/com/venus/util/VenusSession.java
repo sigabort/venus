@@ -5,10 +5,10 @@ import org.hibernate.Session;
 public class VenusSession {
   private Session session;
   
-  public Session getSession() {
+  public Session getHibernateSession() {
     return this.session;
   }
-  public void setSession(Session session) {
+  public void setHibernateSession(Session session) {
     this.session = session;
   }
 }

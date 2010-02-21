@@ -8,8 +8,11 @@ import com.venus.model.Status;
 import com.venus.model.impl.DepartmentImpl;
 import com.venus.util.VenusSession;
 import com.venus.dal.DepartmentOperations;
+import com.venus.dal.DataAccessException;
 
 import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 
@@ -24,7 +27,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
   /**
    * Create / update department
    */
-  public Department createUpdateDepartment(String name, String code, String description, String photoUrl, String email, Date created, Date lastModified, VenusSession session) {
+  public Department createUpdateDepartment(String name, String code, String description, String photoUrl, String email, Date created, Date lastModified, VenusSession session) throws DataAccessException {
     /* name is mandatory for the department create/update */
     if (name == null) {
       throw new IllegalArgumentException("name must be supplied");
@@ -44,7 +47,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
   }
 
   /* create new department */
-  private Department createDepartment(String name, String code, String description, String photoUrl, String email, Date created, Date lastModified, VenusSession session) {
+  private Department createDepartment(String name, String code, String description, String photoUrl, String email, Date created, Date lastModified, VenusSession session) throws DataAccessException {
     /* name is mandatory for the department create */
     if (name == null) {
       throw new IllegalArgumentException("name must be supplied");
@@ -79,13 +82,30 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     dept.setCreated((created != null)? created : new Date());
     dept.setLastModified((lastModified != null)? lastModified : new Date());
 
-    Session sess = session.getSession();
-    sess.save(dept);
+    Transaction txn = null;
+    try {
+      Session sess = session.getHibernateSession();
+      txn = sess.beginTransaction();
+      sess.save(dept);
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to create department: " + name;
+      if (txn != null && txn.isActive()) {
+	txn.rollback();
+      }
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
+    finally {
+      if (txn != null && txn.isActive()) {
+	txn.commit();
+      }
+    }
     return dept;
   }
 
   /* update the existing department */
-  private Department updateDepartment(Department dept, String code, String description, String photoUrl, String email, Status status, VenusSession session) {
+  private Department updateDepartment(Department dept, String code, String description, String photoUrl, String email, Status status, VenusSession session) throws DataAccessException {
     if (dept == null) {
       return null;
     }
@@ -122,9 +142,26 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     }
 
     if (update) {
-      dept.setLastModified(new Date());
-      Session sess = session.getSession();
-      sess.update(dept);
+      Transaction txn = null;
+      try {
+	dept.setLastModified(new Date());
+	Session sess = session.getHibernateSession();
+	txn = sess.beginTransaction();
+	sess.update(dept);
+      }
+      catch (HibernateException he) {
+	String errStr = "Unable to update department: " + dept.getName();
+	if (txn != null && txn.isActive()) {
+	  txn.rollback();
+	}
+	log.error(errStr, he);
+	throw new DataAccessException(errStr, he);
+      }
+      finally {
+	if (txn != null && txn.isActive()) {
+	txn.commit();
+	}
+      }
     }
     return dept;
   }
@@ -132,7 +169,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
   /**
    * Find the department given the name
    */
-  public Department findDepartmentByName(String name, boolean includeDeleted, VenusSession vs) {
+  public Department findDepartmentByName(String name, boolean includeDeleted, VenusSession vs)  throws DataAccessException {
     /* name is null? return null */
     if (name == null) {
       return null;
@@ -142,19 +179,26 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       return findDepartmentByName(name, vs);
     }
 
-    /* get hibernate session */
-    Session sess = vs.getSession();
-    /* create query */
-    Query query = sess.createQuery("from DepartmentImpl dept where dept.name=:name ");
-    query.setString("name", name);
-    /* find now */
-    return (Department)query.uniqueResult();
+    try {
+      /* get hibernate session */
+      Session sess = vs.getHibernateSession();
+      /* create query */
+      Query query = sess.createQuery("from DepartmentImpl dept where dept.name=:name ");
+      query.setString("name", name);
+      /* find now */
+      return (Department)query.uniqueResult();
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to find department with name: " + name;
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
   }
 
   /**
    * Find the department given the code
    */
-  public Department findDepartmentByCode(String code, boolean includeDeleted, VenusSession vs) {
+  public Department findDepartmentByCode(String code, boolean includeDeleted, VenusSession vs) throws DataAccessException  {
     /* code is null? return null */
     if (code == null) {
       return null;
@@ -164,78 +208,125 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       return findDepartmentByCode(code, vs);
     }
 
-    /* get hibernate session */
-    Session sess = vs.getSession();
-    /* create query */
-    Query query = sess.createQuery("from DepartmentImpl dept where dept.code=:code ");
-    query.setString("code", code);
-    /* find now */
-    return (Department)query.uniqueResult();
+    try {
+      /* get hibernate session */
+      Session sess = vs.getHibernateSession();
+      /* create query */
+      Query query = sess.createQuery("from DepartmentImpl dept where dept.code=:code ");
+      query.setString("code", code);
+      /* find now */
+      return (Department)query.uniqueResult();
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to find department with code: " + code;
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
   }
 
   /**
    * Find the department given the name
    */
-  public Department findDepartmentByName(String name, VenusSession vs) {
+  public Department findDepartmentByName(String name, VenusSession vs)  throws DataAccessException {
     /* name is null? return null */
     if (name == null) {
       return null;
     }
-    /* get hibernate session */
-    Session sess = vs.getSession();
-    /* find now */
-    Query query = sess.getNamedQuery(FIND_DEPT_BY_NAME_STR);
-    query.setString(0, name);
-    return (Department)query.uniqueResult();
+   
+    try {
+      /* get hibernate session */
+      Session sess = vs.getHibernateSession();
+      /* find now */
+      Query query = sess.getNamedQuery(FIND_DEPT_BY_NAME_STR);
+      query.setString(0, name);
+      return (Department)query.uniqueResult();
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to find department with name: " + name;
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
   }
 
   /**
    * Find the department given the code
    */
-  public Department findDepartmentByCode(String code, VenusSession vs) {
+  public Department findDepartmentByCode(String code, VenusSession vs) throws DataAccessException  {
     /* code is null? return null */
     if (code == null) {
       return null;
     }
-    /* get hibernate session */
-    Session sess = vs.getSession();
-    /* find now */
-    Query query = sess.getNamedQuery(FIND_DEPT_BY_CODE_STR);
-    query.setString(0, code);
-    return (Department)query.uniqueResult();
+    
+    try {
+      /* get hibernate session */
+      Session sess = vs.getHibernateSession();
+      /* find now */
+      Query query = sess.getNamedQuery(FIND_DEPT_BY_CODE_STR);
+      query.setString(0, code);
+      return (Department)query.uniqueResult();
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to find department with code: " + code;
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
   }
 
   /**
    * Delete the department
    */
-  public void deleteDepartment(Department dept, VenusSession vs) {
+  public void deleteDepartment(Department dept, VenusSession vs) throws DataAccessException  {
     if (dept == null) {
       return;
     }
     
     if (log.isDebugEnabled()) {
-      log.debug("Removing department: " + dept.getName());
+      log.debug("Deleting department: " + dept.getName());
     }
     
     /* set the status to deleted */
     dept.setStatus(Status.Deleted.ordinal());
 
-    /* get the hibernate session */
-    Session sess = vs.getSession();
-    sess.update(dept);
+    Transaction txn = null;
+    try {
+      /* get the hibernate session */
+      Session sess = vs.getHibernateSession();
+      txn = sess.beginTransaction();
+      sess.update(dept);
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to delete department: " + dept.getName();
+      log.error(errStr, he);
+      if (txn != null && txn.isActive()) {
+	txn.rollback();
+      }
+      throw new DataAccessException(errStr, he);
+    }
+    finally {
+      if (txn != null && txn.isActive()) {
+	txn.commit();
+      }
+    }
   }
 
   /**
    * Get all the departments in the institute
    */
-  public List<Department> getDepartments(int offset, int maxRet, VenusSession vs) {
-    Session sess = vs.getSession();
-    Query query = sess.createQuery("from DepartmentImpl dept where dept.status=:status");
-    query.setInteger("status", Status.Active.ordinal());
-    query.setFirstResult(offset);
-    query.setMaxResults(maxRet);
-
-    return query.list();
+  public List<Department> getDepartments(int offset, int maxRet, VenusSession vs)  throws DataAccessException {
+    try {
+      Session sess = vs.getHibernateSession();
+      Query query = sess.createQuery("from DepartmentImpl dept where dept.status=:status");
+      query.setInteger("status", Status.Active.ordinal());
+      query.setFirstResult(offset);
+      query.setMaxResults(maxRet);
+      
+      return query.list();
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to get departments";
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
   }
   
 

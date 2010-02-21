@@ -11,7 +11,7 @@ public class VenusSessionFactory {
     SessionFactory sf = new Configuration().configure().buildSessionFactory();
     Session session = sf.openSession();
     VenusSession vs = new VenusSession();
-    vs.setSession(session);
+    vs.setHibernateSession(session);
     return vs;
   }
   

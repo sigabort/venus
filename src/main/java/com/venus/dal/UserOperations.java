@@ -14,14 +14,14 @@ public interface UserOperations {
 					String phone, String address1, String address2,
 					String city, String country, String postalCode, 
 					String photoUrl, Date birthDate, Date joinDate,
-					Date created, Date lastModified, VenusSession session);
+					Date created, Date lastModified, VenusSession session) throws DataAccessException;
   
-  public abstract User findUserByUsername(String username, VenusSession session);
+  public abstract User findUserByUsername(String username, VenusSession session) throws DataAccessException;
 
-//   public abstract User findUserByUserId(String userId, VenusSession session);
+//   public abstract User findUserByUserId(String userId, VenusSession session) throws DataAccessException;
 
-//   public abstract User findUserByEmail(String email, VenusSession session);
+//   public abstract User findUserByEmail(String email, VenusSession session) throws DataAccessException;
 
-  public abstract List<User> getUsers(int offset, int maxRet, VenusSession vs);
+  public abstract List<User> getUsers(int offset, int maxRet, VenusSession vs) throws DataAccessException;
   
 }

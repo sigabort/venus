@@ -7,6 +7,7 @@ import java.util.Date;
 import com.venus.model.Department;
 import com.venus.model.impl.DepartmentImpl;
 import com.venus.dal.DepartmentOperations;
+import com.venus.dal.DataAccessException;
 import com.venus.dal.impl.DepartmentOperationsImpl;
 import com.venus.util.VenusSession;
 import com.venus.util.VenusSessionFactory;
@@ -22,7 +23,13 @@ public class DepartmentService {
   private VenusSession vs = VenusSessionFactory.getVenusSession();
 
   public Department getDepartment(String name) {
-    Department department = dol.findDepartmentByName(name, vs);
+    Department department = null;
+    try {
+      department = dol.findDepartmentByName(name, vs);
+    }
+    catch (DataAccessException dae) {
+      throw new RuntimeException("Error while getting dept: " + name, dae);
+    }
     return department;
   }
   
@@ -32,18 +39,29 @@ public class DepartmentService {
     String desc = req.getDescription();
     String email = req.getEmail();
     String photoUrl = req.getPhotoUrl();
+    Department dept = null;
     
-    vs.getSession().beginTransaction();
-    Department dept = dol.createUpdateDepartment(name, code, desc, photoUrl, email, null, null, vs);
+    try {
+      dept  = dol.createUpdateDepartment(name, code, desc, photoUrl, email, null, null, vs);
+    }
+    catch (DataAccessException dae) {
+      throw new RuntimeException("Error while creating/updating dept: " + name, dae);
+    }
     if (dept == null) {
       throw new RuntimeException("Unable to create/update user");
     }
-    vs.getSession().getTransaction().commit();
     return dept;
   }
 
   public List<Department> getDepartments(int offset, int maxRet) {
-    List<Department> departments = dol.getDepartments(offset, maxRet, vs);
+    List<Department> departments = null;
+    try {
+      departments = dol.getDepartments(offset, maxRet, vs);
+    }
+    catch (DataAccessException dae) {
+      throw new RuntimeException("Error while getting departments", dae);
+    }
+    
     return departments;
   }
 

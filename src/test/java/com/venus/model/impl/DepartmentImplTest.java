@@ -22,7 +22,7 @@ public class DepartmentImplTest extends BaseImplTest {
   @Before
   public void setUp() {
     vs = getVenusSession();
-    sess = vs.getSession();
+    sess = vs.getHibernateSession();
   }
 
   @Test

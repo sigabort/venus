@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Assert;
 
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import com.venus.model.Department;
 import com.venus.util.VenusSession;
@@ -24,7 +23,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   public void setUp() {
     dol = new DepartmentOperationsImpl();
     vs = getVenusSession();
-    sess = vs.getSession();
+    sess = vs.getHibernateSession();
   }
 
   /* create and test department */
@@ -36,9 +35,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String photoUrl = name + "-url";
    String email = name + "-email";
    
-   Transaction trans = sess.beginTransaction();
    Department dept = dol.createUpdateDepartment(name, code, desc, photoUrl, email, null, null, vs);
-   trans.commit();
    Assert.assertNotNull(dept);
    
    Assert.assertEquals("department name", name, dept.getName());
@@ -60,9 +57,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String email = name + "-email";
 
    /* create one department */
-   Transaction trans = sess.beginTransaction();
    Department dept = dol.createUpdateDepartment(name, code, desc, photoUrl, email, null, null, vs);
-   trans.commit();
    Assert.assertNotNull(dept);
    
    Assert.assertEquals("department name", name, dept.getName());
@@ -79,9 +74,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String newEmail = name + "-nuEmail";
 
    /* update the department with new values */
-   trans = sess.beginTransaction();
    Department dept1 = dol.createUpdateDepartment(name, newCode, newDesc, newPhotoUrl, newEmail, null, null, vs);
-   trans.commit();
    Assert.assertNotNull(dept1);
    
    Assert.assertEquals("department name", name, dept1.getName());
@@ -102,9 +95,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String photoUrl = name + "-url";
    String email = name + "-email";
    
-   Transaction trans = sess.beginTransaction();
    Department dept = dol.createUpdateDepartment(name, code, desc, photoUrl, email, null, null, vs);
-   trans.commit();
    Assert.assertNotNull(dept);
    
    Assert.assertEquals("department name", name, dept.getName());
@@ -129,9 +120,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String photoUrl = name + "-url";
    String email = name + "-email";
    
-   Transaction trans = sess.beginTransaction();
    Department dept = dol.createUpdateDepartment(name, code, desc, photoUrl, email, null, null, vs);
-   trans.commit();
    Assert.assertNotNull(dept);
    
    Assert.assertEquals("department name", name, dept.getName());
@@ -157,7 +146,6 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String email = name + "-email";
 
    /* create one department */
-   Transaction trans = sess.beginTransaction();
    Department dept = dol.createUpdateDepartment(name, code, desc, photoUrl, email, null, null, vs);
    Assert.assertNotNull(dept);
    
@@ -171,7 +159,6 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
 
    /* delete the department */
    dol.deleteDepartment(dept, vs);
-   trans.commit();
 
    String newCode = name + "-nuCode";
    String newDesc = name + "-nuDesc";
@@ -179,9 +166,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String newEmail = name + "-nuEmail";
 
    /* update the department with new values */
-   trans = sess.beginTransaction();
    Department dept1 = dol.createUpdateDepartment(name, newCode, newDesc, newPhotoUrl, newEmail, null, null, vs);
-   trans.commit();
    Assert.assertNotNull(dept1);
    
    Assert.assertEquals("department name", name, dept1.getName());
@@ -203,7 +188,6 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String email = name + "-email";
 
    /* create one department */
-   Transaction trans = sess.beginTransaction();
    Department dept = dol.createUpdateDepartment(name, code, desc, photoUrl, email, null, null, vs);
    Assert.assertNotNull(dept);
    
@@ -217,7 +201,6 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
 
    /* delete the department */
    dol.deleteDepartment(dept, vs);
-   trans.commit();
 
    Department dept1 = dol.findDepartmentByCode(code, vs);
    Assert.assertNull("department should not be found", dept1);
@@ -237,7 +220,6 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String email = name + "-email";
 
    /* create one department */
-   Transaction trans = sess.beginTransaction();
    Department dept1 = dol.createUpdateDepartment(name1, code1, desc1, photoUrl, email, null, null, vs);
    Assert.assertNotNull(dept1);
    
@@ -260,7 +242,6 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    Assert.assertEquals("department email", email, dept2.getEmail());
    Assert.assertNotNull("department created date", dept2.getCreated());
    Assert.assertNotNull("department last modified date", dept2.getLastModified());
-   trans.commit();
 
    /* fetch the departments now */
    List<Department> list = dol.getDepartments(0, 10, vs);

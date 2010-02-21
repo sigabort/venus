@@ -21,7 +21,7 @@ public class UserImplTest extends BaseImplTest {
   @Before
   public void setUp() {
     VenusSession vs = getVenusSession();
-    sess = vs.getSession();
+    sess = vs.getHibernateSession();
   }
 
   @Test

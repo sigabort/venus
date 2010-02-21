@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Assert;
 
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import com.venus.model.User;
 import com.venus.util.VenusSession;
@@ -23,13 +22,11 @@ public class UserOperationsImplTest extends BaseImplTest {
   public void setUp() {
     uol = new UserOperationsImpl();
     vs = getVenusSession();
-    sess = vs.getSession();
+    sess = vs.getHibernateSession();
   }
 
   @Test
-  public void testCreateUser() throws Exception {
-   Transaction trans = sess.beginTransaction();
-   
+  public void testCreateUser() throws Exception {   
    String name = "testCU" + getUniqueName();
    String username = name + "-uname";
    String userId = name + "-userId";
@@ -44,7 +41,6 @@ public class UserOperationsImplTest extends BaseImplTest {
    
    User user = createUser(username, userId, password, firstName, lastName, email, gender, url, address, birthDate, vs);
    Assert.assertNotNull(user);
-   trans.commit();
    
    testUserDetails(user, username, userId, password, firstName, lastName, email, address, gender, birthDate, url);
   }
@@ -52,12 +48,9 @@ public class UserOperationsImplTest extends BaseImplTest {
   @Test
   public void testFindUserByUsername() throws Exception {
 
-   Transaction trans = sess.beginTransaction();
-
    String name = "testFindUByUN" + getUniqueName();
    User user = createTestUser(name, vs);
    Assert.assertNotNull(user);
-   trans.commit();
    
    User nuUser = uol.findUserByUsername(name, vs);
    Assert.assertNotNull(nuUser);
@@ -65,12 +58,12 @@ public class UserOperationsImplTest extends BaseImplTest {
   }
 
  
-  private User createUser(String username, String userId, String password, String firstName, String lastName, String email, String gender, String url, String address1, Date birthDate, VenusSession vs) {
+  private User createUser(String username, String userId, String password, String firstName, String lastName, String email, String gender, String url, String address1, Date birthDate, VenusSession vs) throws Exception {
     User user = uol.createUpdateUser(username, userId, password, firstName, lastName, email, gender, url, null, address1, null, null, null, null, null, birthDate, null, null, null, vs);
     return user;
   }
 
-  private User createTestUser(String name, VenusSession vs) {
+  private User createTestUser(String name, VenusSession vs) throws Exception {
    String userId = name + "-userId";
    String password = name + "-passwd";
    String firstName = name + "-fName";
