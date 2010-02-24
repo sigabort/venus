@@ -1,0 +1,26 @@
+#navigation
+{
+    padding:0;
+    height:10em;
+}
+#nav-list
+{
+    list-style-type:none;
+    margin:0;
+    padding:0;
+}
+li
+{
+    display:inline;
+}
+#ul-depts {
+    list-style-type:none;
+    margin:0;
+    padding:0;    
+}
+#li-depts
+{
+    display:none;
+    margin:0;
+    padding:0;    
+}

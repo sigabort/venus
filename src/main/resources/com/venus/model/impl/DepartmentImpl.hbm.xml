@@ -52,13 +52,13 @@
   <query name="findDepartmentByName">
     <![CDATA[
   	from DepartmentImpl as dept
-  	where dept.name=? and status=0
+  	where dept.name=? and dept.status=0
       ]]>
   </query>
   <query name="findDepartmentByCode">
     <![CDATA[
   	from DepartmentImpl as dept
-  	where dept.code=? and status=0
+  	where dept.code=? and dept.status=0
       ]]>
   </query>
 

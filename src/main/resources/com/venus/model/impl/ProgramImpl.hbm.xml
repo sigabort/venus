@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="com.venus.model.impl.ProgramImpl" table="programs">
+
+    <!-- auto generated id -->
+    <id name="ID" type="int" column="id" >
+      <generator class="native"/>
+    </id>
+
+    <natural-id>  
+      <!-- The department to which this program belongs to -->
+      <many-to-one name="department" cascade="none" outer-join="false"
+                   foreign-key="FK1_PROGRAMMES_DEPT_ID"
+                   class="com.venus.model.impl.DepartmentImpl">
+	<column name="department" not-null="true"/>
+      </many-to-one>
+      
+      <!-- the name of the programme -->
+      <property name="name" type="string" length="128" update="true" insert="true">
+	<column name="name" unique="false" not-null="true"
+		sql-type="varchar(128)"/>
+      </property>
+    </natural-id>
+
+    <!-- program description in the institute -->
+    <property name="description" type="string" update="true" insert="true">
+      <column name="description" not-null="false" unique="false"/>
+    </property>
+
+    <!-- Unique program code in the institute -->
+    <property name="code" type="string" length="128" update="true" insert="true">
+      <column name="code" not-null="false" sql-type="varchar(128)" unique="true" index="IDX_PROGRAMIMPL_CODENAME"/>
+    </property>
+
+    <!-- prerequisites for the program -->
+    <property name="prerequisites" type="string" update="true" insert="true">
+      <column name="prerequisites" not-null="false" unique="false"/>
+    </property>
+
+    <!-- duration for the program -->
+    <property name="duration" type="int" update="true" insert="true">
+      <column name="duration" not-null="false" unique="false"/>
+    </property>
+
+    <!-- the status of program -->
+    <property name="status" type="int" update="true" insert="true" 
+	      column="status" not-null="true" unique="false" />
+
+    <!-- created time of the object  -->
+    <property name="created" type="java.util.Date" update="true" insert="true"
+	      column="created" unique="false" not-null="true" />
+    
+    <!-- last modified time of the object  -->
+    <property name="lastModified" type="java.util.Date" update="true"
+      insert="true" column="lastmodified" unique="false" not-null="true" />
+
+  </class>
+
+  <query name="findProgramByCode">
+    <![CDATA[
+  	from ProgramImpl as p
+  	where p.code=? and p.status=0
+      ]]>
+  </query>
+
+</hibernate-mapping>

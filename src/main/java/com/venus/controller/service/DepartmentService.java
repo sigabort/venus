@@ -48,7 +48,7 @@ public class DepartmentService {
       throw new RuntimeException("Error while creating/updating dept: " + name, dae);
     }
     if (dept == null) {
-      throw new RuntimeException("Unable to create/update user");
+      throw new RuntimeException("Unable to create/update department");
     }
     return dept;
   }

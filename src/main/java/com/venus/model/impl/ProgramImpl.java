@@ -4,16 +4,14 @@ import com.venus.model.Department;
 import com.venus.model.Program;
 
 import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
 
-public class DepartmentImpl extends BaseModelImpl implements Department {
+public class ProgramImpl extends BaseModelImpl implements Program {
   private String name;
+  private Department department;
   private String description;
   private String code;
-  private String photoUrl;
-  private String email;
-  private List<Program> programs = new ArrayList<Program>();
+  private String prerequisites;
+  private Integer duration;
   private Date created;
   private Date lastModified;
 
@@ -22,6 +20,12 @@ public class DepartmentImpl extends BaseModelImpl implements Department {
   }
   public void setName(String name) {
     this.name = name;
+  }
+  public Department getDepartment() {
+    return department;
+  }
+  public void setDepartment(Department department) {
+    this.department = department;
   }
   public String getDescription() {
     return description;
@@ -35,23 +39,17 @@ public class DepartmentImpl extends BaseModelImpl implements Department {
   public void setCode(String code) {
     this.code = code;
   }
-  public String getPhotoUrl() {
-    return photoUrl;
+  public String getPrerequisites() {
+    return prerequisites;
   }
-  public void setPhotoUrl(String photoUrl) {
-    this.photoUrl = photoUrl;
+  public void setPrerequisites(String prerequisites) {
+    this.prerequisites = prerequisites;
   }
-  public String getEmail() {
-    return email;
+  public Integer getDuration() {
+    return duration;
   }
-  public void setEmail(String email) {
-    this.email = email;
-  }
-  public List<Program> getPrograms() {
-    return programs;
-  }
-  public void setPrograms(List<Program> programs) {
-    this.programs = programs;
+  public void setDuration(Integer duration) {
+    this.duration = duration;
   }
   public Date getCreated() {
     return created;

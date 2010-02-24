@@ -1,13 +1,16 @@
 package com.venus.model;
 
 import java.util.Date;
-import java.util.List;
 
-public interface Department extends BaseModel {
+public interface Program extends BaseModel {
 
   public abstract String getName();
 
   public abstract void setName(String name);
+
+  public abstract Department getDepartment();
+
+  public abstract void setDepartment(Department department);
 
   public abstract String getDescription();
 
@@ -17,17 +20,13 @@ public interface Department extends BaseModel {
 
   public abstract void setCode(String code);
 
-  public abstract String getPhotoUrl();
+  public abstract String getPrerequisites();
 
-  public abstract void setPhotoUrl(String photoUrl);
+  public abstract void setPrerequisites(String prerequisites);
 
-  public abstract String getEmail();
+  public abstract Integer getDuration();
 
-  public abstract void setEmail(String email);
-  
-  public abstract void setPrograms(List<Program> programs);
-
-  public abstract List<Program> getPrograms();
+  public abstract void setDuration(Integer duration);
 
   public abstract Date getCreated();
 
