@@ -30,8 +30,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.apache.log4j.Logger;
 
 import com.venus.controller.service.DepartmentService;
+import com.venus.controller.service.ProgramService;
 import com.venus.controller.request.BaseRequest;
 import com.venus.controller.request.DepartmentRequest;
+
+import com.venus.controller.response.BaseResponse;
+import com.venus.controller.response.ProgramResponse;
 
 @Controller
 @Path(DepartmentHandler.DEPT_HANDLER_URL)
@@ -40,6 +44,8 @@ public class DepartmentHandler
   public static final String DEPT_HANDLER_URL = "/app/departments";
   @Autowired
   DepartmentService deptService;
+  @Autowired
+  ProgramService progService;
 
   private static final Logger log = Logger.getLogger(DepartmentHandler.class);
 
@@ -71,6 +77,17 @@ public class DepartmentHandler
      log.info("I am in get department req: " + name);
      Object dept = deptService.getDepartment(name);
      return new ModelAndView("department", "department", dept);
+   }
+  
+   @GET
+   @Produces("application/json")
+   @Path("/{name}/programs")
+   public ProgramResponse getPrograms(@PathParam("name") String name, @Form BaseRequest req) {
+     log.info("I am in get programs for dept: " + name);
+     List programs = progService.getPrograms(name, req.getOffset(), req.getMaxReturn());
+     ProgramResponse resp = new ProgramResponse();
+     resp.populatePrograms(programs);
+     return resp;
    }
 
 }
