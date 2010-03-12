@@ -30,8 +30,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.apache.log4j.Logger;
 
 import com.venus.controller.service.ProgramService;
+import com.venus.controller.service.DepartmentService;
 import com.venus.controller.request.BaseRequest;
 import com.venus.controller.request.ProgramRequest;
+import com.venus.controller.util.ConfigParams;
 
 @Controller
 @Path(ProgramHandler.PROGRAM_HANDLER_URL)
@@ -40,6 +42,8 @@ public class ProgramHandler {
   public static final String PROGRAM_HANDLER_URL = "/programs";
   @Autowired
   ProgramService programService;
+  @Autowired
+  DepartmentService deptService;
 
   private static final Logger log = Logger.getLogger(ProgramHandler.class);
 
@@ -49,7 +53,7 @@ public class ProgramHandler {
    public ModelAndView createUpdateProgram(@Form ProgramRequest req, @Context HttpServletRequest servletReq) {
      log.info("I am going to create/update program: " + req.getName());
      Object program = programService.createUpdateProgram(req);
-     return  new ModelAndView("redirect:" + PROGRAM_HANDLER_URL + "/" + req.getName());     
+     return  new ModelAndView("redirect:" + PROGRAM_HANDLER_URL + "/" + req.getDepartmentName() + "/" + req.getName());
    }
 
 
@@ -79,6 +83,14 @@ public class ProgramHandler {
      log.info("I am in get program req: " + name + ", for dept: " + deptName);
      Object program = programService.getProgram(name, deptName);
      return new ModelAndView("program", "program", program);
+   }
+
+   @GET
+   @Produces(MediaType.TEXT_HTML)
+   @Path("/createProgram")
+   public ModelAndView defaultHandler(@Form BaseRequest req, @Context HttpServletRequest servletReq) {
+     List deptList = deptService.getDepartments(0, ConfigParams.DEFAULT_MAX_ITEMS_PER_PAGE);
+     return new ModelAndView("createProgram", "departments", deptList);
    }
 
 }
