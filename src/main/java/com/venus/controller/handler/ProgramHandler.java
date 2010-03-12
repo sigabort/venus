@@ -37,7 +37,7 @@ import com.venus.controller.request.ProgramRequest;
 @Path(ProgramHandler.PROGRAM_HANDLER_URL)
 public class ProgramHandler {
 
-  public static final String PROGRAM_HANDLER_URL = "/app/programs";
+  public static final String PROGRAM_HANDLER_URL = "/programs";
   @Autowired
   ProgramService programService;
 
@@ -58,16 +58,16 @@ public class ProgramHandler {
    @Path("/{dept}")
      public ModelAndView viewAll(@PathParam("dept") String deptName,
 				 @Form BaseRequest req, @Context HttpServletRequest servletReq) {
-     log.info("I am in  programs home for dept: " + deptName + ", [" + req.getOffset() + ", " + req.getMaxReturn() + "]");
-     List programList = programService.getPrograms(deptName, req.getOffset(), req.getMaxReturn());
+     log.info("I am in  programs home for dept: " + deptName + ", [" + req.getStartIndex() + ", " + req.getItemsPerPage() + "]");
+     List programList = programService.getPrograms(deptName, req.getStartIndex(), req.getItemsPerPage());
      return new ModelAndView("programs", "programs", programList);
    }
 
    @GET
    @Produces(MediaType.TEXT_HTML)
    public ModelAndView viewAll(@Form BaseRequest req, @Context HttpServletRequest servletReq) {
-     log.info("I am in  programs for all departments...[" + req.getOffset() + ", " + req.getMaxReturn() + "]");
-     List programList = programService.getPrograms(req.getOffset(), req.getMaxReturn());
+     log.info("I am in  programs for all departments...[" + req.getStartIndex() + ", " + req.getItemsPerPage() + "]");
+     List programList = programService.getPrograms(req.getStartIndex(), req.getItemsPerPage());
      return new ModelAndView("deptPrograms", "deptPrograms", programList);
    }
 

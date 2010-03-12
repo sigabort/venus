@@ -7,34 +7,104 @@ import javax.xml.bind.annotation.XmlRootElement;
 import net.sf.oval.constraint.Max;
 import net.sf.oval.constraint.Min;
 
+import java.util.List;
+
 @XmlRootElement
 public class BaseRequest {
 
-  @QueryParam("offset")
+  @QueryParam("startIndex")
   @DefaultValue("0")
-  @Min(value = 0, message= "offset must be greater than or equal to 0")
-  private Integer offset;
+  @Min(value = 0, message= "startIndex must be greater than or equal to 0")
+  private Integer startIndex;
 
-  @QueryParam("maxReturn")
+  @QueryParam("itemsPerPage")
   @DefaultValue("20")
-  @Max(value = 200, message = "maxReturn may be no greater than 200")
-  @Min(value = 1, message= "maxReturn must be not be less than 1")
-  private Integer maxReturn;
+  @Max(value = 200, message = "itemsPerPage may be no greater than 200")
+  @Min(value = 1, message= "itemsPerPage must be not be less than 1")
+  private Integer itemsPerPage;
 
-  public void setOffset(Integer offset) {
-    this.offset = offset;
+  @QueryParam("format")
+  @DefaultValue("json")
+  private String format;
+
+  @QueryParam("sortBy")
+  private List<String> sortFields;
+
+  @QueryParam("filterBy")
+  private String filterField;
+
+  @QueryParam("filterValue")
+  private String filterValue;
+
+  @QueryParam("filterOp")
+  private String filterOp;
+
+  @QueryParam("sortOrder")
+  @DefaultValue("ascending")
+  private String sortOrder;
+    
+  public void setStartIndex(Integer startIndex) {
+    this.startIndex = startIndex;
   }
   
-  public Integer getOffset() {
-    return this.offset;
+  public Integer getStartIndex() {
+    return this.startIndex;
   }
 
-  public void setMaxReturn(Integer maxReturn) {
-    this.maxReturn = maxReturn;
+  public void setItemsPerPage(Integer itemsPerPage) {
+    this.itemsPerPage = itemsPerPage;
   }
   
-  public Integer getMaxReturn() {
-    return this.maxReturn;
+  public Integer getItemsPerPage() {
+    return this.itemsPerPage;
+  }
+
+  public void setFormat(String format) {
+    this.format = format;
+  }
+  
+  public String getFormat() {
+    return this.format;
+  }
+
+  public void setSortOrder(String sortOrder) {
+    this.sortOrder = sortOrder;
+  }
+  
+  public String getSortOrder() {
+    return this.sortOrder;
+  }
+
+  public void setSortFields(List<String> sortFields) {
+    this.sortFields = sortFields;
+  }
+  
+  public List<String> getSortFields() {
+    return this.sortFields;
+  }
+
+  public void setFilterField(String filterField) {
+    this.filterField = filterField;
+  }
+  
+  public String getFilterField() {
+    return this.filterField;
+  }
+
+  public void setFilterValue(String filterValue) {
+    this.filterValue = filterValue;
+  }
+  
+  public String getFilterValue() {
+    return this.filterValue;
+  }
+
+  public void setFilterOp(String filterOp) {
+    this.filterOp = filterOp;
+  }
+  
+  public String getFilterOp() {
+    return this.filterOp;
   }
 
 }

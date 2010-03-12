@@ -24,7 +24,7 @@
 
   <servlet-mapping>
     <servlet-name>venus</servlet-name>
-    <url-pattern>/app/*</url-pattern>
+    <url-pattern>/*</url-pattern>
   </servlet-mapping>
 
   <listener>

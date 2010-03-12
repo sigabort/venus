@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 @Path(DefaultHandler.DEFAULT_URL)
 public class DefaultHandler
 {
-  public static final String DEFAULT_URL = "/app";
+  public static final String DEFAULT_URL = "/";
 
   private static final Logger log = Logger.getLogger(DefaultHandler.class);
 

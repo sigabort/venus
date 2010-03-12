@@ -7,7 +7,7 @@
         <#list programs as pgm>
 	  <li class="li-pgms">
             <div class="program">
-	      <h4> <a href="/venus/app/programs/${pgm.name}">${pgm.name}</a> </h4>
+	      <h4> <a href="/venus/programs/${pgm.name}">${pgm.name}</a> </h4>
 	    </div>
           </li>
         </#list>

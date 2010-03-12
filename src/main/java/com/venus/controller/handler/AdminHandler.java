@@ -34,7 +34,7 @@ import com.venus.controller.service.UserService;
 @Path(AdminHandler.ADMIN_URL)
 public class AdminHandler
 {
-  public static final String ADMIN_URL = "/app/admin";
+  public static final String ADMIN_URL = "/admin";
   @Autowired
   UserService service;
   private static final Logger log = Logger.getLogger(AdminHandler.class);

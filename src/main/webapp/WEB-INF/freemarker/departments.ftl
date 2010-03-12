@@ -7,7 +7,7 @@
         <#list departments as dept>
 	  <li class="li-depts">
             <div class="department">
-	      <h4> <a href="/venus/app/departments/${dept.name}">${dept.name}</a> </h4>
+	      <h4> <a href="/venus/departments/${dept.name}">${dept.name}</a> </h4>
 	    </div>
           </li>
         </#list>

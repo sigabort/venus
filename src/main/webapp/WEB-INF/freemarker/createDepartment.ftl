@@ -4,7 +4,7 @@
   <h3> Create a Department!</h3>
 
   <div id="create-user"> 
-    <form action="/venus/app/departments" method="POST" name="create_dept_form">
+    <form action="/venus/departments" method="POST" name="create_dept_form">
       <div class='row'>
         <label for="name">Name:</label><input type="text" name="name" id="name"/>
       </div>

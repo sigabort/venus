@@ -36,7 +36,7 @@ import com.venus.controller.request.UserRequest;
 @Path(UserHandler.USERS_URL)
 public class UserHandler
 {
-  public static final String USERS_URL = "/app/users";
+  public static final String USERS_URL = "/users";
   @Autowired
   UserService service;
 
@@ -57,7 +57,7 @@ public class UserHandler
    public ModelAndView viewAll(@Form UserRequest req, @Context HttpServletRequest servletReq)
    {
      log.info("I am in  req");
-     List users = service.getUsers(req.getOffset(), req.getMaxReturn());
+     List users = service.getUsers(req.getStartIndex(), req.getItemsPerPage());
      return new ModelAndView("users", "users", users);
    }
 

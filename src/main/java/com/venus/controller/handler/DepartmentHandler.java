@@ -41,7 +41,7 @@ import com.venus.controller.response.ProgramResponse;
 @Path(DepartmentHandler.DEPT_HANDLER_URL)
 public class DepartmentHandler
 {
-  public static final String DEPT_HANDLER_URL = "/app/departments";
+  public static final String DEPT_HANDLER_URL = "/departments";
   @Autowired
   DepartmentService deptService;
   @Autowired
@@ -65,7 +65,7 @@ public class DepartmentHandler
    public ModelAndView viewAll(@Form BaseRequest req, @Context HttpServletRequest servletReq)
    {
      log.info("I am in  departments home");
-     List deptList = deptService.getDepartments(req.getOffset(), req.getMaxReturn());
+     List deptList = deptService.getDepartments(req.getStartIndex(), req.getItemsPerPage());
      return new ModelAndView("departments", "departments", deptList);
    }
 
@@ -84,7 +84,7 @@ public class DepartmentHandler
    @Path("/{name}/programs")
    public ProgramResponse getPrograms(@PathParam("name") String name, @Form BaseRequest req) {
      log.info("I am in get programs for dept: " + name);
-     List programs = progService.getPrograms(name, req.getOffset(), req.getMaxReturn());
+     List programs = progService.getPrograms(name, req.getStartIndex(), req.getItemsPerPage());
      ProgramResponse resp = new ProgramResponse();
      resp.populatePrograms(programs);
      return resp;
