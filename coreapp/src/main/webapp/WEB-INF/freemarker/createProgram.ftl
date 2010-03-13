@@ -4,7 +4,7 @@
   <h3> Create a Program!</h3>
 
   <div id="create-program"> 
-    <form action="/venus/programs" method="POST" name="create_program_form">
+    <form action="${contextPath}/programs" method="POST" name="create_program_form">
       <div class='row'>
         <label for="name">Name:</label><input type="text" name="name" id="name"/>
       </div>
@@ -21,7 +21,7 @@
 	    </select>
           <#else>
             <div class='no-depts'>
-	      <h4> No departments available. Click <a href="/venus/departments/createDepartment">here</a> to create one </h4>
+	      <h4> No departments available. Click <a href="${contextPath}/departments/createDepartment">here</a> to create one </h4>
             </div>
           </#if>
       </div>

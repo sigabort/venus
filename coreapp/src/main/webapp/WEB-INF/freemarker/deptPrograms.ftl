@@ -10,7 +10,7 @@
 	      <h2>${dept.name}</h2>
 		<#if dept.programs??>
 		  <#list dept.programs as program>
-		    <h3><a href="/venus/programs/${dept.name}/${program.name}">${program.name}</a></h3>
+		    <h3><a href="${contextPath}/programs/${dept.name}/${program.name}">${program.name}</a></h3>
 		  </#list>
 		</#if>
 	    </div>

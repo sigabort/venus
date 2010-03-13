@@ -4,7 +4,7 @@
 
 <div>
   <div>
-    <form action="/venus/j_spring_security_check" method="POST" name="login_form">
+    <form action="${rootContextPath}/j_spring_security_check" method="POST" name="login_form">
       <h3>Log in:</h3>
       <div class='row'>
         <label for="j_username">Username:</label>

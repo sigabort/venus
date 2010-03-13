@@ -27,13 +27,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 
 import org.apache.log4j.Logger;
+import com.venus.controller.util.ConfigParams;
+
 
 @Controller
-@Path(DefaultHandler.DEFAULT_URL)
+@Path(ConfigParams.DEFAULT_URL)
 public class DefaultHandler
 {
-  public static final String DEFAULT_URL = "/";
-
   private static final Logger log = Logger.getLogger(DefaultHandler.class);
 
    @GET

@@ -6,9 +6,9 @@
     <title>${pageTitle}</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="language" content="en" />
-    <meta name="description" content="Users Details" />
+    <meta name="description" content="Venus Web App" />
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css"/>
-<!--     <link rel="stylesheet" type="text/css" href="css/venus.css"/> -->
+    <link rel="stylesheet" type="text/css" href="${rootContextPath}/css/venus.css"/>
   </head>
 
   <body class="main-body" class="main-body">
@@ -16,9 +16,9 @@
     <div id="contents" class="contents">
       <div id="navigation" class="navigation">
 	<ul class="nav-list">
- 	  <li class="home" id="home"><a href="/venus/home">Home</a></li>
- 	  <li class="departments" id="departments"><a href="/venus/departments">Departments</a></li>
- 	  <li class="programs" id="programs"><a href="/venus/programs">Programs</a></li>
- 	  <li class="users" id="users"><a href="/venus/users">Users</a></li>
+ 	  <li class="home" id="home"><a href="${contextPath}/home">Home</a></li>
+ 	  <li class="departments" id="departments"><a href="${contextPath}/departments">Departments</a></li>
+ 	  <li class="programs" id="programs"><a href="${contextPath}/programs">Programs</a></li>
+ 	  <li class="users" id="users"><a href="${contextPath}/users">Users</a></li>
 	</ul>
       </div> <!-- navigation -->

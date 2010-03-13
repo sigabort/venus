@@ -31,12 +31,12 @@ import org.apache.log4j.Logger;
 
 import com.venus.controller.service.UserService;
 import com.venus.controller.request.UserRequest;
+import com.venus.controller.util.ConfigParams;
 
 @Controller
-@Path(UserHandler.USERS_URL)
+@Path(ConfigParams.USERS_URL)
 public class UserHandler
 {
-  public static final String USERS_URL = "/users";
   @Autowired
   UserService service;
 
@@ -49,7 +49,7 @@ public class UserHandler
    {
      log.info("I am going to create/update user: " + req.getUsername());
      Object user = service.createUpdateUser(req);
-     return  new ModelAndView("redirect:" + USERS_URL + "/" + req.getUsername());     
+     return  new ModelAndView("redirect:" + ConfigParams.USERS_URL + "/" + req.getUsername());     
    }
 
    @GET

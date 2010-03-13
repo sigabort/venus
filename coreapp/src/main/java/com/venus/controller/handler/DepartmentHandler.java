@@ -36,12 +36,12 @@ import com.venus.controller.request.DepartmentRequest;
 
 import com.venus.controller.response.BaseResponse;
 import com.venus.controller.response.ProgramResponse;
+import com.venus.controller.util.ConfigParams;
 
 @Controller
-@Path(DepartmentHandler.DEPT_HANDLER_URL)
+@Path(ConfigParams.DEPT_HANDLER_URL)
 public class DepartmentHandler
 {
-  public static final String DEPT_HANDLER_URL = "/departments";
   @Autowired
   DepartmentService deptService;
   @Autowired
@@ -56,7 +56,7 @@ public class DepartmentHandler
    {
      log.info("I am going to create/update dept: " + req.getName());
      Object dept = deptService.createUpdateDepartment(req);
-     return  new ModelAndView("redirect:" + DEPT_HANDLER_URL + "/" + req.getName());     
+     return  new ModelAndView("redirect:" + ConfigParams.DEPT_HANDLER_URL + "/" + req.getName());     
    }
 
 

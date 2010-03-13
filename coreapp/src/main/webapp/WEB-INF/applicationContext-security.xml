@@ -9,7 +9,7 @@
    <!-- Add our own log out filter to invalidate session and cookies -->
   <beans:bean id="logoutFilter" class="org.springframework.security.ui.logout.LogoutFilter">
     <custom-filter position="LOGOUT_FILTER"/>
-    <beans:constructor-arg value="/home"></beans:constructor-arg>
+    <beans:constructor-arg value="/edu/home"></beans:constructor-arg>
     <beans:constructor-arg>
       <beans:list>
 <!-- 	<beans:ref bean="tokenbasedRememberMeHandler"/> -->
@@ -27,12 +27,12 @@
   <!-- Set auto-config to 'false' to add custom stuff -->
   <http auto-config="false" session-fixation-protection="none"
 	entry-point-ref="formLoginAuthenticationEntryPoint">
-    <intercept-url pattern="/home" access="ROLE_ANONYMOUS, ROLE_USER, ROLE_ADMIN" />
-    <intercept-url pattern="/users" access="ROLE_USER, ROLE_ADMIN" />
-    <intercept-url pattern="/users/*" access="ROLE_USER, ROLE_ADMIN" />
-    <intercept-url pattern="/createuser" access="ROLE_ADMIN" />
-    <intercept-url pattern="/admin" access="ROLE_ADMIN" />
-    <intercept-url pattern="/admin/*" access="ROLE_ADMIN" />
+    <intercept-url pattern="/edu/home" access="ROLE_ANONYMOUS, ROLE_USER, ROLE_ADMIN" />
+    <intercept-url pattern="/edu/users" access="ROLE_USER, ROLE_ADMIN" />
+    <intercept-url pattern="/edu/users/*" access="ROLE_USER, ROLE_ADMIN" />
+    <intercept-url pattern="/edu/createuser" access="ROLE_ADMIN" />
+    <intercept-url pattern="/edu/admin" access="ROLE_ADMIN" />
+    <intercept-url pattern="/edu/admin/*" access="ROLE_ADMIN" />
     <intercept-url pattern="/**"
 		   access="ROLE_ANONYMOUS, ROLE_USER, ROLE_ADMIN" />
 
@@ -46,16 +46,16 @@
   <!-- entry point for FormBased login -->
   <beans:bean id="formLoginAuthenticationEntryPoint"
 	      class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
-    <beans:property name="loginFormUrl" value="/login" />
+    <beans:property name="loginFormUrl" value="/edu/login" />
   </beans:bean>
 
   <!-- Our own authentication filter -->
   <beans:bean id="customAuthenticationProcessingFilter"
 	      class="org.springframework.security.ui.webapp.AuthenticationProcessingFilter">
     <custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
-    <beans:property name="defaultTargetUrl" value="/home" />
+    <beans:property name="defaultTargetUrl" value="/edu/home" />
     <beans:property name="authenticationManager" ref="authenticationMgr" />
-    <beans:property name="authenticationFailureUrl" value="/login.jsp?authfailed=true" />
+    <beans:property name="authenticationFailureUrl" value="/edu/login?authfailed=true" />
     <beans:property name="allowSessionCreation" value="true" />
     <beans:property name="exceptionMappings">
       <beans:props>

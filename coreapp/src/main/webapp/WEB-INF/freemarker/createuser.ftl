@@ -4,7 +4,7 @@
   <h3> Create a User!</h3>
 
   <div id="create-user"> 
-    <form action="/venus/users" method="POST" name="create_user_form">
+    <form action="${contextPath}/users" method="POST" name="create_user_form">
       <div class='row'>
         <label for="username">Username:</label><input type="text" name="username" id="username"/>
       </div>

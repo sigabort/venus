@@ -30,13 +30,14 @@
 
 -->
 <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+  <property name="viewClass" value="com.venus.controller.view.VenusFreemarkerView"/>
   <property name="cache" value="true"/>
   <property name="prefix" value=""/>
   <property name="suffix" value=".ftl"/>
   
   <!-- if you want to use the Spring FreeMarker macros, set this property to true -->
   <property name="exposeSpringMacroHelpers" value="true"/>
-
+  <property name="exposeRequestAttributes"  value="true" />
 </bean>
 
 

@@ -36,10 +36,9 @@ import com.venus.controller.request.ProgramRequest;
 import com.venus.controller.util.ConfigParams;
 
 @Controller
-@Path(ProgramHandler.PROGRAM_HANDLER_URL)
+@Path(ConfigParams.PROGRAM_HANDLER_URL)
 public class ProgramHandler {
 
-  public static final String PROGRAM_HANDLER_URL = "/programs";
   @Autowired
   ProgramService programService;
   @Autowired
@@ -53,7 +52,7 @@ public class ProgramHandler {
    public ModelAndView createUpdateProgram(@Form ProgramRequest req, @Context HttpServletRequest servletReq) {
      log.info("I am going to create/update program: " + req.getName());
      Object program = programService.createUpdateProgram(req);
-     return  new ModelAndView("redirect:" + PROGRAM_HANDLER_URL + "/" + req.getDepartmentName() + "/" + req.getName());
+     return  new ModelAndView("redirect:" + ConfigParams.PROGRAM_HANDLER_URL + "/" + req.getDepartmentName() + "/" + req.getName());
    }
 
 

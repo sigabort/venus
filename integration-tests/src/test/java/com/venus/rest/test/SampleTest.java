@@ -16,7 +16,7 @@ public class SampleTest extends RESTTestCase {
   public void testRequestContainsWizTools() throws Exception {
     // Step 1: Create the request:
     RequestBean requestBean = new RequestBean();
-    requestBean.setUrl(new java.net.URL("http://localhost:8080/venus/"));
+    requestBean.setUrl(new java.net.URL("http://localhost:8080/venus/edu"));
     requestBean.setMethod(HTTPMethod.GET);
     Request request = requestBean;
 
@@ -29,8 +29,8 @@ public class SampleTest extends RESTTestCase {
 
 	@Override
 	public void doResponse(Response response){
-	  Assert.assertEquals("Response Code", 200, response.getStatusCode());
           System.out.println(response.getResponseBody());
+	  Assert.assertEquals("Response Code", 200, response.getStatusCode());
 	}
 	@Override
 	  public void doCancelled(){
