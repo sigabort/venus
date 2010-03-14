@@ -1,57 +1,28 @@
 package com.venus.rest.test;
 
-import org.wiztools.restclient.Request;
 import org.wiztools.restclient.Response;
-import org.wiztools.restclient.RequestBean;
-import org.wiztools.restclient.HTTPMethod;
-import org.wiztools.restclient.View;
-import org.wiztools.restclient.Implementation;
-import org.wiztools.restclient.RequestExecuter;
-import org.wiztools.restclient.RESTTestCase;
+
+import com.venus.rest.VenusRestClient;
 
 import org.junit.Assert;
+import org.junit.Test;
 
-public class SampleTest extends RESTTestCase {
+public class SampleTest {
 
-  public void testRequestContainsWizTools() throws Exception {
-    // Step 1: Create the request:
-    RequestBean requestBean = new RequestBean();
-    requestBean.setUrl(new java.net.URL("http://localhost:8080/venus/edu"));
-    requestBean.setMethod(HTTPMethod.GET);
-    Request request = requestBean;
+  /* test getting default page - with out any parameters */
+  @Test
+  public void testGetDefaultPage() throws Exception {
+    VenusRestClient client = new VenusRestClient();
+    Response resp = client.getRequest(null, null);
+    Assert.assertEquals("Response code", 200, resp.getStatusCode());
+  }
 
-    // Step 2: Write the handler
-    View view = new View() {
-	@Override
-	  public void doStart(Request request){
-          // do nothing!
-	}
-
-	@Override
-	public void doResponse(Response response){
-          System.out.println(response.getResponseBody());
-	  Assert.assertEquals("Response Code", 200, response.getStatusCode());
-	}
-	@Override
-	  public void doCancelled(){
-          // do nothing!
-	}
-
-	@Override
-	  public void doEnd(){
-          // do nothing!
-	}
-
-	@Override
-	  public void doError(final String error){
-          System.err.println(error);
-	}
-      };
-    
-    // Step 3: Execute:
-    RequestExecuter executer = Implementation.of(RequestExecuter.class);
-    executer.execute(request, view);
-    
+  /* test getting departments page - with out any parameters */
+  @Test
+  public void testGetDepartmentsPage() throws Exception {
+    VenusRestClient client = new VenusRestClient();
+    Response resp = client.getRequest("/departments", null);
+    Assert.assertEquals("Response code", 200, resp.getStatusCode());
   }
   
 }
