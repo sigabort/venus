@@ -2,8 +2,13 @@
 <#include "header.ftl">
 
   <h3> Create a Department!</h3>
+  <#if response??>
+    <#if response.error = true>
+      <h3> Cannot create department, try again. Error code: ${response.httpErrorCode}</h3>
+    </#if>
+  </#if>
 
-  <div id="create-user"> 
+  <div id="create-dept"> 
     <form action="${contextPath}/departments" method="POST" name="create_dept_form">
       <div class='row'>
         <label for="name">Name:</label><input type="text" name="name" id="name"/>

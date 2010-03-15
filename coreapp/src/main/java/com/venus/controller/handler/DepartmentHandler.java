@@ -33,9 +33,11 @@ import com.venus.controller.service.DepartmentService;
 import com.venus.controller.service.ProgramService;
 import com.venus.controller.request.BaseRequest;
 import com.venus.controller.request.DepartmentRequest;
+import com.venus.controller.request.RequestValidator;
 
 import com.venus.controller.response.BaseResponse;
 import com.venus.controller.response.ProgramResponse;
+import com.venus.controller.response.error.ResponseException;
 import com.venus.controller.util.ConfigParams;
 
 @Controller
@@ -51,9 +53,15 @@ public class DepartmentHandler
 
    @POST
    @PUT
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-   public ModelAndView createUpdateDepartment(@Form DepartmentRequest req, @Context HttpServletRequest servletReq)
-   {
+   @Produces(MediaType.TEXT_HTML)
+   public ModelAndView createUpdateDepartment(@Form DepartmentRequest req, @Context HttpServletRequest servletReq) throws Exception {
+     try {
+       RequestValidator.validate(req);
+     }
+     catch (ResponseException re) {
+       log.error("createUpdateDept: request validation failed");
+       return new ModelAndView("createDepartment", "response", re.getResponse());
+     }
      log.info("I am going to create/update dept: " + req.getName());
      Object dept = deptService.createUpdateDepartment(req);
      return  new ModelAndView("redirect:" + ConfigParams.DEPT_HANDLER_URL + "/" + req.getName());     
@@ -62,8 +70,7 @@ public class DepartmentHandler
 
    @GET
    @Produces(MediaType.TEXT_HTML)
-   public ModelAndView viewAll(@Form BaseRequest req, @Context HttpServletRequest servletReq)
-   {
+   public ModelAndView viewAll(@Form BaseRequest req, @Context HttpServletRequest servletReq) throws Exception {
      log.info("I am in  departments home");
      List deptList = deptService.getDepartments(req.getStartIndex(), req.getItemsPerPage());
      return new ModelAndView("departments", "departments", deptList);
@@ -72,8 +79,7 @@ public class DepartmentHandler
    @GET
    @Produces(MediaType.TEXT_HTML)
    @Path("/{name}")
-   public ModelAndView defaultHandler(@PathParam("name") String name)
-   {
+   public ModelAndView defaultHandler(@PathParam("name") String name) throws Exception {
      log.info("I am in get department req: " + name);
      Object dept = deptService.getDepartment(name);
      return new ModelAndView("department", "department", dept);
@@ -82,10 +88,16 @@ public class DepartmentHandler
    @GET
    @Produces("application/json")
    @Path("/{name}/programs")
-   public ProgramResponse getPrograms(@PathParam("name") String name, @Form BaseRequest req) {
+   public BaseResponse getPrograms(@PathParam("name") String name, @Form BaseRequest req) throws Exception {
      log.info("I am in get programs for dept: " + name);
-     List programs = progService.getPrograms(name, req.getStartIndex(), req.getItemsPerPage());
      ProgramResponse resp = new ProgramResponse();
+     List programs = null;
+     try {
+       programs = progService.getPrograms(name, req.getStartIndex(), req.getItemsPerPage());
+     }
+     catch (ResponseException re) {
+       return re.getResponse();
+     }
      resp.populatePrograms(programs);
      return resp;
    }

@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="${rootContextPath}/css/venus.css"/>
   </head>
 
-  <body class="main-body" class="main-body">
+  <body class="main-body" id="main-body">
     <#include "header-nav.ftl">
     <div id="contents" class="contents">
       <div id="navigation" class="navigation">

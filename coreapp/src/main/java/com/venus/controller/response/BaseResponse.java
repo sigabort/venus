@@ -2,10 +2,8 @@ package com.venus.controller.response;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonWriteNullProperties;
-
-import com.venus.controller.error.HttpStatusCode;
+import javax.ws.rs.core.Response;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @JsonWriteNullProperties(value=false)
@@ -21,7 +19,7 @@ public class BaseResponse {
   public BaseResponse() {
     this.error = false;
     this.errorCode = 0;
-    this.httpErrorCode = HttpStatusCode.OK.getBit();
+    this.httpErrorCode = Response.Status.OK.getStatusCode();
     this.startIndex = 0;
     this.itemsPerPage = 0;
     this.totalResults = 0;

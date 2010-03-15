@@ -60,7 +60,7 @@ public class ProgramHandler {
    @Produces(MediaType.TEXT_HTML)
    @Path("/{dept}")
      public ModelAndView viewAll(@PathParam("dept") String deptName,
-				 @Form BaseRequest req, @Context HttpServletRequest servletReq) {
+				 @Form BaseRequest req, @Context HttpServletRequest servletReq) throws Exception {
      log.info("I am in  programs home for dept: " + deptName + ", [" + req.getStartIndex() + ", " + req.getItemsPerPage() + "]");
      List programList = programService.getPrograms(deptName, req.getStartIndex(), req.getItemsPerPage());
      return new ModelAndView("programs", "programs", programList);
@@ -87,7 +87,7 @@ public class ProgramHandler {
    @GET
    @Produces(MediaType.TEXT_HTML)
    @Path("/createProgram")
-   public ModelAndView defaultHandler(@Form BaseRequest req, @Context HttpServletRequest servletReq) {
+   public ModelAndView defaultHandler(@Form BaseRequest req, @Context HttpServletRequest servletReq) throws Exception {
      List deptList = deptService.getDepartments(0, ConfigParams.DEFAULT_MAX_ITEMS_PER_PAGE);
      return new ModelAndView("createProgram", "departments", deptList);
    }

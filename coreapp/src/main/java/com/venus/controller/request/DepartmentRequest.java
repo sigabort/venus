@@ -16,6 +16,8 @@ public class DepartmentRequest extends BaseRequest {
   @FormParam("name")
   private String name;
 
+  @NotNull(message = "Code must be supplied")
+  @NotBlank(message = "Code must not be blank")
   @FormParam("code")
   private String code;
 
