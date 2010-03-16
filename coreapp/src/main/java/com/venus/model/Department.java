@@ -3,11 +3,19 @@ package com.venus.model;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Department bean representing the Department in an institute
+ * @author sigabort
+ */
 public interface Department extends BaseModel {
 
   public abstract String getName();
 
   public abstract void setName(String name);
+
+  public abstract Integer getInstituteId();
+
+  public abstract void setInstituteId(Integer instituteId);
 
   public abstract String getDescription();
 

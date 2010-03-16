@@ -22,6 +22,9 @@ public class UserOperationsImplTest extends BaseImplTest {
   public void setUp() {
     uol = new UserOperationsImpl();
     vs = getVenusSession();
+    /* XXX: we need to do this after creating the institute */
+    vs.setInstituteId(1);
+//     vs.setInstitute(institute);
     sess = vs.getHibernateSession();
   }
 

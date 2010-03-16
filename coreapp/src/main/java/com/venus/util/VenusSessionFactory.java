@@ -14,5 +14,11 @@ public class VenusSessionFactory {
     vs.setHibernateSession(session);
     return vs;
   }
+
+  public static VenusSession getVenusSession(Integer instituteId) {
+    VenusSession vs = getVenusSession();
+    vs.setInstituteId(instituteId);
+    return vs;
+  }
   
 }

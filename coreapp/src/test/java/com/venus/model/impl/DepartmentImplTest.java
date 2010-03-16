@@ -22,6 +22,9 @@ public class DepartmentImplTest extends BaseImplTest {
   @Before
   public void setUp() {
     vs = getVenusSession();
+    /* XXX: we need to set this by creating actual institute */
+    vs.setInstituteId(1);
+//     vs.setInstitute(institute);
     sess = vs.getHibernateSession();
   }
 
@@ -45,6 +48,7 @@ public class DepartmentImplTest extends BaseImplTest {
 
     Department dept = new DepartmentImpl();
     dept.setName(name);
+    dept.setInstituteId(vs.getInstituteId());
     dept.setCode(code);
     dept.setDescription(desc);
     dept.setPhotoUrl(photoUrl);

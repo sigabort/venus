@@ -2,6 +2,8 @@ package com.venus.dal.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import com.venus.model.Department;
 import com.venus.model.Status;
@@ -14,20 +16,34 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Implementation of operations on departments of an institute.
+ * 
+ * @author sigabort
+ */
 public class DepartmentOperationsImpl implements DepartmentOperations {
   private String FIND_DEPT_BY_NAME_STR = "findDepartmentByName";
   private String FIND_DEPT_BY_CODE_STR = "findDepartmentByCode";
-
+  
+  /* logger for logging */
   private final Logger log = Logger.getLogger(DepartmentOperationsImpl.class);
   
   /**
-   * Create / update department
+   * Create or Update department
+   * @paramm name            The name of the department. This should be unique in the institute
+   * @param optionalParams   The map of optional parameters. The list include:
+   * <ul>
+   *   <li>code: String</li><li>description: String</li><li>photoUrl: String</li>
+   *   <li>email: String</li><li>status: Status</li><li>created: Date</li><li>lastModified: Date</li>
+   * </ul>
+   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @return                 The created/updated department object
+   * @throws DataAccessException thrown when there is any error
    */
-  public Department createUpdateDepartment(String name, String code, String description, String photoUrl, String email, Date created, Date lastModified, VenusSession session) throws DataAccessException {
+  public Department createUpdateDepartment(String name, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException {
     /* name is mandatory for the department create/update */
     if (name == null) {
       throw new IllegalArgumentException("name must be supplied");
@@ -35,53 +51,72 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
 
     /* see if the dept exists already */
     Department dept = findDepartmentByName(name, true, session);
+
     /* ok, department exists. Update it */
     if (dept != null) {
-      dept = updateDepartment(dept, code, description, photoUrl, email, Status.Active, session);
+      /* if status is supplied, use it. Otherwise, we need to set it to Status.Active to make
+       * sure we are updating the active object
+       */
+      Status status = OperationsUtilImpl.getStatus("status", optionalParams, Status.Active);
+      if (optionalParams == null) {
+	optionalParams = new HashMap<String, Object>(1);
+      }
+      optionalParams.put("status", (Object)status);
+
+      /* ok, time to update department */
+      dept = updateDepartment(dept, optionalParams, session);
     }
     else {
-      dept = createDepartment(name, code, description, photoUrl, email, created, lastModified, session);
+      /* object doesn't exist, create it */
+      dept = createDepartment(name, optionalParams, session);
     }
 
     return dept;
   }
 
-  /* create new department */
-  private Department createDepartment(String name, String code, String description, String photoUrl, String email, Date created, Date lastModified, VenusSession session) throws DataAccessException {
+  /**
+   * Create department
+   * @paramm name            The name of the department. This should be unique in the institute
+   * @param optionalParams   The map of optional parameters. The list include:
+   * <ul>
+   *   <li>code: String</li><li>description: String</li><li>photoUrl: String</li>
+   *   <li>email: String</li><li>status: Status</li><li>created: Date</li><li>lastModified: Date</li>
+   * </ul>
+   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @return                 The created department object
+   * @throws DataAccessException thrown when there is any error
+   */
+  private Department createDepartment(String name, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException {
     /* name is mandatory for the department create */
     if (name == null) {
       throw new IllegalArgumentException("name must be supplied");
     }
-
-    Department dept = new DepartmentImpl();
-    if (name != null) {
-      dept.setName(name);
-    }
-
-    if (code != null) {
-      dept.setCode(code);
-    }
-    /* code is not supplied, name will be used as code */
-    else {
-      dept.setCode(name);
-    }
-
-    if (description != null) {
-      dept.setDescription(description);
-    }
-
-    if (photoUrl != null) {
-      dept.setPhotoUrl(photoUrl);
-    }
-
-    if (email != null) {
-      dept.setEmail(email);
-    }
     
-    dept.setStatus(Status.Active.ordinal());
-    dept.setCreated((created != null)? created : new Date());
-    dept.setLastModified((lastModified != null)? lastModified : new Date());
+    if (log.isDebugEnabled()) {
+      log.debug("Creating Department with name: " + name + ", for institute with id: " + session.getInstituteId());
+    }
 
+    /* create new object */
+    Department dept = new DepartmentImpl();
+    dept.setName(name);
+
+    /* set the institute Id */
+    dept.setInstituteId(session.getInstituteId());
+
+    /****** set the optional parameters now *******/
+    /* code - uniquely identifying the department. If not set, use name+"-"+InstituteId for now */
+    dept.setCode(OperationsUtilImpl.getStringValue("code", optionalParams, name + "-" + session.getInstituteId()));
+    /* description of the department */
+    dept.setDescription(OperationsUtilImpl.getStringValue("description", optionalParams, null));
+    dept.setPhotoUrl(OperationsUtilImpl.getStringValue("photoUrl", optionalParams, null));
+    dept.setEmail(OperationsUtilImpl.getStringValue("email", optionalParams, null));
+    /* status should be active if not specified */
+    dept.setStatus(OperationsUtilImpl.getStatus("status", optionalParams, Status.Active).ordinal());
+    /* set the created and lastmodified dates */
+    dept.setCreated(OperationsUtilImpl.getDate("created", optionalParams, new Date()));
+    dept.setLastModified(OperationsUtilImpl.getDate("lastModified", optionalParams, new Date()));    
+
+    /* begin the transaction and save the object */
     Transaction txn = null;
     try {
       Session sess = session.getHibernateSession();
@@ -89,7 +124,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       sess.save(dept);
     }
     catch (HibernateException he) {
-      String errStr = "Unable to create department: " + name;
+      String errStr = "Unable to create department: " + name + ", for institute: " + session.getInstituteId();
       if (txn != null && txn.isActive()) {
 	txn.rollback();
       }
@@ -104,53 +139,73 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     return dept;
   }
 
-  /* update the existing department */
-  private Department updateDepartment(Department dept, String code, String description, String photoUrl, String email, Status status, VenusSession session) throws DataAccessException {
+  /**
+   * Update department
+   * @paramm dept            The department object to be updated
+   * @param optionalParams   The map of optional parameters. The list include:
+   * <ul>
+   *   <li>code: String</li><li>description: String</li><li>photoUrl: String</li>
+   *   <li>email: String</li><li>status: Status</li><li>created: Date</li><li>lastModified: Date</li>
+   * </ul>
+   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @return                 The updated department object
+   * @throws DataAccessException thrown when there is any error
+   */
+  private Department updateDepartment(Department dept, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException {
     if (dept == null) {
       return null;
     }
     boolean update = false;
 
-    String oldCode = dept.getCode();
-    if (oldCode == null || !oldCode.equals(code)) {
-      dept.setCode(code);
-      update = true;
+    if (optionalParams != null) {
+      /* check the code */
+      String newCode = OperationsUtilImpl.getStringValue("code", optionalParams, null);
+      if (newCode != null && !newCode.equals(dept.getCode())) {
+	dept.setCode(newCode);
+	update = true;
+      }
+      
+      /* check the description */
+      String newDescription = OperationsUtilImpl.getStringValue("description", optionalParams, null);
+      if (newDescription != null && !newDescription.equals(dept.getDescription())) {
+	dept.setDescription(newDescription);
+	update = true;
+      }
+
+      /* check the photoUrl */
+      String newPhotoUrl = OperationsUtilImpl.getStringValue("photoUrl", optionalParams, null);
+      if (newPhotoUrl != null && !newPhotoUrl.equals(dept.getPhotoUrl())) {
+	dept.setPhotoUrl(newPhotoUrl);
+	update = true;
+      }
+      
+      /* check the email */
+      String newEmail = OperationsUtilImpl.getStringValue("email", optionalParams, null);
+      if (newEmail != null && !newEmail.equals(dept.getEmail())) {
+	dept.setEmail(newEmail);
+	update = true;
+      }
+      
+      /* check the Status */
+      Status newStatus = OperationsUtilImpl.getStatus("status", optionalParams, null);
+      if (newStatus != null && newStatus.ordinal() != dept.getStatus()) {
+	dept.setStatus(newStatus.ordinal());
+	update = true;
+      }
     }
 
-    String oldDescription = dept.getDescription();
-    if (oldDescription == null || !oldDescription.equals(description)) {
-      dept.setDescription(description);
-      update = true;
-    }
-
-    String oldPhotoUrl = dept.getPhotoUrl();
-    if (oldPhotoUrl == null || !oldPhotoUrl.equals(photoUrl)) {
-      dept.setPhotoUrl(photoUrl);
-      update = true;
-    }
-
-    String oldEmail = dept.getEmail();
-    if (oldEmail == null || !oldEmail.equals(email)) {
-      dept.setEmail(email);
-      update = true;
-    }
-
-    Integer oldStatus = dept.getStatus();
-    if (oldStatus == null || !oldStatus.equals(status.ordinal())) {
-      dept.setStatus(status.ordinal());
-      update = true;
-    }
-
+    /* is update needed? */
     if (update) {
       Transaction txn = null;
       try {
+	/* set the last modified date */
 	dept.setLastModified(new Date());
 	Session sess = session.getHibernateSession();
 	txn = sess.beginTransaction();
 	sess.update(dept);
       }
       catch (HibernateException he) {
-	String errStr = "Unable to update department: " + dept.getName();
+	String errStr = "Unable to update department: " + dept.getName() + ", for institute: " + dept.getInstituteId();
 	if (txn != null && txn.isActive()) {
 	  txn.rollback();
 	}

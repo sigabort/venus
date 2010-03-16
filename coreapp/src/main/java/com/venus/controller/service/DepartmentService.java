@@ -3,6 +3,8 @@ package com.venus.controller.service;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
 
 import com.venus.model.Department;
 import com.venus.model.impl.DepartmentImpl;
@@ -23,7 +25,7 @@ import org.apache.log4j.Logger;
 @Service
 public class DepartmentService {
   private DepartmentOperations dol = new DepartmentOperationsImpl();
-  private VenusSession vs = VenusSessionFactory.getVenusSession();
+  private VenusSession vs = VenusSessionFactory.getVenusSession(new Integer(1));
   private static final Logger log = Logger.getLogger(DepartmentService.class);
 
   public Department getDepartment(String name) throws ResponseException {
@@ -41,14 +43,15 @@ public class DepartmentService {
   
   public Department createUpdateDepartment(DepartmentRequest req) throws ResponseException {
     String name = req.getName();
-    String code = req.getCode();
-    String desc = req.getDescription();
-    String email = req.getEmail();
-    String photoUrl = req.getPhotoUrl();
     Department dept = null;
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("code", req.getCode());
+    params.put("description", req.getDescription());
+    params.put("photoUrl", req.getPhotoUrl());
+    params.put("email", req.getEmail());
     
     try {
-      dept  = dol.createUpdateDepartment(name, code, desc, photoUrl, email, null, null, vs);
+      dept  = dol.createUpdateDepartment(name, params, vs);
     }
     catch (DataAccessException dae) {
       String errStr = "Error while creating/updating department with name: " + name;

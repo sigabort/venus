@@ -28,6 +28,9 @@ public class ProgramOperationsImplTest extends BaseImplTest {
   public void setUp() {
     pol = new ProgramOperationsImpl();
     vs = getVenusSession();
+    /* XXX: we need to do this after creating the institute */
+    vs.setInstituteId(1);
+//     vs.setInstitute(institute);
     sess = vs.getHibernateSession();
     Transaction txn = sess.beginTransaction();
     testDept = DepartmentImplTest.createTestDepartment("ProgramOpsImplTest-" + getUniqueName(), vs);

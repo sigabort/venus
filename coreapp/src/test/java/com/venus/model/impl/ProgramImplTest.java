@@ -23,6 +23,9 @@ public class ProgramImplTest extends BaseImplTest {
   @Before
   public void setUp() {
     vs = getVenusSession();
+    /* XXX: we need to set this by creating actual institute */
+    vs.setInstituteId(1);
+//     vs.setInstitute(institute);
     sess = vs.getHibernateSession();
   }
 

@@ -7,8 +7,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Implementation class for Department bean
+ * @author sigabort
+ */
 public class DepartmentImpl extends BaseModelImpl implements Department {
   private String name;
+  private Integer instituteId;
   private String description;
   private String code;
   private String photoUrl;
@@ -22,6 +27,12 @@ public class DepartmentImpl extends BaseModelImpl implements Department {
   }
   public void setName(String name) {
     this.name = name;
+  }
+  public Integer getInstituteId() {
+    return instituteId;
+  }
+  public void setInstituteId(Integer instituteId) {
+    this.instituteId = instituteId;
   }
   public String getDescription() {
     return description;

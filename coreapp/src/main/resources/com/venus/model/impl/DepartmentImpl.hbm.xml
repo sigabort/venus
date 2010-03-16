@@ -10,10 +10,21 @@
       <generator class="native"/>
     </id>
 
-    <!-- Unique department name in the institute -->
-    <property name="name" type="string" length="128" update="true" insert="true">
-      <column name="name" not-null="true" sql-type="varchar(128)" unique="true" index="IDX_DEPTIMPL_NAME"/>
-    </property>
+    <!-- Name and Institute ID is the Unique Key for the departments table  -->
+    <natural-id>  
+      <!-- XXX: Institute is not yet implemented. So we will use
+      simple int type here -->
+      
+      <!-- The institute to which this department belongs to -->
+      <property name="instituteId" type="int" update="true" insert="true">
+	<column name="instituteid" not-null="true" unique="false"/>
+      </property>
+      
+      <!-- Unique department name in the institute -->
+      <property name="name" type="string" length="128" update="true" insert="true">
+	<column name="name" not-null="true" sql-type="varchar(128)" unique="false"/>
+      </property>
+    </natural-id>
 
     <!-- department description in the institute -->
     <property name="description" type="string" update="true" insert="true">
@@ -22,7 +33,7 @@
 
     <!-- Unique department code in the institute, if not specified name will be used -->
     <property name="code" type="string" length="128" update="true" insert="true">
-      <column name="code" not-null="false" sql-type="varchar(128)" unique="true" index="IDX_DEPTIMPL_CODENAME"/>
+      <column name="code" not-null="false" sql-type="varchar(128)" unique="true"/>
     </property>
 
     <!-- department's photo url -->
@@ -34,6 +45,12 @@
     <property name="email" type="string" update="true" insert="true">
       <column name="email" not-null="false" unique="false"/>
     </property>
+
+    <!-- department's programs -->
+    <bag name="programs" cascade="none" inverse="true" batch-size="10">
+      <key column="department" />
+      <one-to-many class="com.venus.model.impl.ProgramImpl" />
+    </bag>
 
     <!-- the status of department -->
     <property name="status" type="int" update="true" insert="true" 
@@ -48,17 +65,16 @@
       insert="true" column="lastmodified" unique="false" not-null="true" />
 
   </class>
-
   <query name="findDepartmentByName">
     <![CDATA[
-  	from DepartmentImpl as dept
-  	where dept.name=? and dept.status=0
+       from DepartmentImpl as dept
+       where dept.name=? and dept.status=0
       ]]>
   </query>
   <query name="findDepartmentByCode">
     <![CDATA[
-  	from DepartmentImpl as dept
-  	where dept.code=? and dept.status=0
+       from DepartmentImpl as dept
+       where dept.code=? and dept.status=0
       ]]>
   </query>
 
