@@ -11,13 +11,13 @@
   </head>
 
   <body class="main-body" id="main-body">
-    <#include "header-nav.ftl">
+    <#include "../header-nav.ftl">
     <div id="contents" class="contents">
       <div id="navigation" class="navigation">
 	<ul class="nav-list">
  	  <li class="home" id="home"><a href="${contextPath}/home">Home</a></li>
- 	  <li class="departments" id="departments"><a href="${contextPath}/departments">Departments</a></li>
- 	  <li class="programs" id="programs"><a href="${contextPath}/programs">Programs</a></li>
- 	  <li class="users" id="users"><a href="${contextPath}/users">Users</a></li>
+ 	  <li class="create-dept" id="create-dept"><a href="${contextPath}/admin/createDepartment">Create Department</a></li>
+ 	  <li class="create-program" id="create-program"><a href="${contextPath}/admin/createProgram">Create Program</a></li>
+ 	  <li class="create-user" id="create-user"><a href="${contextPath}/admin/createUser">Create User</a></li>
 	</ul>
       </div> <!-- navigation -->

@@ -1,5 +1,5 @@
 <#assign pageTitle="Create a User">
-<#include "header.ftl">
+<#include "../header.ftl">
 
   <h3> Create a User!</h3>
 
@@ -60,4 +60,4 @@
     </form>
   </div>
 
-<#include "footer.ftl">
+<#include "../footer.ftl">

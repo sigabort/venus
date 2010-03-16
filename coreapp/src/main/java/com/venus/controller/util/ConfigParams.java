@@ -10,4 +10,5 @@ public class ConfigParams {
   public static final String DEPT_HANDLER_URL = DEFAULT_CTX_ROOT + "/departments";
   public static final String PROGRAM_HANDLER_URL = DEFAULT_CTX_ROOT + "/programs";
   public static final String USERS_URL = DEFAULT_CTX_ROOT + "/users";
+  public static final String ADMIN_URL = DEFAULT_CTX_ROOT + "/admin";
 }

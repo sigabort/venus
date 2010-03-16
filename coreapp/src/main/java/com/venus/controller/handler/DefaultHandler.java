@@ -21,8 +21,7 @@ public class DefaultHandler
 
    @GET
    @Produces(MediaType.TEXT_HTML)
-   public ModelAndView viewAll()
-   {
+   public ModelAndView defaultHandler() {
      log.info("I am in  req");
      return new ModelAndView("home");
    }
@@ -30,8 +29,7 @@ public class DefaultHandler
    @GET
    @Produces(MediaType.TEXT_HTML)
    @Path("/{resource}")
-   public ModelAndView defaultHandler(@PathParam("resource") String resource)
-   {
+   public ModelAndView resourceHandler(@PathParam("resource") String resource) {
      log.info("I am in default req: " + resource);
      return new ModelAndView(resource);
    }

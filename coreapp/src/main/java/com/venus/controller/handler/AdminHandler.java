@@ -29,27 +29,20 @@ import org.springframework.web.servlet.ModelAndView;
 import org.apache.log4j.Logger;
 
 import com.venus.controller.service.UserService;
+import com.venus.controller.util.ConfigParams;
 
 @Controller
-@Path(AdminHandler.ADMIN_URL)
+@Path(ConfigParams.ADMIN_URL)
 public class AdminHandler
 {
-  public static final String ADMIN_URL = "/admin";
   @Autowired
   UserService service;
   private static final Logger log = Logger.getLogger(AdminHandler.class);
 
    @GET
    @Produces(MediaType.TEXT_HTML)
-   public ModelAndView viewAll()
-   {
-     System.out.println("I am in admin  req");
-     Object user = (Object)service.getUser("ravi-ZDNbYrLqMlAyvvfswjSDNa3o6");
-     List resp = new ArrayList<Object>();
-     if (user != null) {
-       resp.add(user);
-     }
-     return new ModelAndView("users", "users", resp);
+   public ModelAndView viewAll() {
+     return new ModelAndView("admin/admin");
    }
 
    @GET
@@ -58,7 +51,7 @@ public class AdminHandler
    public ModelAndView defaultHandler(@PathParam("resource") String resource)
    {
      System.out.println("I am in default admin req: " + resource);
-     return new ModelAndView(resource);
+     return new ModelAndView("admin/" + resource);
    }
 
 }

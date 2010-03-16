@@ -1,5 +1,5 @@
 <#assign pageTitle="Create a Department">
-<#include "header.ftl">
+<#include "../header.ftl">
 
   <h3> Create a Department!</h3>
   <#if response??>
@@ -29,4 +29,4 @@
     </form>
   </div>
 
-<#include "footer.ftl">
+<#include "../footer.ftl">

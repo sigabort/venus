@@ -1,5 +1,5 @@
 <#assign pageTitle="Create a Program">
-<#include "header.ftl">
+<#include "../header.ftl">
 
   <h3> Create a Program!</h3>
 
@@ -38,4 +38,4 @@
     </form>
   </div>
 
-<#include "footer.ftl">
+<#include "../footer.ftl">
