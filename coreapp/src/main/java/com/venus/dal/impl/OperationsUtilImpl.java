@@ -65,5 +65,21 @@ public class OperationsUtilImpl {
     return def;    
   }
 
+  /**
+   * Get the boolean value from the map
+   * @param name      The name of the status parameter
+   * @param params    The map of the parameters to retrieve the parameter from
+   * @param def       The default value, if the param is not found in the map
+   * @return          The value from the list for the param, default otherwise
+   */
+  public static Boolean getBoolean(String name, Map<String, Object> params, Boolean def) {
+    if (params != null) {
+      Boolean value = (Boolean) params.get(name);
+      if (value != null) {
+	return value;
+      }
+    }
+    return def;    
+  }
 
 }

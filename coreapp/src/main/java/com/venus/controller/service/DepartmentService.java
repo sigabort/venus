@@ -31,7 +31,7 @@ public class DepartmentService {
   public Department getDepartment(String name) throws ResponseException {
     Department department = null;
     try {
-      department = dol.findDepartmentByName(name, vs);
+      department = dol.findDepartmentByName(name, null, vs);
     }
     catch (DataAccessException dae) {
       String errStr = "Error while getting department with name: " + name;

@@ -12,6 +12,10 @@ import com.venus.util.VenusSession;
 import com.venus.dal.DepartmentOperations;
 import com.venus.dal.DataAccessException;
 
+import org.hibernate.Criteria;
+import org.hibernate.criterion.NaturalIdentifier;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Expression;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.HibernateException;
@@ -25,9 +29,7 @@ import org.apache.log4j.Logger;
  * @author sigabort
  */
 public class DepartmentOperationsImpl implements DepartmentOperations {
-  private String FIND_DEPT_BY_NAME_STR = "findDepartmentByName";
-  private String FIND_DEPT_BY_CODE_STR = "findDepartmentByCode";
-  
+
   /* logger for logging */
   private final Logger log = Logger.getLogger(DepartmentOperationsImpl.class);
   
@@ -36,8 +38,15 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
    * @paramm name            The name of the department. This should be unique in the institute
    * @param optionalParams   The map of optional parameters. The list include:
    * <ul>
-   *   <li>code: String</li><li>description: String</li><li>photoUrl: String</li>
-   *   <li>email: String</li><li>status: Status</li><li>created: Date</li><li>lastModified: Date</li>
+   *   <li>code(String): The code for the department in the institute. If not
+   *       specified, concat(name, '-', institute id) will be used as code 
+   *   </li>
+   *   <li>description(String): The description of the department</li>
+   *   <li>photoUrl(String): The photourl for the department</li>
+   *   <li>email(String): The email of the department (may be admin mail-id)</li>
+   *   <li>status(Status): The status of the department</li>
+   *   <li>created(Date): The created date of the department</li>
+   *   <li>lastModified(Date): The last modified date of the department</li>
    * </ul>
    * @param session          The venus session object consisting of instituteId, hibernate session
    * @return                 The created/updated department object
@@ -49,8 +58,12 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       throw new IllegalArgumentException("name must be supplied");
     }
 
+    /* options to pass for finding department */
+    Map<String, Object> opts = new HashMap<String, Object>(1);
+    opts.put("onlyActive", Boolean.FALSE);
+
     /* see if the dept exists already */
-    Department dept = findDepartmentByName(name, true, session);
+    Department dept = findDepartmentByName(name, opts, session);
 
     /* ok, department exists. Update it */
     if (dept != null) {
@@ -79,8 +92,15 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
    * @paramm name            The name of the department. This should be unique in the institute
    * @param optionalParams   The map of optional parameters. The list include:
    * <ul>
-   *   <li>code: String</li><li>description: String</li><li>photoUrl: String</li>
-   *   <li>email: String</li><li>status: Status</li><li>created: Date</li><li>lastModified: Date</li>
+   *   <li>code(String): The code for the department in the institute. If not
+   *       specified, concat(name, '-', institute id) will be used as code 
+   *   </li>
+   *   <li>description(String): The description of the department</li>
+   *   <li>photoUrl(String): The photourl for the department</li>
+   *   <li>email(String): The email of the department (may be admin mail-id)</li>
+   *   <li>status(Status): The status of the department</li>
+   *   <li>created(Date): The created date of the department</li>
+   *   <li>lastModified(Date): The last modified date of the department</li>
    * </ul>
    * @param session          The venus session object consisting of instituteId, hibernate session
    * @return                 The created department object
@@ -144,8 +164,15 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
    * @paramm dept            The department object to be updated
    * @param optionalParams   The map of optional parameters. The list include:
    * <ul>
-   *   <li>code: String</li><li>description: String</li><li>photoUrl: String</li>
-   *   <li>email: String</li><li>status: Status</li><li>created: Date</li><li>lastModified: Date</li>
+   *   <li>code(String): The code for the department in the institute. If not
+   *       specified, concat(name, '-', institute id) will be used as code 
+   *   </li>
+   *   <li>description(String): The description of the department</li>
+   *   <li>photoUrl(String): The photourl for the department</li>
+   *   <li>email(String): The email of the department (may be admin mail-id)</li>
+   *   <li>status(Status): The status of the department</li>
+   *   <li>created(Date): The created date of the department</li>
+   *   <li>lastModified(Date): The last modified date of the department</li>
    * </ul>
    * @param session          The venus session object consisting of instituteId, hibernate session
    * @return                 The updated department object
@@ -196,6 +223,9 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
 
     /* is update needed? */
     if (update) {
+      if (log.isDebugEnabled()) {
+	log.debug("Updating Department with name: " + dept.getName() + ", for institute with id: " + dept.getInstituteId());
+      }
       Transaction txn = null;
       try {
 	/* set the last modified date */
@@ -222,144 +252,146 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
   }
 
   /**
-   * Find the department given the name
+   * Find the department given the name in an institue. By default, returns
+   * only active department if not specified
+   * @param name     The name of the department in the institute
+   * @param options  The map of optional parameters. The list include:
+   * <ul>
+   *   <li>onlyActive: Boolean</li>
+   * </ul>
+   * @param vs       The venus session object
+   * @return         The department object if found, null otherwise
+   * @throws DataAccessException thrown when there is any exception
    */
-  public Department findDepartmentByName(String name, boolean includeDeleted, VenusSession vs)  throws DataAccessException {
+  public Department findDepartmentByName(String name, Map<String, Object> options, VenusSession vs)  throws DataAccessException {
     /* name is null? return null */
     if (name == null) {
       return null;
     }
-    /*  */
-    if (!includeDeleted) {
-      return findDepartmentByName(name, vs);
+
+    /* do we need to return only active department? */
+    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+
+    if (log.isDebugEnabled()) {
+      log.debug("Finding Department with name: " + name + ", for institute with id: " + vs.getInstituteId());
     }
 
+    /* use naturalid restrictions to find the department here */
     try {
-      /* get hibernate session */
-      Session sess = vs.getHibernateSession();
-      /* create query */
-      Query query = sess.createQuery("from DepartmentImpl dept where dept.name=:name ");
-      query.setString("name", name);
-      /* find now */
-      return (Department)query.uniqueResult();
+      Criteria criteria = vs.getHibernateSession().createCriteria(DepartmentImpl.class);
+      NaturalIdentifier naturalId = Restrictions.naturalId().set("name", name);
+      naturalId.set("instituteId", vs.getInstituteId());
+      
+      criteria.add(naturalId);
+      criteria.setCacheable(false);
+      Department dept = (DepartmentImpl) criteria.uniqueResult();
+      /* check if only active department is needed */
+      if (dept != null && onlyActive) {
+	if (dept.getStatus() != Status.Active.ordinal()) {
+	  return null;
+	}
+      }
+      return dept;
     }
     catch (HibernateException he) {
-      String errStr = "Unable to find department with name: " + name;
+      String errStr = "Unable to find department with name: " + name + ", in institute with id: " + vs.getInstituteId();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
   }
 
   /**
-   * Find the department given the code
+   * Find the department given the code in an institue. By default, returns
+   * only active department if not specified
+   * @param code     The code of the department in the institute
+   * @param options  The map of optional parameters. The list include:
+   * <ul>
+   *   <li>onlyActive: Boolean</li>
+   * </ul>
+   * @param vs       The venus session object
+   * @return         The department object if found, null otherwise
+   * @throws DataAccessException thrown when there is any exception
    */
-  public Department findDepartmentByCode(String code, boolean includeDeleted, VenusSession vs) throws DataAccessException  {
+  public Department findDepartmentByCode(String code, Map<String, Object> options, VenusSession vs) throws DataAccessException  {
     /* code is null? return null */
     if (code == null) {
       return null;
     }
-    /*  */
-    if (!includeDeleted) {
-      return findDepartmentByCode(code, vs);
+
+    /* do we need to return only active department? */
+    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+
+    if (log.isDebugEnabled()) {
+      log.debug("Finding Department with code: " + code + ", for institute with id: " + vs.getInstituteId());
     }
 
     try {
       /* get hibernate session */
       Session sess = vs.getHibernateSession();
       /* create query */
-      Query query = sess.createQuery("from DepartmentImpl dept where dept.code=:code ");
+      Query query = sess.createQuery("from DepartmentImpl dept where dept.code=:code and dept.instituteId=:instituteId ");
       query.setString("code", code);
+      query.setInteger("instituteId", vs.getInstituteId());
+
       /* find now */
-      return (Department)query.uniqueResult();
+      Department dept = (Department)query.uniqueResult();
+      /* check if only active department is needed */
+      if (dept != null && onlyActive) {
+	if (dept.getStatus() != Status.Active.ordinal()) {
+	  return null;
+	}
+      }
+      return dept;
     }
     catch (HibernateException he) {
-      String errStr = "Unable to find department with code: " + code;
+      String errStr = "Unable to find department with code: " + code + ", in institute with id: " + vs.getInstituteId();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
   }
 
   /**
-   * Find the department given the name
+   * Set status of the department. This can be used to delete the Department
+   * @param dept          The department object to be deleted
+   * @param status        The status to be set
+   * @param vs            The session object
+   * @throws DataAccessException thrown when there is any error
    */
-  public Department findDepartmentByName(String name, VenusSession vs)  throws DataAccessException {
-    /* name is null? return null */
-    if (name == null) {
-      return null;
-    }
-   
-    try {
-      /* get hibernate session */
-      Session sess = vs.getHibernateSession();
-      /* find now */
-      Query query = sess.getNamedQuery(FIND_DEPT_BY_NAME_STR);
-      query.setString(0, name);
-      return (Department)query.uniqueResult();
-    }
-    catch (HibernateException he) {
-      String errStr = "Unable to find department with name: " + name;
-      log.error(errStr, he);
-      throw new DataAccessException(errStr, he);
-    }
-  }
-
-  /**
-   * Find the department given the code
-   */
-  public Department findDepartmentByCode(String code, VenusSession vs) throws DataAccessException  {
-    /* code is null? return null */
-    if (code == null) {
-      return null;
-    }
-    
-    try {
-      /* get hibernate session */
-      Session sess = vs.getHibernateSession();
-      /* find now */
-      Query query = sess.getNamedQuery(FIND_DEPT_BY_CODE_STR);
-      query.setString(0, code);
-      return (Department)query.uniqueResult();
-    }
-    catch (HibernateException he) {
-      String errStr = "Unable to find department with code: " + code;
-      log.error(errStr, he);
-      throw new DataAccessException(errStr, he);
-    }
-  }
-
-  /**
-   * Delete the department
-   */
-  public void deleteDepartment(Department dept, VenusSession vs) throws DataAccessException  {
-    if (dept == null) {
+  public void setStatus(Department dept, Status status, VenusSession vs) throws DataAccessException  {
+    if (dept == null || status == null) {
       return;
     }
     
-    if (log.isDebugEnabled()) {
-      log.debug("Deleting department: " + dept.getName());
+    boolean update = false;
+    if (status.ordinal() != dept.getStatus()) {
+      dept.setStatus(status.ordinal());
+      update = true;
     }
-    
-    /* set the status to deleted */
-    dept.setStatus(Status.Deleted.ordinal());
 
+    /* delete if the status is different */
     Transaction txn = null;
-    try {
-      /* get the hibernate session */
-      Session sess = vs.getHibernateSession();
-      txn = sess.beginTransaction();
-      sess.update(dept);
-    }
-    catch (HibernateException he) {
-      String errStr = "Unable to delete department: " + dept.getName();
-      log.error(errStr, he);
-      if (txn != null && txn.isActive()) {
-	txn.rollback();
+    if (update) {
+      if (log.isDebugEnabled()) {
+	log.debug("Changing the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstituteId());
       }
-      throw new DataAccessException(errStr, he);
-    }
-    finally {
-      if (txn != null && txn.isActive()) {
-	txn.commit();
+      try {
+	/* get the hibernate session */
+	Session sess = vs.getHibernateSession();
+	txn = sess.beginTransaction();
+	sess.update(dept);
+      }
+      catch (HibernateException he) {
+	String errStr = "Unable to change the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstituteId();
+	log.error(errStr, he);
+	if (txn != null && txn.isActive()) {
+	  txn.rollback();
+	}
+	throw new DataAccessException(errStr, he);
+      }
+      finally {
+	if (txn != null && txn.isActive()) {
+	  txn.commit();
+	}
       }
     }
   }

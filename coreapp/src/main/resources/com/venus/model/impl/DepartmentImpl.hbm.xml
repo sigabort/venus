@@ -17,7 +17,7 @@
       
       <!-- The institute to which this department belongs to -->
       <property name="instituteId" type="int" update="true" insert="true">
-	<column name="instituteid" not-null="true" unique="false"/>
+	<column name="instituteid" not-null="true" unique="false" unique-key="IDX_DEPT_INSTITUTE_CODE"/>
       </property>
       
       <!-- Unique department name in the institute -->
@@ -33,7 +33,7 @@
 
     <!-- Unique department code in the institute, if not specified name will be used -->
     <property name="code" type="string" length="128" update="true" insert="true">
-      <column name="code" not-null="false" sql-type="varchar(128)" unique="true"/>
+      <column name="code" not-null="false" sql-type="varchar(128)" unique-key="IDX_DEPT_INSTITUTE_CODE"/>
     </property>
 
     <!-- department's photo url -->
@@ -65,17 +65,5 @@
       insert="true" column="lastmodified" unique="false" not-null="true" />
 
   </class>
-  <query name="findDepartmentByName">
-    <![CDATA[
-       from DepartmentImpl as dept
-       where dept.name=? and dept.status=0
-      ]]>
-  </query>
-  <query name="findDepartmentByCode">
-    <![CDATA[
-       from DepartmentImpl as dept
-       where dept.code=? and dept.status=0
-      ]]>
-  </query>
 
 </hibernate-mapping>

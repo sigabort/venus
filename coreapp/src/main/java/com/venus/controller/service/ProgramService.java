@@ -34,7 +34,7 @@ public class ProgramService {
     Program program = null;
     Department dept = null;
     try {
-      dept = dol.findDepartmentByName(deptName, vs);
+      dept = dol.findDepartmentByName(deptName, null, vs);
     }
     catch (DataAccessException dae) {
       throw new RuntimeException("Error while getting dept: " + deptName, dae);
@@ -60,7 +60,7 @@ public class ProgramService {
     Program program = null;
 
     try {
-      dept = dol.findDepartmentByName(deptName, vs);
+      dept = dol.findDepartmentByName(deptName, null, vs);
     }
     catch (DataAccessException dae) {
       throw new RuntimeException("Error while getting dept: " + deptName, dae);
@@ -86,7 +86,7 @@ public class ProgramService {
     Department dept = null;
 
     try {
-      dept = dol.findDepartmentByName(deptName, vs);
+      dept = dol.findDepartmentByName(deptName, null, vs);
     }
     catch (DataAccessException dae) {
       String errStr = "Error while getting dept: " + deptName;
