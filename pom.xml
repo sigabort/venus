@@ -8,6 +8,7 @@
   <version>1.0</version>
   <modules>
     <module>coreapp</module>
+    <module>restapp</module>
     <module>integration-tests</module>
   </modules>
 </project>

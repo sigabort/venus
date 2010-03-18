@@ -7,11 +7,11 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.venus</groupId>
-  <artifactId>venus</artifactId>
-  <packaging>war</packaging>
+  <groupId>com.venus.coreapp</groupId>
+  <artifactId>coreapp</artifactId>
+  <packaging>jar</packaging>
   <version>1.0</version>
-  <name>venus web app</name>
+  <name>venus core app</name>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -176,7 +176,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>venus</finalName>
+    <finalName>coreapp</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
