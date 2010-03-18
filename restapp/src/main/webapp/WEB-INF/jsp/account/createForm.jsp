@@ -22,7 +22,7 @@
 		Create Account
 	</h1>
 	<div class="span-12 last">	
-		<form:form modelAttribute="myAccount" method="post">
+		<form:form modelAttribute="account" method="post">
 		  	<fieldset>		
 				<legend>Account Fields</legend>
 				<p>
@@ -54,4 +54,3 @@
 </div>
 </body>
 </html>
-

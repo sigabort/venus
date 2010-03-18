@@ -19,27 +19,31 @@
 <body>
 <div class="container">
 	<h1>
-		Create Account
+		Create Department
 	</h1>
 	<div class="span-12 last">	
-		<form:form modelAttribute="myAccount" method="post">
+		<form:form modelAttribute="departmentRequest" method="post">
 		  	<fieldset>		
 				<legend>Account Fields</legend>
 				<p>
 					<form:label	for="name" path="name" cssErrorClass="error">Name</form:label><br/>
 					<form:input path="name" /> <form:errors path="name" />			
 				</p>
-				<p>	
-					<form:label for="balance" path="balance" cssErrorClass="error">Balance</form:label><br/>
-					<form:input path="balance" /> <form:errors path="balance" />
+				<p>
+					<form:label	for="code" path="code" cssErrorClass="error">Code</form:label><br/>
+					<form:input path="code" /> <form:errors path="code" />			
 				</p>
 				<p>
-					<form:label for="equityAllocation" path="equityAllocation" cssErrorClass="error">Equity Allocation</form:label><br/>
-					<form:input path="equityAllocation" /> <form:errors path="equityAllocation" />
+					<form:label	for="description" path="description" cssErrorClass="error">Description</form:label><br/>
+					<form:input path="description" /> <form:errors path="description" />			
 				</p>
-				<p>	
-					<form:label for="renewalDate" path="renewalDate" cssErrorClass="error">Renewal Date</form:label><br/>
-					<form:input path="renewalDate" /> <form:errors path="renewalDate" />
+				<p>
+					<form:label	for="photoUrl" path="photoUrl" cssErrorClass="error">PhotoUrl</form:label><br/>
+					<form:input path="photoUrl" /> <form:errors path="photoUrl" />			
+				</p>
+				<p>
+					<form:label	for="email" path="email" cssErrorClass="error">Email</form:label><br/>
+					<form:input path="email" /> <form:errors path="email" />			
 				</p>
 				<p>	
 					<input type="submit" />
@@ -48,9 +52,6 @@
 		</form:form>
 	</div>
 	<hr>	
-	<ul>
-		<li> <a href="?locale=en_us">us</a> |  <a href="?locale=en_gb">gb</a> | <a href="?locale=es_es">es</a> | <a href="?locale=de_de">de</a> </li>
-	</ul>	
 </div>
 </body>
 </html>
