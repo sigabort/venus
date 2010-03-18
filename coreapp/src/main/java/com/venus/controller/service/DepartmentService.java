@@ -64,7 +64,7 @@ public class DepartmentService {
   public List<Department> getDepartments(int offset, int maxRet) throws ResponseException {
     List<Department> departments = null;
     try {
-      departments = dol.getDepartments(offset, maxRet, vs);
+      departments = dol.getDepartments(offset, maxRet, null, vs);
     }
     catch (DataAccessException dae) {
       String errStr = "Error while getting departments";

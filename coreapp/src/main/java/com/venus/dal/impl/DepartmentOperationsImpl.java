@@ -10,18 +10,22 @@ import com.venus.model.Status;
 import com.venus.model.impl.DepartmentImpl;
 import com.venus.util.VenusSession;
 import com.venus.dal.DepartmentOperations;
+import com.venus.dal.OperationsUtil;
 import com.venus.dal.DataAccessException;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Implementation of operations on departments of an institute.
@@ -398,23 +402,111 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
 
   /**
    * Get all the departments in the institute
+   * @param offset        The paging offset in the list
+   * @param maxRet        Maximum number of objects to be returned
+   * @param options       The oprional parameters, including:
+   * <ul>
+   *   <li>onlyActive(Boolean): return only active departments, defaults to true</li>
+   *   <li>sortBy(String): if specified, the restults will be sorted by this field, defaults to created</li>
+   *   <li>isAscending(Boolean): sort by ascending/descending, defaults to true</li>
+   *   <li>filterBy(String): filter the output by this field name</li>
+   *   <li>filterValue(String): filter the output based on this value for the given field. This will be effective, only if filterBy field is set</li>
+   *   <li>filterOp(String): filter operation, can be : contains, equals, startsWith, present. Defaults to contains</li>
+   * </ul>
+   * @param vs           The venus session object
+   * @return the list of departments in an institute
+   * @throws DataAccessException thrown when there is any error
    */
-  public List<Department> getDepartments(int offset, int maxRet, VenusSession vs)  throws DataAccessException {
+  public List<Department> getDepartments(int offset, int maxRet, Map<String, Object> options, VenusSession vs)  throws DataAccessException {
+    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+    /* we will sort on 'created' by default for departments. Why? - God knows */
+    String sortBy = OperationsUtilImpl.getStringValue("sortBy", options, "created");
+    Boolean isAscending = OperationsUtilImpl.getBoolean("isAscending", options, OperationsUtil.DEFAULT_SORT_ORDER);
+    String filterBy = OperationsUtilImpl.getStringValue("filterBy", options, null);
+    String filterValue = OperationsUtilImpl.getStringValue("filterValue", options, null);
+    String filterOp = OperationsUtilImpl.getStringValue("filterOp", options, OperationsUtil.DEFAULT_FILTER_OP);
+
     try {
+      /* use criteria for efficiency */
       Session sess = vs.getHibernateSession();
-      Query query = sess.createQuery("from DepartmentImpl dept where dept.status=:status");
-      query.setInteger("status", Status.Active.ordinal());
-      query.setFirstResult(offset);
-      query.setMaxResults(maxRet);
+      Criteria c = sess.createCriteria(DepartmentImpl.class);
+
+      /* set the institute id */
+      c.add(Expression.eq("instituteId", vs.getInstituteId()));
       
-      return query.list();
+      /* set the condition on status, if we need only active departments */
+      if (onlyActive) {
+	c.add(Expression.eq("status", Status.Active.ordinal()));
+      }
+      
+      /* if sortBy is specified by, add order */
+      if (StringUtils.isNotBlank(sortBy)) {
+	c.addOrder(isAscending? Order.asc(sortBy) : Order.desc(sortBy));
+      }
+      
+      /*XXX: Add filtering*/
+      
+      /* set pagination */
+      c.setFirstResult(offset);
+      c.setMaxResults(maxRet);
+
+      /* return the list */
+      return c.list();
     }
     catch (HibernateException he) {
-      String errStr = "Unable to get departments";
+      String errStr = "Unable to get departments, with institute id: " + vs.getInstituteId();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
   }
   
+
+  /**
+   * Get departments count in the institute
+   * @param options       The oprional parameters, including:
+   * <ul>
+   *   <li>onlyActive(Boolean): return only active departments, defaults to true</li>
+   *   <li>filterBy(String): filter the output by this field name</li>
+   *   <li>filterValue(String): filter the output based on this value for the given field. This will be effective, only if filterBy field is set</li>
+   *   <li>filterOp(String): filter operation, can be : contains, equals, startsWith, present. Defaults to contains</li>
+   * </ul>
+   * @param vs           The venus session object
+   * @return the total count of departments in the institute
+   * @throws DataAccessException thrown when there is any error
+   */
+  public Integer getDepartmentsCount(Map<String, Object> options, VenusSession vs)  throws DataAccessException {
+    /* count only active departments? */
+    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+    /* filter options */
+    String filterBy = OperationsUtilImpl.getStringValue("filterBy", options, null);
+    String filterValue = OperationsUtilImpl.getStringValue("filterValue", options, null);
+    String filterOp = OperationsUtilImpl.getStringValue("filterOp", options, OperationsUtil.DEFAULT_FILTER_OP);
+
+    try {
+      /* use criteria for efficiency */
+      Session sess = vs.getHibernateSession();
+      Criteria c = sess.createCriteria(DepartmentImpl.class);
+
+      /* set the institute id */
+      c.add(Expression.eq("instituteId", vs.getInstituteId()));
+      
+      /* set the condition on status, if we need only active departments */
+      if (onlyActive) {
+	c.add(Expression.eq("status", Status.Active.ordinal()));
+      }
+      /* set the projection for the row count */
+      c.setProjection(Projections.rowCount());
+      
+      /*XXX: Add filtering*/
+
+      /* return the count */
+      return ((Number)c.uniqueResult()).intValue();
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to get departments, with institute id: " + vs.getInstituteId();
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
+  }
 
 }

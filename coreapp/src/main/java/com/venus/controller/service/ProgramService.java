@@ -113,7 +113,7 @@ public class ProgramService {
     List<Department> depts = null;
 
     try {
-       depts = dol.getDepartments(offset, maxRet, vs);
+      depts = dol.getDepartments(offset, maxRet, null, vs);
     }
     catch (DataAccessException dae) {
       throw new RuntimeException("Error while getting depts", dae);

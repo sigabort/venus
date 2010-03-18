@@ -72,6 +72,38 @@ public interface DepartmentOperations {
    */
   public abstract void setStatus(Department dept, Status status, VenusSession session) throws DataAccessException;
 
-  public abstract List<Department> getDepartments(int offset, int maxRet, VenusSession vs) throws DataAccessException;
-  
+
+  /**
+   * Get all the departments in the institute
+   * @param offset        The paging offset in the list
+   * @param maxRet        Maximum number of objects to be returned
+   * @param options       The oprional parameters, including:
+   * <ul>
+   *   <li>onlyActive(Boolean): return only active departments, defaults to true</li>
+   *   <li>sortBy(String): if specified, the restults will be sorted by this field, defaults to created</li>
+   *   <li>isAscending(Boolean): sort by ascending/descending, defaults to true</li>
+   *   <li>filterBy(String): filter the output by this field name</li>
+   *   <li>filterValue(String): filter the output based on this value for the given field. This will be effective, only if filterBy field is set</li>
+   *   <li>filterOp(String): filter operation, can be : contains, equals, startsWith, present. Defaults to contains</li>
+   * </ul>
+   * @param vs           The venus session object
+   * @return the list of departments in an institute
+   * @throws DataAccessException thrown when there is any error
+   */
+  public abstract List<Department> getDepartments(int offset, int maxRet, Map<String, Object> options, VenusSession vs) throws DataAccessException;
+
+  /**
+   * Get departments count in the institute
+   * @param options       The oprional parameters, including:
+   * <ul>
+   *   <li>onlyActive(Boolean): return only active departments, defaults to true</li>
+   *   <li>filterBy(String): filter the output by this field name</li>
+   *   <li>filterValue(String): filter the output based on this value for the given field. This will be effective, only if filterBy field is set</li>
+   *   <li>filterOp(String): filter operation, can be : contains, equals, startsWith, present. Defaults to contains</li>
+   * </ul>
+   * @param vs           The venus session object
+   * @return the total count of departments in the institute
+   * @throws DataAccessException thrown when there is any error
+   */
+  public abstract Integer getDepartmentsCount(Map<String, Object> options, VenusSession vs)  throws DataAccessException;  
 }

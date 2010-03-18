@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-
+import java.util.Random;
 
 import org.junit.Test;
 import org.junit.Before;
@@ -28,7 +28,8 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
     dol = new DepartmentOperationsImpl();
     vs = getVenusSession();
     /* XXX: we need to do this after creating the institute */
-    vs.setInstituteId(1);
+    Integer randInt = new Random(new Random().nextLong()).nextInt();
+    vs.setInstituteId(randInt);
 //     vs.setInstitute(institute);
     sess = vs.getHibernateSession();
   }
@@ -338,9 +339,197 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    Assert.assertNotNull("department last modified date", dept2.getLastModified());
 
    /* fetch the departments now */
-   List<Department> list = dol.getDepartments(0, 10, vs);
+   List<Department> list = dol.getDepartments(0, 10, null, vs);
    Assert.assertNotNull(list);
+   /* should be only 2, when we create new institute per test */
    Assert.assertTrue("list should not be less than 2", list.size() >= 2);
+  }
+
+
+  /* create some departments and fetch them with sortOrder, sortBy specified */
+  @Test
+  public void testGetDepartmentsSortOrder() throws Exception {
+   String name = "testGetDeptsSortOrd-" + getUniqueName();
+   String name1 = name + "-name1", name2 = name + "-name2";
+   String code1 = name + "-code1", code2 = name + "-code2";
+   String desc1 = name + "-desc1", desc2 = name + "-desc2";
+   String photoUrl = name + "-url";
+   String email = name + "-email";
+   Integer randInt = new Random(new Random().nextLong()).nextInt();
+   /* Set the new institue ID */
+   vs.setInstituteId(randInt);
+
+   Map<String, Object> params1 = buildOptionalParams(code1, desc1, photoUrl, email, null, null, null);
+
+   /* create one department */
+   Department dept1 = dol.createUpdateDepartment(name1, params1, vs);
+   Assert.assertNotNull(dept1);
+
+   /* validate the optional fields of the dept object */
+   validateDepartmentOptionalFields(params1, dept1);
+   
+   Assert.assertEquals("department name", name1, dept1.getName());
+   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+
+   /* create another department */
+   Map<String, Object> params2 = buildOptionalParams(code2, desc2, photoUrl, email, null, null, null);
+   Department dept2 = dol.createUpdateDepartment(name2, params2, vs);
+   Assert.assertNotNull(dept2);
+
+   /* validate the optional fields of the dept object */
+   validateDepartmentOptionalFields(params2, dept2);
+   
+   Assert.assertEquals("department name", name2, dept2.getName());
+   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+
+   /* fetch the departments now */
+   List<Department> list = dol.getDepartments(0, 10, null, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should only contain 2 departments", new Integer(2), list.size());
+   
+   /* set order on "id" */
+   Map<String, Object> options = new HashMap<String, Object>();
+   options.put("sortBy", "id");
+   options.put("isAscending", Boolean.TRUE);
+
+   /* get the departments sorted by id, ascending */
+   list = dol.getDepartments(0, 10, options, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should only contain 2 departments", new Integer(2), list.size());
+   Department d1 = (Department) list.get(0);
+   Assert.assertEquals("first one should be equal to the one created first", dept1, d1);
+   Department d2 = (Department) list.get(1);
+   Assert.assertEquals("second one should be equal to the one created later", dept2, d2);
+
+   /* get the departments sorted by id, descending */
+   options.put("isAscending", Boolean.FALSE);
+   list = dol.getDepartments(0, 10, options, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should only contain 2 departments", new Integer(2), list.size());
+   d1 = (Department) list.get(0);
+   Assert.assertEquals("first one should be equal to the one created later", dept2, d1);
+   d2 = (Department) list.get(1);
+   Assert.assertEquals("second one should be equal to the one created first", dept1, d2);
+   
+  }
+
+  /* create some departments, delete and check again */
+  @Test
+  public void testGetDepartmentsAfterDeletion() throws Exception {
+   String name = "testGetDeptsAftDel-" + getUniqueName();
+   String name1 = name + "-name1", name2 = name + "-name2";
+   String code1 = name + "-code1", code2 = name + "-code2";
+   String desc1 = name + "-desc1", desc2 = name + "-desc2";
+   String photoUrl = name + "-url";
+   String email = name + "-email";
+   Integer randInt = new Random(new Random().nextLong()).nextInt();
+   /* Set the new institue ID */
+   vs.setInstituteId(randInt);
+
+   Map<String, Object> params1 = buildOptionalParams(code1, desc1, photoUrl, email, null, null, null);
+
+   /* create one department */
+   Department dept1 = dol.createUpdateDepartment(name1, params1, vs);
+   Assert.assertNotNull(dept1);
+
+   /* validate the optional fields of the dept object */
+   validateDepartmentOptionalFields(params1, dept1);
+   
+   Assert.assertEquals("department name", name1, dept1.getName());
+   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+
+   /* create another department */
+   Map<String, Object> params2 = buildOptionalParams(code2, desc2, photoUrl, email, null, null, null);
+   Department dept2 = dol.createUpdateDepartment(name2, params2, vs);
+   Assert.assertNotNull(dept2);
+
+   /* validate the optional fields of the dept object */
+   validateDepartmentOptionalFields(params2, dept2);
+   
+   Assert.assertEquals("department name", name2, dept2.getName());
+   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+
+   /* fetch the departments now */
+   List<Department> list = dol.getDepartments(0, 10, null, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should only contain 2 departments", new Integer(2), list.size());
+
+   /* set the status of first department to deleted */
+   dol.setStatus(dept1, Status.Deleted, vs);
+   /* now try to get the departments again. This should return only second one */
+   list = dol.getDepartments(0, 10, null, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should only contain only 1 department", new Integer(1), list.size());
+   Assert.assertEquals("The department should be the second one", dept2, (Department)list.get(0));
+
+   /* get the all - active and non-active now, sorted by id */
+   Map<String, Object> options = new HashMap<String, Object>();
+   options.put("sortBy", "id");
+   options.put("isAscending", Boolean.TRUE);
+   options.put("onlyActive", Boolean.FALSE);
+
+   list = dol.getDepartments(0, 100, options, vs);
+   Assert.assertNotNull(list);   
+   Assert.assertEquals("list should only contain 2 departments", new Integer(2), list.size());
+   Department d1 = (Department) list.get(0);
+   Assert.assertEquals("first one's status should be deleted", Status.Deleted.ordinal(), d1.getStatus());
+   Department d2 = (Department) list.get(1);
+   Assert.assertEquals("second one should be equal to the one created later", dept2, d2);
+  }
+
+
+  /* create some departments, check the count */
+  @Test
+  public void testGetDepartmentsCount() throws Exception {
+   String name = "testGetDeptsCount-" + getUniqueName();
+   String name1 = name + "-name1", name2 = name + "-name2";
+   String code1 = name + "-code1", code2 = name + "-code2";
+   String desc1 = name + "-desc1", desc2 = name + "-desc2";
+   String photoUrl = name + "-url";
+   String email = name + "-email";
+   Integer randInt = new Random(new Random().nextLong()).nextInt();
+   /* Set the new institue ID */
+   vs.setInstituteId(randInt);
+
+   Map<String, Object> params1 = buildOptionalParams(code1, desc1, photoUrl, email, null, null, null);
+
+   /* create one department */
+   Department dept1 = dol.createUpdateDepartment(name1, params1, vs);
+   Assert.assertNotNull(dept1);
+
+   /* validate the optional fields of the dept object */
+   validateDepartmentOptionalFields(params1, dept1);
+   
+   Assert.assertEquals("department name", name1, dept1.getName());
+   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+
+   /* create another department */
+   Map<String, Object> params2 = buildOptionalParams(code2, desc2, photoUrl, email, null, null, null);
+   Department dept2 = dol.createUpdateDepartment(name2, params2, vs);
+   Assert.assertNotNull(dept2);
+
+   /* validate the optional fields of the dept object */
+   validateDepartmentOptionalFields(params2, dept2);
+   
+   Assert.assertEquals("department name", name2, dept2.getName());
+   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+
+   /* get the departments count now */
+   Integer count = dol.getDepartmentsCount(null, vs);
+   Assert.assertEquals("list should only contain 2 departments", new Integer(2), count);
+
+   /* set the status of first department to deleted */
+   dol.setStatus(dept1, Status.Deleted, vs);
+   /* now try to get the departments count again. This should return only one */
+   count = dol.getDepartmentsCount(null, vs);
+   Assert.assertEquals("list should only contain only 1 department", new Integer(1), count);
+
+   /* get the all - active and non-active now, the count should be 2 */
+   Map<String, Object> options = new HashMap<String, Object>();
+   options.put("onlyActive", Boolean.FALSE);
+
+   count = dol.getDepartmentsCount(options, vs);
+   Assert.assertEquals("list should only contain 2 departments", new Integer(2), count);
   }
 
   /**

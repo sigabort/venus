@@ -2,6 +2,7 @@ package com.venus.dal.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.Test;
 import org.junit.Before;
@@ -29,7 +30,8 @@ public class ProgramOperationsImplTest extends BaseImplTest {
     pol = new ProgramOperationsImpl();
     vs = getVenusSession();
     /* XXX: we need to do this after creating the institute */
-    vs.setInstituteId(1);
+    Integer randInt = new Random(new Random().nextLong()).nextInt();
+    vs.setInstituteId(randInt);
 //     vs.setInstitute(institute);
     sess = vs.getHibernateSession();
     Transaction txn = sess.beginTransaction();
