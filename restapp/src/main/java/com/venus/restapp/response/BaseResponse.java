@@ -1,7 +1,10 @@
 package com.venus.restapp.response;
 
 import org.springframework.http.HttpStatus;
+import org.codehaus.jackson.annotate.JsonWriteNullProperties;
 
+
+@JsonWriteNullProperties(false)
 public class BaseResponse {
   private Boolean error;
   private Integer errorCode;

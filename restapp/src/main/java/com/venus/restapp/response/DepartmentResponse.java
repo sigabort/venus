@@ -6,6 +6,10 @@ import com.venus.model.Department;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.codehaus.jackson.annotate.JsonWriteNullProperties;
+
+
+@JsonWriteNullProperties(false)
 public class DepartmentResponse extends BaseResponse {
   
   private ArrayList<DepartmentDTO> entries;

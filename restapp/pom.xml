@@ -251,12 +251,12 @@
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>com.springsource.org.codehaus.jackson.mapper</artifactId>
-      <version>1.0.0</version>
+      <version>1.4.2</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>com.springsource.org.codehaus.jackson</artifactId>
-      <version>1.0.0</version>
+      <version>1.4.2</version>
     </dependency>
     <!--  Joda Time -->
     <dependency>
@@ -272,7 +272,6 @@
       <scope>runtime</scope>
     </dependency>		
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
