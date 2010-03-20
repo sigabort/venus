@@ -10,14 +10,16 @@ public class BaseResponse {
   private Integer errorCode;
   private Integer httpErrorCode;
   private String errorDescription;
+  private String httpErrorDescription;
+  private String exception;
   private Integer startIndex;
   private Integer itemsPerPage;
   private Integer totalResults;
 
   public BaseResponse() {
     this.error = false;
-    this.errorCode = 0;
     this.httpErrorCode = HttpStatus.OK.value();
+    this.httpErrorDescription = HttpStatus.OK.toString();
     this.startIndex = 0;
     this.itemsPerPage = 0;
     this.totalResults = 0;
@@ -53,6 +55,14 @@ public class BaseResponse {
 
   public void setErrorDescription(String errorDescription) {
     this.errorDescription = errorDescription;
+  }
+
+  public String getHttpErrorDescription() {
+    return httpErrorDescription;
+  }
+
+  public void setHttpErrorDescription(String httpErrorDescription) {
+    this.httpErrorDescription = httpErrorDescription;
   }
 
   public Integer getStartIndex() {

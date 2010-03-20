@@ -2,6 +2,9 @@ package com.venus.restapp.response.dto;
 
 import com.venus.model.Department;
 
+import org.codehaus.jackson.annotate.JsonWriteNullProperties;
+
+@JsonWriteNullProperties(false)
 public class DepartmentDTO {
   private String name;
   private String code;

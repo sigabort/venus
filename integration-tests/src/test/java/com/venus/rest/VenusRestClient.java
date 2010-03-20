@@ -103,12 +103,12 @@ public class VenusRestClient {
    * @param path     The path for the GET request
    * @param params   The map of the query parameters
    * @return The response of the GET request
-   * @throws Exception thrown when there is any error
    */
-  public HttpResponse getRequest(String path, Map params) throws Exception {
+  public HttpResponse getRequest(String path, Map params) {
     String url = buildUrl(this.basePath, path, params);
     if (url == null) {
-      throw new Exception("Can't build the URL");
+      log.error("Can't build the URL with path: " + path);
+      return null;
     }
     return executeRequest(url, HttpGet.METHOD_NAME);
   }
@@ -118,12 +118,12 @@ public class VenusRestClient {
    * @param path     The path for the POST request
    * @param params   The map of the query parameters
    * @return The response of the POST request
-   * @throws Exception thrown when there is any error
    */
-  public HttpResponse postRequest(String path, Map params) throws Exception {
+  public HttpResponse postRequest(String path, Map params) {
     String url = buildUrl(this.basePath, path, params);
     if (url == null) {
-      throw new Exception("Can't build the URL");
+      log.error("Can't build the URL with path: " + path);
+      return null;
     }
     return executeRequest(url, HttpPost.METHOD_NAME);
   }
@@ -134,15 +134,32 @@ public class VenusRestClient {
    * @param method   The request method
    * @return The response of request
    */
-  private HttpResponse executeRequest(String url, String method) throws Exception {
+  private HttpResponse executeRequest(String url, String method) {
     HttpRequest request = new BasicHttpRequest(method, url);
     RequestLine rl = request.getRequestLine();
-    log.info("Request: " + rl.getMethod() + " " + rl.getUri() + " " + rl.getProtocolVersion());
-    HttpResponse resp = client.execute(this.host, request, context);
+    String requestStr = rl.getMethod() + " " + rl.getUri() + " " + rl.getProtocolVersion();
+    log.info("Request: " + requestStr);
+    HttpResponse resp = null;
+    try {
+      resp = client.execute(this.host, request, context);
+    }
+    catch (Exception e) {
+      log.error("Error while executing the request: " + requestStr);
+      return null;
+    }
+    /* get the actual response entity */
     HttpEntity entity = resp.getEntity();
+    /* Need to handle this in proper way */
     if (entity != null) {
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      entity.writeTo(out);
+      ByteArrayOutputStream out = null;
+      try {
+	out = new ByteArrayOutputStream();
+	entity.writeTo(out);
+      }
+      catch (Exception e) {
+	log.error("Error writing the response to output: " + requestStr);
+	return null;
+      }
       byte[] charData = out.toByteArray();
       String str = new String(charData);
       log.info(str);
@@ -156,9 +173,8 @@ public class VenusRestClient {
    * @param username     The username to be logged in
    * @param passwd       The passwd used for the login
    * @return The response of the request
-   * @throws Exception thrown when there is any error
    */
-  public HttpResponse login(String username, String passwd) throws Exception {
+  public HttpResponse login(String username, String passwd) {
     Map<String, Object> params = new HashMap<String, Object>(2);
     params.put(USER_INPUT_FIELD_NAME, username);
     params.put(USER_PASSWD_FIELD_NAME, passwd);      
@@ -266,9 +282,8 @@ public class VenusRestClient {
    * @param code        The department's code
    * @param params      Query parameters to be set
    * @return The response of the request
-   * @throws Exception thrown when there is any error
    */
-  public HttpResponse createDepartment(String name, String code, Map<String, Object>params) throws Exception {
+  public HttpResponse createDepartment(String name, String code, Map<String, Object>params) {
     if (params == null) {
       params = new HashMap<String, Object>(2);
     }
@@ -276,6 +291,20 @@ public class VenusRestClient {
     params.put("code", code);
     
     return postRequest("/departments/create", params);
+  }
+
+  /**
+   * Get Department
+   * @param name        The department's name
+   * @param params      Query parameters to be set
+   * @return The response of the request
+   */
+  public HttpResponse getDepartment(String name, Map<String, Object>params) {
+    if (params == null) {
+      params = new HashMap<String, Object>(1);
+    }
+    
+    return getRequest("/departments/" + name, params);
   }
 
 }

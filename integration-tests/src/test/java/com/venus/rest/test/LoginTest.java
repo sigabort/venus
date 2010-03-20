@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 
 public class LoginTest {
 
@@ -14,7 +15,7 @@ public class LoginTest {
   public void testLogin() throws Exception {
     VenusRestClient client = new VenusRestClient();
     HttpResponse resp = client.login("rod", "koala");
-    Assert.assertTrue("Response code", resp.getStatusLine().getStatusCode() != 403);
+    Assert.assertTrue("Response code", resp.getStatusLine().getStatusCode() != HttpStatus.SC_FORBIDDEN);
   }
   
 }

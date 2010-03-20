@@ -16,4 +16,6 @@ public interface DepartmentService {
 
   public Department getDepartment(String name, BaseRequest request) throws ResponseException;
 
+  public List<Department> getDepartments(BaseRequest request) throws ResponseException;
+
 }

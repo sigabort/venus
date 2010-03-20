@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
@@ -64,5 +65,62 @@ public class DepartmentServiceImpl implements DepartmentService {
     return department;
   }
 
+  /**
+   * Get the departments
+   * @param request        The request parameter containing the optional parameters
+   * @return               The list of departments
+   * @throws ResponseException if there is any error
+   */
+  public List<Department> getDepartments(BaseRequest request) throws ResponseException {
+    int offset = request.getStartIndex();
+    int maxRet = request.getItemsPerPage();
+    String sortBy = request.getSortBy();
+    String sortOrder = request.getSortOrder();
+    String filterBy = request.getFilterBy();
+    String filterValue = request.getFilterValue();
+    String filterOp = request.getFilterOp();
+
+    /* Time to parse the query parameters */
+    Map<String, Object> params = null;
+    /* if the sortBy option is set, pass it to the DAL layer to 
+     * sort depends on the requested option
+     */
+    if (!StringUtils.isBlank(sortBy)) {
+      if (params == null) {
+	params = new HashMap<String, Object>();
+      }
+      params.put("sortBy", sortBy);
+      /* check whether the order is asc/desc. Default is 'asc' */
+      if (StringUtils.equals("descending", sortOrder)) {
+	params.put("isAscending", Boolean.FALSE);
+      }
+      else {
+	params.put("isAscending", Boolean.TRUE);
+      }
+    }
+    /* if the filterBy option is set, pass it to the DAL layer to 
+     * filter depends on the filterValue
+     */
+    if (!StringUtils.isBlank(filterBy) && !StringUtils.isBlank(filterValue)) {
+      if (params == null) {
+	params = new HashMap<String, Object>();
+      }
+      params.put("filterBy", filterBy);
+      params.put("filterValue", filterValue);
+      params.put("filterOp", filterOp);
+    }
+
+    /* get the departments now */
+    List<Department> departments = null;
+    try {
+      departments = dol.getDepartments(offset, maxRet, params, vs);
+    }
+    catch (DataAccessException dae) {
+      String errStr = "Error while getting departments";
+      log.error(errStr, dae);
+      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+    }
+    return departments;
+  }
 
 }

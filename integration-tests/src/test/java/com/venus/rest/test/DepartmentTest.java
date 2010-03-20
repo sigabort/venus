@@ -8,8 +8,12 @@ import org.junit.Before;
 
 import java.util.Random;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 
 
+/**
+ * Department related tests
+ */
 public class DepartmentTest {
 
   private int randInt;
@@ -26,7 +30,14 @@ public class DepartmentTest {
     VenusRestClient client = new VenusRestClient();
     HttpResponse resp = client.login("rod", "koala");
     resp = client.createDepartment(name, code, null);
-    Assert.assertTrue("Response code", resp.getStatusLine().getStatusCode() != 403);
+    Assert.assertNotNull("Didn't get the response", resp);
+    Assert.assertEquals("Response code", HttpStatus.SC_OK, resp.getStatusLine().getStatusCode());
+
+    /* get the department now */
+    resp = client.getDepartment(name, null);
+    Assert.assertNotNull("Didn't get the response", resp);
+    Assert.assertEquals("Response code", HttpStatus.SC_OK, resp.getStatusLine().getStatusCode());
+    
   }
 
   /* test getting departments page - with out any parameters */
@@ -34,7 +45,7 @@ public class DepartmentTest {
   public void testGetDepartmentsPage() throws Exception {
     VenusRestClient client = new VenusRestClient();
     HttpResponse resp = client.getRequest("/departments", null);
-    Assert.assertEquals("Response code", 200, resp.getStatusLine().getStatusCode());
+    Assert.assertEquals("Response code", HttpStatus.SC_OK, resp.getStatusLine().getStatusCode());
   }
 
   
