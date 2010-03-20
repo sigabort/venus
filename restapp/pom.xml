@@ -359,6 +359,18 @@
       </plugin>
     </plugins>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <reportOutputDirectory>./docs</reportOutputDirectory>
+          <destDir>apidocs</destDir>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
   <properties>
     <spring.version>3.0.0.RELEASE</spring.version>
     <webflow.version>2.0.8.RELEASE</webflow.version>

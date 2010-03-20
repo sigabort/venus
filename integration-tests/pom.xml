@@ -82,5 +82,17 @@
 
     </plugins>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <reportOutputDirectory>./docs</reportOutputDirectory>
+          <destDir>apidocs</destDir>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
 
