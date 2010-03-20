@@ -20,7 +20,6 @@ public class BaseResponse {
     this.error = false;
     this.httpErrorCode = HttpStatus.OK.value();
     this.httpErrorDescription = HttpStatus.OK.toString();
-    this.startIndex = 0;
     this.itemsPerPage = 0;
     this.totalResults = 0;
   }

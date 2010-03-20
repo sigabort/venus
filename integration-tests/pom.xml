@@ -43,6 +43,12 @@
 	</exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
+      <version>2.2.3</version>
+    </dependency>
   </dependencies>
   <build>
     <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -60,7 +66,7 @@
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <parallel>true</parallel>
           <includes>
-            <include>**/test/*Test.java</include>
+            <include>**/**Test.java</include>
           </includes>
         </configuration>
       </plugin>

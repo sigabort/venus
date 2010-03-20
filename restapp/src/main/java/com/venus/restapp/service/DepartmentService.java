@@ -12,10 +12,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface DepartmentService {
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public Department createUpdateDepartment(DepartmentRequest request) throws ResponseException;
+  public abstract Department createUpdateDepartment(DepartmentRequest request) throws ResponseException;
 
-  public Department getDepartment(String name, BaseRequest request) throws ResponseException;
+  public abstract Department getDepartment(String name, BaseRequest request) throws ResponseException;
 
-  public List<Department> getDepartments(BaseRequest request) throws ResponseException;
+  public abstract List<Department> getDepartments(BaseRequest request) throws ResponseException;
 
+  public abstract Integer getDepartmentsCount(BaseRequest request)  throws ResponseException;
 }

@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Controller class for handling all departments related requests.
+ * Handles REST requests: create/update/delete/get
  * 
  */
 @Controller
@@ -35,19 +36,53 @@ public class DepartmentController {
   private DepartmentService departmentService;
   private static final Logger log = Logger.getLogger(DepartmentController.class);
 
+  /**
+   * Get the Model object for creating the department
+   * This is mostly used by the UI clients when they want to create a department
+   * @param model        The model object for request
+   * @return             The url location for view resolver to send the
+   *                     proper view to the client with model object(DepartmentRequest) added to request
+   */
   @RequestMapping(value="create", method=RequestMethod.GET)
   public String getCreateForm(Model model) {
     model.addAttribute("departmentRequest", new DepartmentRequest());
     return "departments/createDepartment";
   }
 
+//   /**
+//    * Create/Update the Department
+//    * @param name               The department name for creation/updation
+//    * @param result             The BindingResult object containing the errors if there
+//    *                            are any errors found while validating the request object
+//    * @return the ModelAndView object containing response of creation/updation of department.
+//    *             The response object is added as model object. This object contains information
+//    *             about the exceptions/errors(if any errors found) 
+//    */
+//   @RequestMapping(vlaue="{name}", method=RequestMethod.POST)
+//   public ModelAndView createByName(@PathVariable String name, DepartmentRequest request) {
+//     request.setName(name);
+//   }
 
+  /**
+   * Create/Update the Department
+   * @param departmentRequest   The DepartmentRequest object containing all parameters
+   * @param result             The BindingResult object containing the errors if there
+   *                            are any errors found while validating the request object
+   * @return the ModelAndView object containing response of creation/updation of department.
+   *             The response object is added as model object. This object contains information
+   *             about the exceptions/errors(if any errors found) 
+   */
   @RequestMapping(method=RequestMethod.POST)
   public ModelAndView create(@Valid DepartmentRequest departmentRequest, BindingResult result) {
     if (result.hasErrors()) {
-      return new ModelAndView("departments/createDepartment");
+      /* XXX: We need to populate the response with the actual errors. Need to check
+       * how 'create' is populating the errors properly in case of invalid request.
+       * We need to do same here too.
+       */
+      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request");
+      return new ModelAndView("departments/createDepartment", "response", re.getResponse());
     }
-    log.info("Adding department" + departmentRequest.getName());
+    log.info("Adding/Updating department" + departmentRequest.getName());
     Object dept = null;
     try {
       dept = departmentService.createUpdateDepartment(departmentRequest);
@@ -59,6 +94,15 @@ public class DepartmentController {
     return new ModelAndView("departments/department", "response", resp);
   }
 
+  /**
+   * Send a particualr department details with given name in the institute.
+   * @param name     The name of the department
+   * @param request  The base request object containing all of the optional parameters
+   * @param result   The binding result containing any errors if the request is bad
+   * @return the ModelAndView object containing response with result of getting department information.
+   *             The response object is added as model object. This object contains information
+   *             about the exceptions/errors(if any errors found) 
+   */
   @RequestMapping(value="{name}", method=RequestMethod.GET)
   public ModelAndView getDepartment(@PathVariable String name, @Valid BaseRequest request, BindingResult result) {
     if (result.hasErrors()) {
@@ -93,8 +137,9 @@ public class DepartmentController {
    * for departments page.
    * @param request  The base request object containing all of the optional parameters
    * @param result   The binding result containing any errors if the request is bad
-   * @return The response object as Model object with List of departments or exception details
-   *         if there are any errors
+   * @return the ModelAndView object containing response with result of getting departments.
+   *             The response object is added as model object. This object contains information
+   *             about the exceptions/errors(if any errors found) 
    */
   @RequestMapping(method=RequestMethod.GET)
   public ModelAndView getDepartments(@Valid BaseRequest request, BindingResult result) {
@@ -106,10 +151,16 @@ public class DepartmentController {
       ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request");
       return new ModelAndView("departments/home", "response", re.getResponse());
     }
+
     log.info("Fetching all departments....");
+
     List depts = null;
+    Integer totalCount = null;
+
     try {
       depts = departmentService.getDepartments(request);
+      /* get the total departments count */
+      totalCount = departmentService.getDepartmentsCount(request);
     }
     catch (ResponseException re) {
       return new ModelAndView("departments/home", "response", re.getResponse());
@@ -118,11 +169,12 @@ public class DepartmentController {
      * what to do next
      */
     if (depts == null) {
-      return new ModelAndView("departments/department", "response", new BaseResponse());
+      return new ModelAndView("departments/home", "response", new BaseResponse());
     }
     log.info("Got depts: " + depts.size());
-    /* populate the object */
-    DepartmentResponse resp = DepartmentResponse.populateDepartments(depts);
+    
+    /* populate the response object */
+    DepartmentResponse resp = DepartmentResponse.populateDepartments(depts, totalCount);
     return new ModelAndView("departments/home", "response", resp);
   }
 

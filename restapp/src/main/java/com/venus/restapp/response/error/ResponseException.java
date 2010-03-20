@@ -14,6 +14,7 @@ import org.codehaus.jackson.annotate.JsonWriteNullProperties;
  * The details of the exception will be converted to the BaseResponse object
  * and that is sent to the client when any exception happens
  */
+/* JsonWriteNullProperties: annotation for sending attributes with null values */
 @JsonWriteNullProperties(false)
 public class ResponseException extends Exception {
   private BaseResponse response;

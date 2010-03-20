@@ -1,6 +1,7 @@
 package com.venus.rest.test;
 
 import com.venus.rest.VenusRestClient;
+import com.venus.rest.VenusRestResponse;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,8 +15,8 @@ public class LoginTest {
   @Test
   public void testLogin() throws Exception {
     VenusRestClient client = new VenusRestClient();
-    HttpResponse resp = client.login("rod", "koala");
-    Assert.assertTrue("Response code", resp.getStatusLine().getStatusCode() != HttpStatus.SC_FORBIDDEN);
+    VenusRestResponse resp = client.login("rod", "koala");
+    Assert.assertTrue("Response code", resp.getResponseCode() != HttpStatus.SC_FORBIDDEN);
   }
   
 }

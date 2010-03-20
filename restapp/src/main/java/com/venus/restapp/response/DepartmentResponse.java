@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import org.codehaus.jackson.annotate.JsonWriteNullProperties;
 
-
+/* JsonWriteNullProperties: annotation for sending attributes with null values */
 @JsonWriteNullProperties(false)
 public class DepartmentResponse extends BaseResponse {
   
@@ -36,9 +36,18 @@ public class DepartmentResponse extends BaseResponse {
   }
 
 
-  public static DepartmentResponse populateDepartments(List departments) {
+  /**
+   * Populate the Department response, given the list of departments of Model objects(Hibernate Mapped object)
+   * This involves converting the model objects into the equivalent DTOs for department
+   * and, then setting that DTOs to the response.
+   * @param departments     The List of Department model objects (Hibernate Mapped objects)
+   * @param totalCount      The total count of departments in the institute
+   * @return The DepartmentResponse containing the departments details
+   */
+  public static DepartmentResponse populateDepartments(List departments, Integer totalCount) {
     DepartmentResponse resp = new DepartmentResponse();
     ArrayList<DepartmentDTO> list = null;
+    /* populate only if the list is not empty */
     if (departments != null && departments.size() > 0) {
       list = new ArrayList<DepartmentDTO>(departments.size());
       for (Object dept :  departments) {
@@ -48,15 +57,22 @@ public class DepartmentResponse extends BaseResponse {
 	}
       }
     }
-    if (list != null) {
+    /* if the list contains some elements, then set the response */
+    if (list != null && list.size() > 0) {
       resp.setEntries(list);
       resp.setItemsPerPage(list.size());
-      /* XXX: get the total count and set */
-//       respt.setTotalResults(totalCount);
+      resp.setTotalResults(totalCount);
     }
     return resp;
   }
 
+  /**
+   * Populate the Department response, given the department model object(DB Mapped object)
+   * This involves converting the model object into the equivalent DTO for department
+   * and, then setting that DTO to the response.
+   * @param department     The Department model object (Hibernate Mapped object)
+   * @return The DepartmentResponse containing the department details
+   */
   public static DepartmentResponse populateDepartment(Object department) {
     DepartmentResponse resp = new DepartmentResponse();
     DepartmentDTO dto = DepartmentDTO.getDepartmentDTO((Department) department);

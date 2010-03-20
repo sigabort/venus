@@ -23,7 +23,9 @@ public class BaseRequest {
   private String filterOp;
 
   private String sortOrder = "ascending";
-    
+
+  private Boolean onlyActive;
+ 
   public void setStartIndex(Integer startIndex) {
     this.startIndex = startIndex;
   }
@@ -86,6 +88,14 @@ public class BaseRequest {
   
   public String getFilterOp() {
     return this.filterOp;
+  }
+
+  public void setOnlyActive(Boolean onlyActive) {
+    this.onlyActive = onlyActive;
+  }
+  
+  public Boolean getOnlyActive() {
+    return this.onlyActive;
   }
 
 }

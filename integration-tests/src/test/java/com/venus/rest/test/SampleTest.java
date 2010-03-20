@@ -1,6 +1,7 @@
 package com.venus.rest.test;
 
 import com.venus.rest.VenusRestClient;
+import com.venus.rest.VenusRestResponse;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,8 +19,8 @@ public class SampleTest {
   @Test
   public void testGetDefaultPage() throws Exception {
     VenusRestClient client = new VenusRestClient();
-    HttpResponse resp = client.getRequest(null, null);
-    Assert.assertEquals("Response code", 200, resp.getStatusLine().getStatusCode());
+    VenusRestResponse resp = client.getRequest(null, null);
+    Assert.assertEquals("Response code", 200, resp.getResponseCode());
   }
 
   /**** Test the code in VenusRestClient  *****/

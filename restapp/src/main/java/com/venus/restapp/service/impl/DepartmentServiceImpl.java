@@ -123,4 +123,42 @@ public class DepartmentServiceImpl implements DepartmentService {
     return departments;
   }
 
+  /**
+   * Get the departments count in the institute
+   * @param request        The request parameter containing the optional parameters
+   * @return               The count of total departments in the institute
+   * @throws ResponseException if there is any error
+   */
+  public Integer getDepartmentsCount(BaseRequest request) throws ResponseException {
+   /* Time to parse the query parameters */
+    Boolean onlyActive = request.getOnlyActive();
+    String filterBy = request.getFilterBy();
+    String filterValue = request.getFilterValue();
+    String filterOp = request.getFilterOp();
+    
+    Map<String, Object> params = new HashMap<String, Object>();
+    /* needed only count of active departments? */
+    params.put("onlyActive", onlyActive);
+
+    /* if the filterBy option is set, pass it to the DAL layer to 
+     * filter depends on the filterValue
+     */
+    if (!StringUtils.isBlank(filterBy) && !StringUtils.isBlank(filterValue)) {
+      params.put("filterBy", filterBy);
+      params.put("filterValue", filterValue);
+      params.put("filterOp", filterOp);
+    }
+
+    /* get the departments now */
+    Integer count = null;
+    try {
+      count = dol.getDepartmentsCount(params, vs);
+    }
+    catch (DataAccessException dae) {
+      String errStr = "Error while getting departments count";
+      log.error(errStr, dae);
+      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+    }
+    return count;
+  }
 }
