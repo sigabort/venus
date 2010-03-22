@@ -58,7 +58,7 @@ public class ProgramOperationsImplTest extends BaseImplTest {
    Assert.assertEquals("program description", desc, program.getDescription());
    Assert.assertEquals("program prerequisites", prerequisites, program.getPrerequisites());
    Assert.assertEquals("program duration", duration, program.getDuration());
-   Assert.assertEquals("program status", Status.Active.ordinal(), program.getStatus());
+   Assert.assertEquals("program status", (int)Status.Active.ordinal(), (int)program.getStatus());
    Assert.assertNotNull("program created date", program.getCreated());
    Assert.assertNotNull("program lastModified date", program.getLastModified());
   }

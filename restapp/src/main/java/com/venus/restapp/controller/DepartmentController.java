@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  * Handles REST requests: create/update/delete/get
  * 
  */
-@Controller
+@Controller("departmentController")
 @RequestMapping(value="/departments")
 public class DepartmentController {
   @Autowired

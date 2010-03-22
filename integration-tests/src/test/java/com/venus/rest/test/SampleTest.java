@@ -20,7 +20,7 @@ public class SampleTest {
   public void testGetDefaultPage() throws Exception {
     VenusRestClient client = new VenusRestClient();
     VenusRestResponse resp = client.getRequest(null, null);
-    Assert.assertEquals("Response code", 200, resp.getResponseCode());
+    Assert.assertEquals("Response code", (int)200, (int)resp.getResponseCode());
   }
 
   /**** Test the code in VenusRestClient  *****/

@@ -54,7 +54,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    
    Assert.assertEquals("department name", name, dept.getName());
    Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
-   Assert.assertEquals("department status", Status.Deleted.ordinal(), dept.getStatus());
+   Assert.assertEquals("department status", (int)Status.Deleted.ordinal(), (int)dept.getStatus());
    Assert.assertEquals("department created date", created, dept.getCreated());
    Assert.assertEquals("department last modified date", lastModified, dept.getLastModified());
   }
@@ -74,7 +74,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    
    Assert.assertEquals("department name", name, dept.getName());
    Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
-   Assert.assertEquals("department status", Status.Active.ordinal(), dept.getStatus());
+   Assert.assertEquals("department status", (int)Status.Active.ordinal(), (int)dept.getStatus());
    Assert.assertNotNull("department created date", dept.getCreated());
    Assert.assertNotNull("department last modified date", dept.getLastModified());
   }
@@ -100,7 +100,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    
    Assert.assertEquals("department name", name, dept.getName());
    Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
-   Assert.assertEquals("department status", Status.Active.ordinal(), dept.getStatus());
+   Assert.assertEquals("department status", (int)Status.Active.ordinal(), (int)dept.getStatus());
    Assert.assertEquals("department created date", created, dept.getCreated());
    Assert.assertEquals("department lastModified date", lastModified, dept.getLastModified());
 
@@ -119,7 +119,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
 
    Assert.assertEquals("department name", name, dept1.getName());
    Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
-   Assert.assertEquals("department status", Status.Active.ordinal(), dept1.getStatus());
+   Assert.assertEquals("department status", (int)Status.Active.ordinal(), (int)dept1.getStatus());
    Assert.assertEquals("department created date", created, dept1.getCreated());
    Assert.assertNotNull("department last modified date", dept1.getLastModified());
   }
@@ -142,7 +142,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    
    Assert.assertEquals("department name", name, dept.getName());
    Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
-   Assert.assertEquals("department status", Status.Active.ordinal(), dept.getStatus());
+   Assert.assertEquals("department status", (int)Status.Active.ordinal(), (int)dept.getStatus());
    Assert.assertNotNull("department created date", dept.getCreated());
    Assert.assertNotNull("department lastModified date", dept.getLastModified());
 
@@ -169,7 +169,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    
    Assert.assertEquals("department name", name, dept.getName());
    Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
-   Assert.assertEquals("department status", Status.Suspended.ordinal(), dept.getStatus());
+   Assert.assertEquals("department status", (int)Status.Suspended.ordinal(), (int)dept.getStatus());
    Assert.assertNotNull("department created date", dept.getCreated());
    Assert.assertNotNull("department lastModified date", dept.getLastModified());
 
@@ -184,7 +184,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
 
    Assert.assertEquals("department name", name, dept2.getName());
    Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
-   Assert.assertEquals("department status", Status.Suspended.ordinal(), dept2.getStatus());
+   Assert.assertEquals("department status", (int)Status.Suspended.ordinal(), (int)dept2.getStatus());
 
    /* check with findDepartmentByCode */
    dept1 = dol.findDepartmentByCode(code, null, vs);
@@ -197,7 +197,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
 
    Assert.assertEquals("department name", name, dept2.getName());
    Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
-   Assert.assertEquals("department status", Status.Suspended.ordinal(), dept2.getStatus());
+   Assert.assertEquals("department status", (int)Status.Suspended.ordinal(), (int)dept2.getStatus());
   }
 
   /* create and find the department by its code */
@@ -385,7 +385,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    /* fetch the departments now */
    List<Department> list = dol.getDepartments(0, 10, null, vs);
    Assert.assertNotNull(list);
-   Assert.assertEquals("list should only contain 2 departments", new Integer(2), list.size());
+   Assert.assertEquals("list should only contain 2 departments", (new Integer(2)).intValue(), (int)list.size());
    
    /* set order on "id" */
    Map<String, Object> options = new HashMap<String, Object>();
@@ -395,7 +395,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    /* get the departments sorted by id, ascending */
    list = dol.getDepartments(0, 10, options, vs);
    Assert.assertNotNull(list);
-   Assert.assertEquals("list should only contain 2 departments", new Integer(2), list.size());
+   Assert.assertEquals("list should only contain 2 departments", (new Integer(2)).intValue(), (int)list.size());
    Department d1 = (Department) list.get(0);
    Assert.assertEquals("first one should be equal to the one created first", dept1, d1);
    Department d2 = (Department) list.get(1);
@@ -405,7 +405,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    options.put("isAscending", Boolean.FALSE);
    list = dol.getDepartments(0, 10, options, vs);
    Assert.assertNotNull(list);
-   Assert.assertEquals("list should only contain 2 departments", new Integer(2), list.size());
+   Assert.assertEquals("list should only contain 2 departments", (new Integer(2)).intValue(), (int)list.size());
    d1 = (Department) list.get(0);
    Assert.assertEquals("first one should be equal to the one created later", dept2, d1);
    d2 = (Department) list.get(1);
@@ -452,14 +452,14 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    /* fetch the departments now */
    List<Department> list = dol.getDepartments(0, 10, null, vs);
    Assert.assertNotNull(list);
-   Assert.assertEquals("list should only contain 2 departments", new Integer(2), list.size());
+   Assert.assertEquals("list should only contain 2 departments", (new Integer(2)).intValue(), (int)list.size());
 
    /* set the status of first department to deleted */
    dol.setStatus(dept1, Status.Deleted, vs);
    /* now try to get the departments again. This should return only second one */
    list = dol.getDepartments(0, 10, null, vs);
    Assert.assertNotNull(list);
-   Assert.assertEquals("list should only contain only 1 department", new Integer(1), list.size());
+   Assert.assertEquals("list should only contain only 1 department", (new Integer(1)).intValue(), (int)list.size());
    Assert.assertEquals("The department should be the second one", dept2, (Department)list.get(0));
 
    /* get the all - active and non-active now, sorted by id */
@@ -470,9 +470,9 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
 
    list = dol.getDepartments(0, 100, options, vs);
    Assert.assertNotNull(list);   
-   Assert.assertEquals("list should only contain 2 departments", new Integer(2), list.size());
+   Assert.assertEquals("list should only contain 2 departments", (new Integer(2)).intValue(), (int)list.size());
    Department d1 = (Department) list.get(0);
-   Assert.assertEquals("first one's status should be deleted", Status.Deleted.ordinal(), d1.getStatus());
+   Assert.assertEquals("first one's status should be deleted", (int)Status.Deleted.ordinal(), (int)d1.getStatus());
    Department d2 = (Department) list.get(1);
    Assert.assertEquals("second one should be equal to the one created later", dept2, d2);
   }
