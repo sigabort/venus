@@ -192,15 +192,15 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       /* check the code */
       String newCode = OperationsUtilImpl.getStringValue("code", optionalParams, null);
       if (newCode != null && !newCode.equals(dept.getCode())) {
-	dept.setCode(newCode);
-	update = true;
+        dept.setCode(newCode);
+        update = true;
       }
       
       /* check the description */
       String newDescription = OperationsUtilImpl.getStringValue("description", optionalParams, null);
       if (newDescription != null && !newDescription.equals(dept.getDescription())) {
-	dept.setDescription(newDescription);
-	update = true;
+        dept.setDescription(newDescription);
+        update = true;
       }
 
       /* check the photoUrl */

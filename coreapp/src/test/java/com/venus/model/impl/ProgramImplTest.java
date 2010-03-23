@@ -31,7 +31,7 @@ public class ProgramImplTest extends BaseImplTest {
 
   @Test
   public void testCreateProgram() throws Exception {
-   String name = "testCreateProgram-" + getUniqueName();
+   String name = "testCreateProgram-" + getRandomString();
    Transaction trans = sess.beginTransaction();
    Department dept = DepartmentImplTest.createTestDepartment(name, vs);
    sess.save(dept);

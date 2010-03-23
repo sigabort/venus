@@ -17,10 +17,11 @@ import com.venus.util.VenusSessionFactory;
 
 public class UserImplTest extends BaseImplTest {
   private Session sess;
+  private VenusSession vs;
   
   @Before
   public void setUp() {
-    VenusSession vs = getVenusSession();
+    vs = getVenusSession();
     /* XXX: we need to set this by creating actual institute */
     vs.setInstituteId(1);
 //     vs.setInstitute(institute);
@@ -32,7 +33,8 @@ public class UserImplTest extends BaseImplTest {
    Transaction trans = sess.beginTransaction();
 
    User user = new UserImpl();
-   user.setUsername("ravi-" + getUniqueName());
+   user.setUsername("ravi-" + getRandomString());
+   user.setInstituteId(vs.getInstituteId());
    user.setFirstName("ravi");
    user.setLastName("ravi");
    user.setStatus(Status.Active.ordinal());

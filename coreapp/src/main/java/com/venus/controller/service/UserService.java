@@ -57,10 +57,7 @@ public class UserService {
     User user = null;
 
     try {
-      user = uo.createUpdateUser(username, userId, password, firstname, 
-				      lastname, email, gender, url, phone, address1, 
-				      address2, city, country, postalCode, photoUrl, 
-				      null, null, null, null, vs);
+      user = uo.createUpdateUser(username, null, vs);
     }
     catch (DataAccessException dae) {
       log.error("Internal error while creating/updating user: " + username, dae);

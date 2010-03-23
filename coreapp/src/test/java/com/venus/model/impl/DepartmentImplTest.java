@@ -30,7 +30,7 @@ public class DepartmentImplTest extends BaseImplTest {
 
   @Test
   public void testCreateDepartment() throws Exception {
-   String name = "testCreateDept-" + getUniqueName();
+   String name = "testCreateDept-" + getRandomString();
    Department dept = createTestDepartment(name, vs);
    Transaction trans = sess.beginTransaction();
    sess.save(dept);

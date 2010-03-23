@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class UserImpl extends BaseModelImpl implements User {
   private String username;
+  private Integer instituteId;
   private String userId;
   private String password;
   private String firstName;
@@ -30,6 +31,12 @@ public class UserImpl extends BaseModelImpl implements User {
   }
   public void setUsername(String username) {
     this.username = username;
+  }
+  public Integer getInstituteId() {
+    return instituteId;
+  }
+  public void setInstituteId(Integer instituteId) {
+    this.instituteId = instituteId;
   }
   public String getUserId() {
     return userId;

@@ -8,14 +8,28 @@ import com.venus.util.VenusSession;
 import com.venus.util.VenusSessionFactory;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.hibernate.Session;
 
 public class BaseImplTest {
-  
-  protected final String getUniqueName() {
-    return RandomStringUtils.randomAlphanumeric(25); 
+
+  /**
+   * Generate 20-char random string
+   */
+  public String getRandomString() {
+    return RandomStringUtils.random(20, true, true); 
   }
 
+  /**
+   * Generate random number
+   */
+  public int getRandomNumber() {
+    return RandomUtils.nextInt(); 
+  }
+
+  /**
+   * Get the venus session
+   */
   protected final VenusSession getVenusSession() {
     return VenusSessionFactory.getVenusSession();
   }

@@ -8,6 +8,10 @@ public interface User extends BaseModel {
 
   public abstract void setUsername(String username);
 
+  public abstract Integer getInstituteId();
+
+  public abstract void setInstituteId(Integer instituteId);
+
   public abstract String getUserId();
 
   public abstract void setUserId(String userId);

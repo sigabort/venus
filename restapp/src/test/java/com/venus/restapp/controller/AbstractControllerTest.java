@@ -24,17 +24,17 @@ public class AbstractControllerTest {
   static ClassPathXmlApplicationContext appContext;
   
   /**
-   * Generate 10-char random string
+   * Generate 20-char random string
    */
   public String getRandomString() {
-    return RandomStringUtils.random(15, true, true);
+    return RandomStringUtils.random(20, true, true);
   }
   
   /**
    * Generate random number
    */
-  public long getRandomNumber() {
-    return RandomUtils.nextLong();
+  public int getRandomNumber() {
+    return RandomUtils.nextInt();
   }
   
   /**

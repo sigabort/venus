@@ -35,7 +35,7 @@ public class ProgramOperationsImplTest extends BaseImplTest {
 //     vs.setInstitute(institute);
     sess = vs.getHibernateSession();
     Transaction txn = sess.beginTransaction();
-    testDept = DepartmentImplTest.createTestDepartment("ProgramOpsImplTest-" + getUniqueName(), vs);
+    testDept = DepartmentImplTest.createTestDepartment("ProgramOpsImplTest-" + getRandomString(), vs);
     sess.save(testDept);
     txn.commit();
   }
@@ -43,7 +43,7 @@ public class ProgramOperationsImplTest extends BaseImplTest {
   /* create and test program */
   @Test
   public void testCreateProgram() throws Exception {
-   String name = "testCreateProgram-" + getUniqueName();
+   String name = "testCreateProgram-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String prerequisites = name + "-prerequisites";
@@ -66,7 +66,7 @@ public class ProgramOperationsImplTest extends BaseImplTest {
   /* create, update and test program */
   @Test
   public void testUpdateProgram() throws Exception {
-   String name = "testUpdateProgram-" + getUniqueName();
+   String name = "testUpdateProgram-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String prerequisites = name + "-prerequisites";
@@ -107,7 +107,7 @@ public class ProgramOperationsImplTest extends BaseImplTest {
   /* create and find the program by its name */
   @Test
   public void testFindProgramByName() throws Exception {
-   String name = "testFindProgramByName-" + getUniqueName();
+   String name = "testFindProgramByName-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String prerequisites = name + "-prerequisites";
@@ -133,7 +133,7 @@ public class ProgramOperationsImplTest extends BaseImplTest {
   /* create and find the program by its code */
   @Test
   public void testFindProgramByCode() throws Exception {
-   String name = "testFindProgramByCode-" + getUniqueName();
+   String name = "testFindProgramByCode-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String prerequisites = name + "-prerequisites";
@@ -159,7 +159,7 @@ public class ProgramOperationsImplTest extends BaseImplTest {
   /* create, delete and update the same */
   @Test
   public void testUpdateDeletedProgram() throws Exception {
-   String name = "testUpdateDeletedProgram-" + getUniqueName();
+   String name = "testUpdateDeletedProgram-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String prerequisites = name + "-prerequisites";
@@ -203,7 +203,7 @@ public class ProgramOperationsImplTest extends BaseImplTest {
   /* create, delete and test */
   @Test
   public void testDeleteProgram() throws Exception {
-   String name = "testDeleteProgram-" + getUniqueName();
+   String name = "testDeleteProgram-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String prerequisites = name + "-prerequisites";
@@ -235,7 +235,7 @@ public class ProgramOperationsImplTest extends BaseImplTest {
   /* create some programs and fetch them */
   @Test
   public void testGetPrograms() throws Exception {
-   String name = "testGetPrograms-" + getUniqueName();
+   String name = "testGetPrograms-" + getRandomString();
    String name1 = name + "-name1", name2 = name + "-name2";
    String code1 = name + "-code1", code2 = name + "-code2";
    String desc1 = name + "-desc1", desc2 = name + "-desc2";

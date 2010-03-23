@@ -4,5 +4,6 @@ public enum Status {
   Active,
   Deleted,
   Suspended,
+  Unverified,
   Pending;
 }

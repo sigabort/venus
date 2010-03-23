@@ -35,12 +35,9 @@
 	      	</c:if>
               </c:when>
               <c:otherwise>
-	        <c:if test="{response.errorCode != 0}">
-		  <h3> Error Code: <c:out value="${response.errorCode}" />
-		</c:if>
-	        <c:if test="{response.errorDescription != null}">
-		  <h3> Error Description: <c:out value="${response.errorDescription}" />
-		</c:if>
+                <h3> Department not found </h3>
+		<h3> Error Code: <c:out value="${response.httpErrorCode}" />
+		<h3> Error Description: <c:out value="${response.errorDescription}" />
 	      </c:otherwise>
 	    </c:choose>
           </c:if>

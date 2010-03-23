@@ -119,10 +119,12 @@ public class DepartmentController {
       dept = departmentService.getDepartment(name, request);
     }
     catch (ResponseException re) {
+      log.info("Error while finding Department with name: " + name, re);
       return new ModelAndView("departments/department", "response", re.getResponse());
     }
     /* department not found? throw 404 */
     if (dept == null) {
+      log.info("Department with name: " + name + " is not found...");
       ResponseException re = new ResponseException(HttpStatus.NOT_FOUND, "Department with name: " + name + ", not found");
       return new ModelAndView("departments/department", "response", re.getResponse());
     }

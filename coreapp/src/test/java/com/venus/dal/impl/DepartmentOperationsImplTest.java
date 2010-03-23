@@ -37,7 +37,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create and test department */
   @Test
   public void testCreateDepartment() throws Exception {
-   String name = "testCreateDept-" + getUniqueName();
+   String name = "testCreateDept-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String photoUrl = name + "-url";
@@ -62,7 +62,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create with only mandatory parameters and test department */
   @Test
   public void testCreateDepartmentWithNoOptionalParams() throws Exception {
-   String name = "testCreateDept-" + getUniqueName();
+   String name = "testCreateDept-" + getRandomString();
    
    Department dept = dol.createUpdateDepartment(name, null, vs);
    Assert.assertNotNull(dept);
@@ -82,7 +82,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create, update and test department */
   @Test
   public void testUpdateDepartment() throws Exception {
-   String name = "testUpdateDept-" + getUniqueName();
+   String name = "testUpdateDept-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String photoUrl = name + "-url";
@@ -127,7 +127,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create and find the department by its name */
   @Test
   public void testFindDepartmentByName() throws Exception {
-   String name = "testFindDeptByName-" + getUniqueName();
+   String name = "testFindDeptByName-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String photoUrl = name + "-url";
@@ -154,7 +154,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* Create non-active departments and try to find */
   @Test
   public void testFindNonActiveDepartments() throws Exception {
-   String name = "testFindDeptByName-" + getUniqueName();
+   String name = "testFindDeptByName-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String photoUrl = name + "-url";
@@ -203,7 +203,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create and find the department by its code */
   @Test
   public void testFindDepartmentByCode() throws Exception {
-   String name = "testFindDeptByCode-" + getUniqueName();
+   String name = "testFindDeptByCode-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String photoUrl = name + "-url";
@@ -229,7 +229,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create, delete and update the same */
   @Test
   public void testUpdateDeletedDepartment() throws Exception {
-   String name = "testUpdateDeletedDept-" + getUniqueName();
+   String name = "testUpdateDeletedDept-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String photoUrl = name + "-url";
@@ -273,7 +273,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create, delete and test */
   @Test
   public void testDeleteDepartment() throws Exception {
-   String name = "testDeleteDept-" + getUniqueName();
+   String name = "testDeleteDept-" + getRandomString();
    String code = name + "-code";
    String desc = name + "-desc";
    String photoUrl = name + "-url";
@@ -305,7 +305,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create some departments and fetch them */
   @Test
   public void testGetDepartments() throws Exception {
-   String name = "testGetDepts-" + getUniqueName();
+   String name = "testGetDepts-" + getRandomString();
    String name1 = name + "-name1", name2 = name + "-name2";
    String code1 = name + "-code1", code2 = name + "-code2";
    String desc1 = name + "-desc1", desc2 = name + "-desc2";
@@ -349,7 +349,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create some departments and fetch them with sortOrder, sortBy specified */
   @Test
   public void testGetDepartmentsSortOrder() throws Exception {
-   String name = "testGetDeptsSortOrd-" + getUniqueName();
+   String name = "testGetDeptsSortOrd-" + getRandomString();
    String name1 = name + "-name1", name2 = name + "-name2";
    String code1 = name + "-code1", code2 = name + "-code2";
    String desc1 = name + "-desc1", desc2 = name + "-desc2";
@@ -416,7 +416,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create some departments, delete and check again */
   @Test
   public void testGetDepartmentsAfterDeletion() throws Exception {
-   String name = "testGetDeptsAftDel-" + getUniqueName();
+   String name = "testGetDeptsAftDel-" + getRandomString();
    String name1 = name + "-name1", name2 = name + "-name2";
    String code1 = name + "-code1", code2 = name + "-code2";
    String desc1 = name + "-desc1", desc2 = name + "-desc2";
@@ -481,7 +481,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   /* create some departments, check the count */
   @Test
   public void testGetDepartmentsCount() throws Exception {
-   String name = "testGetDeptsCount-" + getUniqueName();
+   String name = "testGetDeptsCount-" + getRandomString();
    String name1 = name + "-name1", name2 = name + "-name2";
    String code1 = name + "-code1", code2 = name + "-code2";
    String desc1 = name + "-desc1", desc2 = name + "-desc2";
