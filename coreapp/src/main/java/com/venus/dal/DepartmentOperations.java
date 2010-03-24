@@ -16,7 +16,7 @@ public interface DepartmentOperations {
   
   /**
    * Create or Update department
-   * @paramm name            The name of the department. This should be unique in the institute
+   * @param name            The name of the department. This should be unique in the institute
    * @param optionalParams   The map of optional parameters. The list include:
    * <ul>
    *   <li>code(String): The code for the department in the institute. If not

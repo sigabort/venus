@@ -39,7 +39,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
   
   /**
    * Create or Update department
-   * @paramm name            The name of the department. This should be unique in the institute
+   * @param name            The name of the department. This should be unique in the institute
    * @param optionalParams   The map of optional parameters. The list include:
    * <ul>
    *   <li>code(String): The code for the department in the institute. If not
@@ -184,7 +184,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
    */
   private Department updateDepartment(Department dept, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException {
     if (dept == null) {
-      return null;
+      throw new IllegalArgumentException("Update: Department must be supplied");
     }
     boolean update = false;
 
@@ -268,9 +268,9 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
    * @throws DataAccessException thrown when there is any exception
    */
   public Department findDepartmentByName(String name, Map<String, Object> options, VenusSession vs)  throws DataAccessException {
-    /* name is null? return null */
+    /* name is null? throw error */
     if (name == null) {
-      return null;
+      throw new IllegalArgumentException("findDepartmentByName: department name must be supplied");
     }
 
     /* do we need to return only active department? */
@@ -317,9 +317,9 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
    * @throws DataAccessException thrown when there is any exception
    */
   public Department findDepartmentByCode(String code, Map<String, Object> options, VenusSession vs) throws DataAccessException  {
-    /* code is null? return null */
+    /* code is null? throw error */
     if (code == null) {
-      return null;
+      throw new IllegalArgumentException("findDepartmentByCode: department code must be supplied");
     }
 
     /* do we need to return only active department? */
@@ -356,14 +356,14 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
 
   /**
    * Set status of the department. This can be used to delete the Department
-   * @param dept          The department object to be deleted
+   * @param dept          The department object for which the status needs to be changed
    * @param status        The status to be set
    * @param vs            The session object
    * @throws DataAccessException thrown when there is any error
    */
   public void setStatus(Department dept, Status status, VenusSession vs) throws DataAccessException  {
     if (dept == null || status == null) {
-      return;
+      throw new IllegalArgumentException("Department and Status must be supplied");
     }
     
     boolean update = false;
@@ -376,26 +376,26 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     Transaction txn = null;
     if (update) {
       if (log.isDebugEnabled()) {
-	log.debug("Changing the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstituteId());
+        log.debug("Changing the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstituteId());
       }
       try {
-	/* get the hibernate session */
-	Session sess = vs.getHibernateSession();
-	txn = sess.beginTransaction();
-	sess.update(dept);
+        /* get the hibernate session */
+        Session sess = vs.getHibernateSession();
+        txn = sess.beginTransaction();
+        sess.update(dept);
       }
       catch (HibernateException he) {
-	String errStr = "Unable to change the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstituteId();
-	log.error(errStr, he);
-	if (txn != null && txn.isActive()) {
-	  txn.rollback();
-	}
-	throw new DataAccessException(errStr, he);
+        String errStr = "Unable to change the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstituteId();
+        log.error(errStr, he);
+        if (txn != null && txn.isActive()) {
+          txn.rollback();
+        }
+        throw new DataAccessException(errStr, he);
       }
       finally {
-	if (txn != null && txn.isActive()) {
-	  txn.commit();
-	}
+        if (txn != null && txn.isActive()) {
+          txn.commit();
+        }
       }
     }
   }
@@ -436,12 +436,12 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       
       /* set the condition on status, if we need only active departments */
       if (onlyActive) {
-	c.add(Expression.eq("status", Status.Active.ordinal()));
+        c.add(Expression.eq("status", Status.Active.ordinal()));
       }
       
       /* if sortBy is specified by, add order */
       if (StringUtils.isNotBlank(sortBy)) {
-	c.addOrder(isAscending? Order.asc(sortBy) : Order.desc(sortBy));
+        c.addOrder(isAscending? Order.asc(sortBy) : Order.desc(sortBy));
       }
       
       /*XXX: Add filtering*/
@@ -492,7 +492,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       
       /* set the condition on status, if we need only active departments */
       if (onlyActive) {
-	c.add(Expression.eq("status", Status.Active.ordinal()));
+        c.add(Expression.eq("status", Status.Active.ordinal()));
       }
       /* set the projection for the row count */
       c.setProjection(Projections.rowCount());
@@ -503,7 +503,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       return ((Number)c.uniqueResult()).intValue();
     }
     catch (HibernateException he) {
-      String errStr = "Unable to get departments, with institute id: " + vs.getInstituteId();
+      String errStr = "Unable to get departments count, with institute id: " + vs.getInstituteId();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }

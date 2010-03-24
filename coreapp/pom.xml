@@ -208,6 +208,21 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <inherited>true</inherited>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <filesets>
+            <fileset>
+	      <directory>.</directory>
+	      <includes>              
+		<include>docs</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
     </plugins>
     <resources>
       <resource>

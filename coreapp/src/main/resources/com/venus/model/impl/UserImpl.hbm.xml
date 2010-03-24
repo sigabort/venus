@@ -92,10 +92,19 @@
 
   </class>
 
-  <query name="findUserByUsername">
+  <!-- Named query for finding user by email -->
+  <query name="findUserByEmail">
     <![CDATA[
   	from UserImpl as u
-  	where u.username=?
+  	where u.email=? and u.instituteId=?
+      ]]>
+  </query>
+  
+  <!-- Named query for finding user by userId -->
+   <query name="findUserByUserId">
+    <![CDATA[
+  	from UserImpl as u
+  	where u.userId=? and u.instituteId=?
       ]]>
   </query>
 

@@ -15,6 +15,7 @@ import org.hibernate.Session;
 import com.venus.model.Department;
 import com.venus.model.Status;
 import com.venus.util.VenusSession;
+import com.venus.dal.DataAccessException;
 
 import com.venus.model.impl.BaseImplTest;
 
@@ -124,6 +125,22 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    Assert.assertNotNull("department last modified date", dept1.getLastModified());
   }
   
+  /**
+   * Create/Update department with out any name
+   * @throws Exception
+   */
+  @Test
+  public void testCreateUpdateDepartmentWithoutName() throws Exception {
+    try {
+      Department dept = dol.createUpdateDepartment(null, null, vs);
+    }
+    catch (IllegalArgumentException iae) {
+      //test passed
+      return;
+    }
+    Assert.fail("CreateUpdate with no name didn't return any exception");
+  }
+  
   /* create and find the department by its name */
   @Test
   public void testFindDepartmentByName() throws Exception {
@@ -149,6 +166,22 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    Department dept1 = dol.findDepartmentByName(name, null, vs);
    Assert.assertNotNull(dept1);
    Assert.assertEquals("The departments should be equal", dept, dept1);
+  }
+  
+  /**
+   * Test 'findDepartmentByName' with out passing name argument
+   * @throws Exception
+   */
+  @Test
+  public void testFindDepartmentWithoutName() throws Exception {
+    try {
+      Department dept = dol.findDepartmentByName(null, null, vs);
+    }
+    catch (IllegalArgumentException iae) {
+      //test passed
+      return;
+    }
+    Assert.fail("findDepartmentByName didn't throw exception when name is not passed");
   }
 
   /* Create non-active departments and try to find */
@@ -348,8 +381,8 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
 
   /* create some departments and fetch them with sortOrder, sortBy specified */
   @Test
-  public void testGetDepartmentsSortOrder() throws Exception {
-   String name = "testGetDeptsSortOrd-" + getRandomString();
+  public void testGetDepartmentsSortOnId() throws Exception {
+   String name = "testGetDeptsSortOnId-" + getRandomString();
    String name1 = name + "-name1", name2 = name + "-name2";
    String code1 = name + "-code1", code2 = name + "-code2";
    String desc1 = name + "-desc1", desc2 = name + "-desc2";
@@ -413,7 +446,105 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    
   }
 
-  /* create some departments, delete and check again */
+  /**
+   * Test getDepartments() with sorting on name
+   * @throws Exception
+   */
+  @Test
+  public void testGetDepartmentsSortOnName() throws Exception {
+   String name = "testGetDeptsSortOnId-" + getRandomString();
+   String name1 = name + "-name1", name2 = name + "-name2";
+   String code1 = name + "-code1", code2 = name + "-code2";
+   String desc1 = name + "-desc1", desc2 = name + "-desc2";
+   String photoUrl = name + "-url";
+   String email = name + "-email";
+   Integer randInt = new Random(new Random().nextLong()).nextInt();
+   /* Set the new institue ID */
+   vs.setInstituteId(randInt);
+
+   Map<String, Object> params1 = buildOptionalParams(code1, desc1, photoUrl, email, null, null, null);
+
+   /* create one department */
+   Department dept1 = dol.createUpdateDepartment(name1, params1, vs);
+   Assert.assertNotNull(dept1);
+
+   /* validate the optional fields of the dept object */
+   validateDepartmentOptionalFields(params1, dept1);
+   
+   Assert.assertEquals("department name", name1, dept1.getName());
+   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+
+   /* create another department */
+   Map<String, Object> params2 = buildOptionalParams(code2, desc2, photoUrl, email, null, null, null);
+   Department dept2 = dol.createUpdateDepartment(name2, params2, vs);
+   Assert.assertNotNull(dept2);
+
+   /* validate the optional fields of the dept object */
+   validateDepartmentOptionalFields(params2, dept2);
+   
+   Assert.assertEquals("department name", name2, dept2.getName());
+   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+
+   /* fetch the departments now */
+   List<Department> list = dol.getDepartments(0, 10, null, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should only contain 2 departments", (new Integer(2)).intValue(), (int)list.size());
+   
+   /* set order on "id" */
+   Map<String, Object> options = new HashMap<String, Object>();
+   options.put("sortBy", "name");
+   options.put("isAscending", Boolean.TRUE);
+
+   /* get the departments sorted by id, ascending */
+   list = dol.getDepartments(0, 10, options, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should only contain 2 departments", (new Integer(2)).intValue(), (int)list.size());
+   Department d1 = (Department) list.get(0);
+   Assert.assertEquals("first one should be equal to the one created first", dept1, d1);
+   Department d2 = (Department) list.get(1);
+   Assert.assertEquals("second one should be equal to the one created later", dept2, d2);
+
+   /* get the departments sorted by id, descending */
+   options.put("isAscending", Boolean.FALSE);
+   list = dol.getDepartments(0, 10, options, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should only contain 2 departments", (new Integer(2)).intValue(), (int)list.size());
+   d1 = (Department) list.get(0);
+   Assert.assertEquals("first one should be equal to the one created later", dept2, d1);
+   d2 = (Department) list.get(1);
+   Assert.assertEquals("second one should be equal to the one created first", dept1, d2);
+   
+  }
+  
+  
+  /**
+   * Test getDepartments() with sorting on non-existing field
+   * @throws Exception
+   */
+  @Test
+  public void testGetDepartmentsSortOnNonExistingField() throws Exception {
+   String name = "testGetDeptsSortOnNEF-" + getRandomString();
+   String field = name;
+
+   /* set order on "id" */
+   Map<String, Object> options = new HashMap<String, Object>();
+   options.put("sortBy", field);
+   options.put("isAscending", Boolean.TRUE);
+
+   try {
+     /* get the departments sorted by non-existing field, ascending */
+     List list = dol.getDepartments(0, 10, options, vs);
+   }
+   catch (DataAccessException dae) {
+     //test passed
+     return;
+   }
+   Assert.fail("getDepartments didn't return DAE exception even after sorting on non-existing field");
+  }
+  
+  /** create some departments, delete and check again 
+   * @throws Exception
+   */
   @Test
   public void testGetDepartmentsAfterDeletion() throws Exception {
    String name = "testGetDeptsAftDel-" + getRandomString();

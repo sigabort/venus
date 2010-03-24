@@ -10,23 +10,35 @@ import com.venus.model.Status;
 import com.venus.model.impl.UserImpl;
 import com.venus.util.VenusSession;
 import com.venus.dal.UserOperations;
+import com.venus.dal.OperationsUtil;
 import com.venus.dal.DataAccessException;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.NaturalIdentifier;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 public class UserOperationsImpl implements UserOperations {
-  private String FIND_USER_BY_USERNAME_STR = "findUserByUsername";
-  private Logger log = Logger.getLogger(UserOperationsImpl.class);
+  /** The named query name for finding user by userid */
+  private static String FIND_USER_BY_USERID_STR = "findUserByUserId";
+  /** The named query name for finding user by email */
+  private static String FIND_USER_BY_EMAIL_STR = "findUserByEmail";
+  
+  private final Logger log = Logger.getLogger(UserOperationsImpl.class);
   
   /**
    * Create or Update user
-   * @paramm username        The username of the user. This should be unique in the institute
+   * @param username        The username of the user. This should be unique in the institute
    * @param optionalParams   The map of optional parameters. The list include:
    * <ul>
    *   <li>userId(String):   The userId can be used as user's roll number, etc 
@@ -51,14 +63,21 @@ public class UserOperationsImpl implements UserOperations {
    *   <li>lastModified(Date): The last modified date of this object</li>
    * </ul>
    * @param session          The venus session object consisting of instituteId, hibernate session
-   * @return                 The created/updated department object
+   * @return                 The created/updated user object
    * @throws DataAccessException thrown when there is any error
    */  
   public User createUpdateUser(String username, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException {
     if (username == null) {
-      throw new IllegalArgumentException("Username must be supplied");
+      throw new IllegalArgumentException("createUpdate: Username must be supplied");
     }
-    User user = findUserByUsername(username, session);
+    
+    /* options to pass for finding user */
+    Map<String, Object> opts = new HashMap<String, Object>(1);
+    opts.put("onlyActive", Boolean.FALSE);
+    
+    /* see if the user with given username already exists or not */
+    User user = findUserByUsername(username, opts, session);
+    
     if (user != null) {
       /* if status is supplied, use it. Otherwise, we need to set it to Status.Active to make
        * sure we are updating the active object
@@ -72,7 +91,7 @@ public class UserOperationsImpl implements UserOperations {
       /* ok, time to update the existing user */
       user = updateUser(user, optionalParams, session);
     }
-    else {
+    else { /* user doesn't exist, create a new user */
       user = createUser(username, optionalParams, session);
     }
     return user;
@@ -106,12 +125,12 @@ public class UserOperationsImpl implements UserOperations {
    *   <li>lastModified(Date): The last modified date of this object</li>
    * </ul>
    * @param session          The venus session object consisting of instituteId, hibernate session
-   * @return                 The created/updated department object
+   * @return                 The created/updated user object
    * @throws DataAccessException thrown when there is any error
    */
   private User createUser(String username, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException {
     if (username == null) {
-      throw new IllegalArgumentException("Username must be supplied");
+      throw new IllegalArgumentException("createUser: Username must be supplied");
     }
     
     if (log.isDebugEnabled()) {
@@ -216,12 +235,12 @@ public class UserOperationsImpl implements UserOperations {
    *   <li>lastModified(Date): The last modified date of this object</li>
    * </ul>
    * @param session          The venus session object consisting of instituteId, hibernate session
-   * @return                 The created/updated department object
+   * @return                 The created/updated user object
    * @throws DataAccessException thrown when there is any error
    */
   private User updateUser(User user, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException {
     if (user == null) {
-      return null;
+      throw new IllegalArgumentException("updateUser: user must be supplied");
     }
     boolean update = false;
     
@@ -380,39 +399,315 @@ public class UserOperationsImpl implements UserOperations {
     }
     return user;
   }
-
-  public User findUserByUsername(String username, VenusSession vs) throws DataAccessException {
+  
+  /**
+   * Find the user given the username in an institue. By default, returns
+   * only active user if not specified.
+   * @param username     The username of the user in the institute
+   * @param options      The map of optional parameters. The list include:
+   * <ul>
+   *   <li>onlyActive(Boolean): If set to true, only active user will be returned. Defaults to true</li>
+   * </ul>
+   * @param vs       The venus session object
+   * @return         The user object if found, null otherwise
+   * @throws DataAccessException thrown when there is any exception
+   */
+  public User findUserByUsername(String username, Map<String, Object> options, VenusSession vs) throws DataAccessException {
     if (username == null) {
-      return null;
+      throw new IllegalArgumentException("findUserByUsername: username must be supplied");
     }
+    
+    /* do we need to return only active user? */
+    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+
+    if (log.isDebugEnabled()) {
+      log.debug("Finding user with username: " + username + ", for institute with id: " + vs.getInstituteId());
+    }
+
+    /* use naturalid restrictions to find the user here */
     try {
-      Session sess = vs.getHibernateSession();
-      Query query = sess.getNamedQuery(FIND_USER_BY_USERNAME_STR);
-      query.setString(0, username);
-      return (User)query.uniqueResult();
+      Criteria criteria = vs.getHibernateSession().createCriteria(UserImpl.class);
+      NaturalIdentifier naturalId = Restrictions.naturalId().set("username", username);
+      naturalId.set("instituteId", vs.getInstituteId());
+      
+      criteria.add(naturalId);
+      criteria.setCacheable(false);
+      User user = (UserImpl) criteria.uniqueResult();
+      /* check if only active user is needed */
+      if (user != null && onlyActive) {
+        if (user.getStatus() != Status.Active.ordinal()) {
+          return null;
+        }
+      }
+      return user;
     }
     catch (HibernateException he) {
-      String errStr = "Unable to find the user: " + username;
+      String errStr = "Unable to find user with username: " + username + ", in institute with id: " + vs.getInstituteId();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
-    
   }
 
-  public List<User> getUsers(int offset, int maxRet, VenusSession vs) throws DataAccessException {
+  
+  /**
+   * Find the user given the userId. By default, returns
+   * only active user if not specified
+   * @param userId     The userId of the user in the institute
+   * @param options    The map of optional parameters. The list include:
+   * <ul>
+   *   <li>onlyActive(Boolean): If set to true, only active user will be returned. Defaults to true</li>
+   * </ul>
+   * @param vs       The venus session object
+   * @return         The user object if found, null otherwise
+   * @throws DataAccessException thrown when there is any exception
+   */
+  public User findUserByUserId(String userId, Map<String, Object> options, VenusSession vs) throws DataAccessException  {
+    /* userId is null? throw error */
+    if (userId == null) {
+      throw new IllegalArgumentException("findUserByUserId: userId must be supplied");
+    }
+
+    /* do we need to return only active user? */
+    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+
+    if (log.isDebugEnabled()) {
+      log.debug("Finding User with userId: " + userId + ", for institute with id: " + vs.getInstituteId());
+    }
+
     try {
+      /* get hibernate session */
       Session sess = vs.getHibernateSession();
-      Query query = sess.createQuery("from UserImpl");
-      query.setFirstResult(offset);
-      query.setMaxResults(maxRet);
-      return query.list();
+      /* find now using named query */
+      Query query = sess.getNamedQuery(FIND_USER_BY_USERID_STR);
+      query.setString(0, userId);
+      query.setInteger(1, vs.getInstituteId());
+      
+      /* get the result */
+      User user = (UserImpl) query.uniqueResult();
+      /* check if only active user is needed */
+      if (user != null && onlyActive) {
+        if (user.getStatus() != Status.Active.ordinal()) {
+          return null;
+        }
+      }
+      return user;
     }
     catch (HibernateException he) {
-      String errStr = "Unable to get the users";
+      String errStr = "Unable to find user with userId: " + userId + ", in institute with id: " + vs.getInstituteId();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
   }
   
+  
+  /**
+   * Find the user given the email. By default, returns
+   * only active user if not specified
+   * @param email     The email of the user in the institute
+   * @param options    The map of optional parameters. The list include:
+   * <ul>
+   *   <li>onlyActive(Boolean): If set to true, only active user will be returned. Defaults to true</li>
+   * </ul>
+   * @param vs       The venus session object
+   * @return         The user object if found, null otherwise
+   * @throws DataAccessException thrown when there is any exception
+   */
+  public User findUserByEmail(String email, Map<String, Object> options, VenusSession vs) throws DataAccessException  {
+    /* email is null? throw error */
+    if (email == null) {
+      throw new IllegalArgumentException("findUserByEmail: email must be supplied");
+    }
 
+    /* do we need to return only active user? */
+    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+
+    if (log.isDebugEnabled()) {
+      log.debug("Finding User with email: " + email + ", for institute with id: " + vs.getInstituteId());
+    }
+
+    try {
+      /* get hibernate session */
+      Session sess = vs.getHibernateSession();
+      /* find now using named query */
+      Query query = sess.getNamedQuery(FIND_USER_BY_EMAIL_STR);
+      query.setString(0, email);
+      query.setInteger(1, vs.getInstituteId());
+      
+      /* get the result */
+      User user = (UserImpl) query.uniqueResult();
+      /* check if only active user is needed */
+      if (user != null && onlyActive) {
+        if (user.getStatus() != Status.Active.ordinal()) {
+          return null;
+        }
+      }
+      return user;
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to find user with email: " + email + ", in institute with id: " + vs.getInstituteId();
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
+  }
+  
+  /**
+   * Get all the users in the institute (Allowing filtering)
+   * @param offset        The paging offset in the list
+   * @param maxRet        Maximum number of objects to be returned
+   * @param options       The oprional parameters, including:
+   * <ul>
+   *   <li>onlyActive(Boolean): return only active users, defaults to true</li>
+   *   <li>sortBy(String): if specified, the restults will be sorted by this field, defaults to created</li>
+   *   <li>isAscending(Boolean): sort by ascending/descending, defaults to true</li>
+   *   <li>filterBy(String): filter the output by this field name</li>
+   *   <li>filterValue(String): filter the output based on this value for the given field. This will be effective, only if filterBy field is set</li>
+   *   <li>filterOp(String): filter operation, can be : contains, equals, startsWith, present. Defaults to contains</li>
+   * </ul>
+   * @param vs           The venus session object
+   * @return the list of users in an institute
+   * @throws DataAccessException thrown when there is any error
+   */
+  /* XXX: add filtering on the specified date (for example, get me users created in the given 
+   * interval, joined in given interval, etc */
+  public List<User> getUsers(int offset, int maxRet, Map<String, Object> options, VenusSession vs)  throws DataAccessException {
+    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+    /* we will sort on 'created' by default for users. Why? - God knows */
+    String sortBy = OperationsUtilImpl.getStringValue("sortBy", options, "created");
+    Boolean isAscending = OperationsUtilImpl.getBoolean("isAscending", options, OperationsUtil.DEFAULT_SORT_ORDER);
+    String filterBy = OperationsUtilImpl.getStringValue("filterBy", options, null);
+    String filterValue = OperationsUtilImpl.getStringValue("filterValue", options, null);
+    String filterOp = OperationsUtilImpl.getStringValue("filterOp", options, OperationsUtil.DEFAULT_FILTER_OP);
+
+    try {
+      /* use criteria for efficiency */
+      Session sess = vs.getHibernateSession();
+      Criteria c = sess.createCriteria(UserImpl.class);
+
+      /* set the institute id */
+      c.add(Expression.eq("instituteId", vs.getInstituteId()));
+      
+      /* set the condition on status, if we need only active users */
+      if (onlyActive) {
+        c.add(Expression.eq("status", Status.Active.ordinal()));
+      }
+      
+      /* if sortBy is specified by, add order */
+      if (StringUtils.isNotBlank(sortBy)) {
+        c.addOrder(isAscending? Order.asc(sortBy) : Order.desc(sortBy));
+      }
+      
+      /*XXX: Add filtering*/
+      
+      /* set pagination */
+      c.setFirstResult(offset);
+      c.setMaxResults(maxRet);
+
+      /* return the list */
+      return c.list();
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to get users, with institute id: " + vs.getInstituteId();
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
+  }
+   
+
+  /**
+   * Set status of the user. This can be used to delete the User
+   * @param user          The user object for which the status needs to be changed
+   * @param status        The status to be set
+   * @param vs            The session object
+   * @throws DataAccessException thrown when there is any error
+   */
+  public void setStatus(User user, Status status, VenusSession vs) throws DataAccessException  {
+    if (user == null || status == null) {
+      throw new IllegalArgumentException("User and Status must be supplied");
+    }
+    
+    /* check whether the passed status and current status are same */
+    boolean update = false;
+    if (status.ordinal() != user.getStatus()) {
+      user.setStatus(status.ordinal());
+      update = true;
+    }
+
+    /* delete if the status is different */
+    Transaction txn = null;
+    if (update) {
+      if (log.isDebugEnabled()) {
+        log.debug("Changing the status for user: " + user.getUsername() + ", in institute with id: " + user.getInstituteId());
+      }
+      try {
+        /* get the hibernate session */
+        Session sess = vs.getHibernateSession();
+        txn = sess.beginTransaction();
+        sess.update(user);
+      }
+      catch (HibernateException he) {
+        String errStr = "Unable to change the status for user: " + user.getUsername() + ", in institute with id: " + user.getInstituteId();
+        log.error(errStr, he);
+        if (txn != null && txn.isActive()) {
+          txn.rollback();
+        }
+        throw new DataAccessException(errStr, he);
+      }
+      finally {
+        if (txn != null && txn.isActive()) {
+          txn.commit();
+        }
+      }
+    }
+  }
+
+  /**
+   * Get users count in the institute
+   * @param options       The oprional parameters, including:
+   * <ul>
+   *   <li>onlyActive(Boolean): return only active users, defaults to true</li>
+   *   <li>filterBy(String): filter the output by this field name</li>
+   *   <li>filterValue(String): filter the output based on this value for the given field. This will be effective, only if filterBy field is set</li>
+   *   <li>filterOp(String): filter operation, can be : contains, equals, startsWith, present. Defaults to contains</li>
+   * </ul>
+   * @param vs           The venus session object
+   * @return the total count of users in the institute
+   * @throws DataAccessException thrown when there is any error
+   */
+  /* XXX: Need to allow filtering on the periods */
+  public Integer getUsersCount(Map<String, Object> options, VenusSession vs)  throws DataAccessException {
+    /* count only active users? */
+    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+    /* filter options */
+    String filterBy = OperationsUtilImpl.getStringValue("filterBy", options, null);
+    String filterValue = OperationsUtilImpl.getStringValue("filterValue", options, null);
+    String filterOp = OperationsUtilImpl.getStringValue("filterOp", options, OperationsUtil.DEFAULT_FILTER_OP);
+
+    try {
+      /* use criteria for efficiency */
+      Session sess = vs.getHibernateSession();
+      Criteria c = sess.createCriteria(UserImpl.class);
+
+      /* set the institute id */
+      c.add(Expression.eq("instituteId", vs.getInstituteId()));
+      
+      /* set the condition on status, if we need only active users */
+      if (onlyActive) {
+        c.add(Expression.eq("status", Status.Active.ordinal()));
+      }
+      /* set the projection for the row count */
+      c.setProjection(Projections.rowCount());
+      
+      /*XXX: Add filtering*/
+
+      /* return the count */
+      return ((Number)c.uniqueResult()).intValue();
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to get users count, with institute id: " + vs.getInstituteId();
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
+  }
+
+  
 }

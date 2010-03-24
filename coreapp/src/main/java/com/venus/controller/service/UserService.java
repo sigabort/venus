@@ -26,7 +26,7 @@ public class UserService {
   public User getUser(String username) {
     User user = null;
     try {
-      user = uo.findUserByUsername(username, vs);
+      user = uo.findUserByUsername(username, null, vs);
     }
     catch (DataAccessException dae) {
       log.error("Internal error while getting user: " + username, dae);
@@ -72,7 +72,7 @@ public class UserService {
   public List<User> getUsers(int offset, int maxRet) {
     List<User> users = null;
     try {
-      users = uo.getUsers(offset, maxRet, vs);
+      users = uo.getUsers(offset, maxRet, null, vs);
     }
     catch (DataAccessException dae) {
       log.error("Internal error while getting users", dae);
