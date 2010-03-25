@@ -66,7 +66,7 @@ public class UserOperationsImpl implements UserOperations {
    * @return                 The created/updated user object
    * @throws DataAccessException thrown when there is any error
    */  
-  public User createUpdateUser(String username, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException {
+  public User createUpdateUser(String username, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException, IllegalArgumentException {
     if (username == null) {
       throw new IllegalArgumentException("createUpdate: Username must be supplied");
     }
@@ -97,7 +97,69 @@ public class UserOperationsImpl implements UserOperations {
     return user;
   }
 
- 
+  /**
+   * Check if the email is already used by the other user
+   * @param email          The email to check whether it is used by other users or not
+   * @param currentUser    The current user to check if this user holds it or not. If 
+   *                       currentUser is not null, and email is held by this user, returns false
+   * @param session        The {@link VenusSession} object holding context
+   * @return               true if email is already used by other users, false otherwise
+   * @throws HibernateException        thrown when there is any error while fetching data
+   * @throws IllegalArgumentException  thrown if the data passed is wrong
+   */
+  private boolean isEmailAlreadyUsed(String email, User currentUser, VenusSession session) throws DataAccessException, IllegalArgumentException {
+    if (email != null) {
+      /*
+       * If the current user is provided, check if this is used by the current user. If so, return false.
+       */
+      if (currentUser != null) {
+        if (email.equals(currentUser.getEmail())) {
+          return false;
+        }
+      }
+      /* we need to check the non-active users too */
+      Map<String, Object> options = new HashMap<String, Object>();
+      options.put("onlyActive", Boolean.FALSE);
+      User existingUser = findUserByEmail(email, options, session);
+      if (existingUser != null) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Check if the userId is already used by the other user
+   * @param userId         The userId to check whether it is used by other users or not
+   * @param currentUser    The current user to check if this user holds it or not. If 
+   *                       currentUser is not null, and userId is held by this user, returns false
+   * @param session        The {@link VenusSession} object holding context
+   * @return               true if userId is already used by other users, false otherwise
+   * @throws HibernateException        thrown when there is any error while fetching data
+   * @throws IllegalArgumentException  thrown if the data passed is wrong
+   */
+  private boolean isUserIdAlreadyUsed(String userId, User currentUser, VenusSession session) throws DataAccessException, IllegalArgumentException {
+    if (userId != null) {
+      /*
+       * If the current user is provided, check if this is used by the current user. If so, return false.
+       */
+      if (currentUser != null) {
+        if (userId.equals(currentUser.getUserId())) {
+          return false;
+        }
+      }
+      /* we need to check the non-active users too */
+      Map<String, Object> options = new HashMap<String, Object>();
+      options.put("onlyActive", Boolean.FALSE);
+      User existingUser = findUserByUserId(userId, options, session);
+      if (existingUser != null) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  
   /**
    * Create a new user
    * @paramm username        The username of the user. This should be unique in the institute
@@ -128,7 +190,7 @@ public class UserOperationsImpl implements UserOperations {
    * @return                 The created/updated user object
    * @throws DataAccessException thrown when there is any error
    */
-  private User createUser(String username, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException {
+  private User createUser(String username, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException, IllegalArgumentException {
     if (username == null) {
       throw new IllegalArgumentException("createUser: Username must be supplied");
     }
@@ -136,6 +198,19 @@ public class UserOperationsImpl implements UserOperations {
     if (log.isDebugEnabled()) {
       log.debug("Creating User with name: " + username + ", for institute with id: " + session.getInstituteId());
     }
+    
+    /* check if the user is trying to set the email/userId which is already
+     * used by other users. If so, throw an error
+     */      
+    String email = OperationsUtilImpl.getStringValue("email", optionalParams, null);
+    if (isEmailAlreadyUsed(email, null, session)) {
+     throw new IllegalArgumentException("User with email " + email + " already exists");
+    }
+    String userId = OperationsUtilImpl.getStringValue("userId", optionalParams, null);
+    if (isUserIdAlreadyUsed(userId, null, session)) {
+      throw new IllegalArgumentException("User with userId " + userId + " already exists");
+    }
+    /* all checks passed, go on and create user */
 
     /* create object */
     User user = new UserImpl();
@@ -144,9 +219,8 @@ public class UserOperationsImpl implements UserOperations {
     user.setUsername(username);
     /* set the institute Id */
     user.setInstituteId(session.getInstituteId());
-
-    /****** set the optional parameters now *******/
     
+    /****** set the optional parameters now *******/
     /* userId - can be user's roll number, employee id, etc */
     user.setUserId(OperationsUtilImpl.getStringValue("userId", optionalParams, null));
     /* set the password - if it needs to be encrypted, it should be done at the service layer */
@@ -238,11 +312,25 @@ public class UserOperationsImpl implements UserOperations {
    * @return                 The created/updated user object
    * @throws DataAccessException thrown when there is any error
    */
-  private User updateUser(User user, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException {
+  private User updateUser(User user, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException, IllegalArgumentException {
     if (user == null) {
       throw new IllegalArgumentException("updateUser: user must be supplied");
     }
     boolean update = false;
+    
+    
+    /* check if the user is trying to set the email/userId which is already
+     * used by other users. If so, throw an error
+     */      
+    String email = OperationsUtilImpl.getStringValue("email", optionalParams, null);
+    if (isEmailAlreadyUsed(email, user, session)) {
+     throw new IllegalArgumentException("User with email " + email + " already exists");
+    }
+    String userId = OperationsUtilImpl.getStringValue("userId", optionalParams, null);
+    if (isUserIdAlreadyUsed(userId, user, session)) {
+      throw new IllegalArgumentException("User with userId " + userId + " already exists");
+    }
+    /* all checks passed, go on and update user */
     
     if (optionalParams != null) {
       /* check the userId */
@@ -381,6 +469,7 @@ public class UserOperationsImpl implements UserOperations {
       try{
         user.setLastModified(new Date());
         Session sess = session.getHibernateSession();
+        txn = sess.beginTransaction();
         sess.update(user);
       }
       catch (HibernateException he) {
@@ -412,7 +501,7 @@ public class UserOperationsImpl implements UserOperations {
    * @return         The user object if found, null otherwise
    * @throws DataAccessException thrown when there is any exception
    */
-  public User findUserByUsername(String username, Map<String, Object> options, VenusSession vs) throws DataAccessException {
+  public User findUserByUsername(String username, Map<String, Object> options, VenusSession vs) throws DataAccessException, IllegalArgumentException {
     if (username == null) {
       throw new IllegalArgumentException("findUserByUsername: username must be supplied");
     }
@@ -461,7 +550,7 @@ public class UserOperationsImpl implements UserOperations {
    * @return         The user object if found, null otherwise
    * @throws DataAccessException thrown when there is any exception
    */
-  public User findUserByUserId(String userId, Map<String, Object> options, VenusSession vs) throws DataAccessException  {
+  public User findUserByUserId(String userId, Map<String, Object> options, VenusSession vs) throws DataAccessException, IllegalArgumentException {
     /* userId is null? throw error */
     if (userId == null) {
       throw new IllegalArgumentException("findUserByUserId: userId must be supplied");
@@ -512,7 +601,7 @@ public class UserOperationsImpl implements UserOperations {
    * @return         The user object if found, null otherwise
    * @throws DataAccessException thrown when there is any exception
    */
-  public User findUserByEmail(String email, Map<String, Object> options, VenusSession vs) throws DataAccessException  {
+  public User findUserByEmail(String email, Map<String, Object> options, VenusSession vs) throws DataAccessException, IllegalArgumentException {
     /* email is null? throw error */
     if (email == null) {
       throw new IllegalArgumentException("findUserByEmail: email must be supplied");
@@ -620,7 +709,7 @@ public class UserOperationsImpl implements UserOperations {
    * @param vs            The session object
    * @throws DataAccessException thrown when there is any error
    */
-  public void setStatus(User user, Status status, VenusSession vs) throws DataAccessException  {
+  public void setStatus(User user, Status status, VenusSession vs) throws DataAccessException, IllegalArgumentException {
     if (user == null || status == null) {
       throw new IllegalArgumentException("User and Status must be supplied");
     }
@@ -639,6 +728,8 @@ public class UserOperationsImpl implements UserOperations {
         log.debug("Changing the status for user: " + user.getUsername() + ", in institute with id: " + user.getInstituteId());
       }
       try {
+        /* change the last modified date */
+        user.setLastModified(new Date());
         /* get the hibernate session */
         Session sess = vs.getHibernateSession();
         txn = sess.beginTransaction();

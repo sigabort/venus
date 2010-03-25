@@ -379,6 +379,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
         log.debug("Changing the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstituteId());
       }
       try {
+        dept.setLastModified(new Date());
         /* get the hibernate session */
         Session sess = vs.getHibernateSession();
         txn = sess.beginTransaction();

@@ -4,6 +4,16 @@ import org.springframework.http.HttpStatus;
 import org.codehaus.jackson.annotate.JsonWriteNullProperties;
 
 
+/**
+ * The response object which will be used as base for all
+ * responses. This will contain the details about the response sent
+ * to the client. The details include: error, error code, error description,
+ * the items included in the response, total items, etc.
+ * 
+ * @author sigabort
+ *
+ */
+/* Make sure we dont send the values which are null */
 @JsonWriteNullProperties(false)
 public class BaseResponse {
   private Boolean error;

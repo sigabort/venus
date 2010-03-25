@@ -1,6 +1,7 @@
 package com.venus.restapp.response.error;
 
 import java.util.List;
+import java.util.Map;
 
 import com.venus.restapp.response.BaseResponse;
 
@@ -23,17 +24,18 @@ public class ResponseException extends Exception {
    * Constructor. This populates the proper BaseResponse object depends on the
    * parameters. When the exception happens, the BaseResponse Object corresponding
    * to this exception will be returned to the client.
-   * @param stats     HttpStatus object specifying the status code
+   * @param status     HttpStatus object specifying the status code
    * @param msg       The error description
+   * @param e         The base exception
+   * @param options   The optional parameters to include in the response exception
    */
-  public ResponseException(HttpStatus status, String msg) {
+  public ResponseException(HttpStatus status, String msg, Exception e, Map<String, Object> options) {
     response = new BaseResponse();
     response.setError(true);
     if (msg != null) {
       response.setErrorDescription(msg);
     }
     response.setHttpErrorCode(status.value());
-    response.setHttpErrorDescription(status.toString());
   }
   
   public BaseResponse getResponse() {

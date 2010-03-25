@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 
 import com.venus.restapp.service.DepartmentService;
 import com.venus.restapp.request.DepartmentRequest;
+import com.venus.restapp.request.BaseDepartmentRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
 import com.venus.restapp.response.DepartmentResponse;
@@ -49,20 +50,6 @@ public class DepartmentController {
     return "departments/createDepartment";
   }
 
-//   /**
-//    * Create/Update the Department
-//    * @param name               The department name for creation/updation
-//    * @param result             The BindingResult object containing the errors if there
-//    *                            are any errors found while validating the request object
-//    * @return the ModelAndView object containing response of creation/updation of department.
-//    *             The response object is added as model object. This object contains information
-//    *             about the exceptions/errors(if any errors found) 
-//    */
-//   @RequestMapping(vlaue="{name}", method=RequestMethod.POST)
-//   public ModelAndView createByName(@PathVariable String name, DepartmentRequest request) {
-//     request.setName(name);
-//   }
-
   /**
    * Create/Update the Department
    * @param departmentRequest   The DepartmentRequest object containing all parameters
@@ -79,7 +66,7 @@ public class DepartmentController {
        * how 'create' is populating the errors properly in case of invalid request.
        * We need to do same here too.
        */
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request");
+      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
       return new ModelAndView("departments/createDepartment", "response", re.getResponse());
     }
     log.info("Adding/Updating department" + departmentRequest.getName());
@@ -110,7 +97,7 @@ public class DepartmentController {
        * how 'create' is populating the errors properly in case of invalid request.
        * We need to do same here too.
        */
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request");
+      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
       return new ModelAndView("departments/department", "response", re.getResponse());
     }
     log.info("Fetching department: " + name);
@@ -125,7 +112,7 @@ public class DepartmentController {
     /* department not found? throw 404 */
     if (dept == null) {
       log.info("Department with name: " + name + " is not found...");
-      ResponseException re = new ResponseException(HttpStatus.NOT_FOUND, "Department with name: " + name + ", not found");
+      ResponseException re = new ResponseException(HttpStatus.NOT_FOUND, "Department with name: " + name + ", not found", null, null);
       return new ModelAndView("departments/department", "response", re.getResponse());
     }
     log.info("Got dept: " + name);
@@ -150,7 +137,7 @@ public class DepartmentController {
        * how 'create' is populating the errors properly in case of invalid request.
        * We need to do same here too.
        */
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request");
+      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
       return new ModelAndView("departments/home", "response", re.getResponse());
     }
 

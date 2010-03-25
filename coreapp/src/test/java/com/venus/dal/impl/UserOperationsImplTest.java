@@ -131,6 +131,130 @@ public class UserOperationsImplTest extends BaseImplTest {
   }
   
   /**
+   * Test creating user with already used email by another user
+   * @throws Exception
+   */
+  @Test
+  public void testCreateUserWithUsedEmail() throws Exception {
+    String name = "testCUWUE-" + getRandomString();
+    String email = name + "-email";
+    String userId = name + "-userId";
+    
+    /* create optional parameters */
+    Map<String, Object> params = createTestUserParams(name);
+    /* override the email, and userId values */
+    params.put("email", email);
+    params.put("userId", userId);
+
+    /* create the user */
+    User user = uol.createUpdateUser(name, params, vs);
+    Assert.assertNotNull("User creation failed", user);
+    
+    /* test the created user details */
+    Assert.assertEquals("User name", name, user.getUsername());
+    Assert.assertEquals("User Institute Id", vs.getInstituteId(), (Integer)user.getInstituteId());
+    Assert.assertEquals("User status", (int)Status.Active.ordinal(), (int)user.getStatus());
+    Assert.assertNotNull("user created date", user.getCreated());
+    Assert.assertNotNull("user last modified date", user.getLastModified());   
+    /* test optional parameters */
+    testUserOptionalParams(user, params);    
+    
+    String newName = name + "-new";
+    params = createTestUserParams(newName);
+    /* override the email id with the one which is used by another user */
+    params.put("email", email);
+    
+    /* try to create the user with new details (used email) */
+    try {
+      User newUser = uol.createUpdateUser(newName, params, vs);
+      Assert.fail("Tried to create user with used email");
+    }
+    catch (IllegalArgumentException iae) {
+      //test passed
+    }
+
+    /* override the userId with the one which is used by another user */
+    params.put("email", null);
+    params.put("userId", userId);
+    
+    /* try to create the user with new details (used userId) */
+    try {
+      User newUser = uol.createUpdateUser(newName, params, vs);
+      Assert.fail("Tried to create user with used userId");
+    }
+    catch (IllegalArgumentException iae) {
+      //test passed
+    }
+  }
+  
+  
+  /**
+   * Test updating user with already used userId by another user
+   * @throws Exception
+   */
+  @Test
+  public void testUpdateUserWithUsedUserId() throws Exception {
+    String name = "testUUWUU-" + getRandomString();
+    String email1 = name + "-email";
+    String userId1 = name + "-userId";
+    
+    /* create optional parameters */
+    Map<String, Object> params = createTestUserParams(name);
+    /* override the email, and userId values */
+    params.put("email", email1);
+    params.put("userId", userId1);
+
+    /* create the first user */
+    User user1 = uol.createUpdateUser(name, params, vs);
+    Assert.assertNotNull("User creation failed", user1);
+    
+    /* test the created user details */
+    Assert.assertEquals("User name", name, user1.getUsername());
+    Assert.assertEquals("User Institute Id", vs.getInstituteId(), (Integer)user1.getInstituteId());
+    
+    /* test optional parameters */
+    testUserOptionalParams(user1, params);    
+    
+    /* create second user */
+    String name2 = name + "-2";
+    params = createTestUserParams(name2);
+    
+    User user2 = uol.createUpdateUser(name2, params, vs);
+    Assert.assertNotNull("User creation failed", user2);
+    
+    /* test the created user details */
+    Assert.assertEquals("User name", name2, user2.getUsername());
+    Assert.assertEquals("User Institute Id", vs.getInstituteId(), (Integer)user2.getInstituteId());
+    
+    
+    /* override the email id with the one which is used by another user */
+    params.put("email", email1);
+    
+    /* try to update the user with new details (used email) */
+    try {
+      User newUser = uol.createUpdateUser(name2, params, vs);
+      Assert.fail("Tried to create user with used email");
+    }
+    catch (IllegalArgumentException iae) {
+      //test passed
+    }
+
+    /* override the userId with the one which is used by another user */
+    params.put("email", null);
+    params.put("userId", userId1);
+    
+    /* try to update the user with new details (used userId) */
+    try {
+      User newUser = uol.createUpdateUser(name2, params, vs);
+      Assert.fail("Tried to create user with used userId");
+    }
+    catch (IllegalArgumentException iae) {
+      //test passed
+    }
+
+  }
+  
+  /**
    * Create/Update user with out any username
    * @throws Exception
    */

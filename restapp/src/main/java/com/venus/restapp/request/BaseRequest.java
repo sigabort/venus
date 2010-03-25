@@ -3,6 +3,15 @@ package com.venus.restapp.request;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;
 
+/**
+ * This class represents the base request for all requests.
+ * The optional parameters for each request will be set in
+ * this class. This class should extended by each class which
+ * represent a request object
+ * 
+ * @author sigabort
+ *
+ */
 public class BaseRequest {
 
   @Min(value = 0, message= "startIndex must be greater than or equal to 0")

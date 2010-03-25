@@ -3,7 +3,15 @@ package com.venus.restapp.request;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-public class BaseDepartmentRequest {
+/**
+ * Basic request object for Department. This object contains all the optional
+ * parameters can be set for an department. The mandatory params will be set
+ * in {@link DepartmentRequest} object which extends this class. 
+ *  
+ * @author sigabort
+ *
+ */
+public class BaseDepartmentRequest extends BaseRequest {
 
   @Size(min=1, max=128, message = "Code size must be between 1 and 128")
   private String code = null;

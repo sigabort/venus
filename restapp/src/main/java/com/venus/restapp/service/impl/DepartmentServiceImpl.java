@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.HashMap;
 
 import com.venus.model.Department;
-import com.venus.model.impl.DepartmentImpl;
 import com.venus.dal.DepartmentOperations;
 import com.venus.dal.DataAccessException;
 import com.venus.dal.impl.DepartmentOperationsImpl;
@@ -46,7 +45,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     catch (DataAccessException dae) {
       String errStr = "Error while creating/updating department with name: " + name;
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
     }
     return dept;
   }
@@ -60,7 +59,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting department with name: " + name;
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
     }
     return department;
   }
@@ -118,7 +117,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting departments";
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
     }
     return departments;
   }
@@ -157,7 +156,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting departments count";
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
     }
     return count;
   }

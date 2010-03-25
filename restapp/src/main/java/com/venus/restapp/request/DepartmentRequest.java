@@ -3,6 +3,17 @@ package com.venus.restapp.request;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/**
+ * Main class representing the department request parameters. This object contains
+ * all parameters needed for creating a department. The mandatory parameters will
+ * be specified in this class. Where as, the optional parameters will be set
+ * in {@link BaseDepartmentRequest}
+ * 
+ * This class will be used against the validator for validation of department requests.
+ * 
+ * @author sigabort
+ *
+ */
 public class DepartmentRequest extends BaseDepartmentRequest {
 
   @NotNull(message = "Name must be supplied")

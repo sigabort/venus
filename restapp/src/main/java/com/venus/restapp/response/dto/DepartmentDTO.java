@@ -4,6 +4,15 @@ import com.venus.model.Department;
 
 import org.codehaus.jackson.annotate.JsonWriteNullProperties;
 
+/**
+ * This class represents the object which is sent to the client as part of
+ * the department response. This object is built using the model object from the
+ * DB: {@link Department}. 
+ *
+ * @author sigabort
+ *
+ */
+/* make sure we don't send the null values */
 @JsonWriteNullProperties(false)
 public class DepartmentDTO {
   private String name;
@@ -52,6 +61,12 @@ public class DepartmentDTO {
     this.email = email;
   }
   
+  /**
+   * Get the {@link DepartmentDTO} object from the {@link Department}
+   * model object (object from the DB).
+   * @param department      The model object 
+   * @return The reponse {@link DepartmentDTO object} built using the model object
+   */
   public static DepartmentDTO getDepartmentDTO(Department department) {
     if (department != null) {
       DepartmentDTO dto = new DepartmentDTO(department.getName(), department.getCode());
