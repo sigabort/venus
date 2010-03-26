@@ -18,5 +18,6 @@
     <mapping resource="com/venus/model/impl/DepartmentImpl.hbm.xml"/>
     <mapping resource="com/venus/model/impl/ProgramImpl.hbm.xml"/>
     <mapping resource="com/venus/model/impl/UserImpl.hbm.xml"/>
+    <mapping resource="com/venus/model/impl/UserRoleImpl.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

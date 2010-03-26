@@ -12,16 +12,16 @@ import org.junit.Assert;
 
 import org.hibernate.Session;
 
-import com.sun.java_cup.internal.internal_error;
 import com.venus.model.User;
 import com.venus.model.Status;
 import com.venus.util.VenusSession;
 import com.venus.dal.DataAccessException;
+import com.venus.dal.UserOperations;
 
 import com.venus.model.impl.BaseImplTest;
 
 public class UserOperationsImplTest extends BaseImplTest {
-  private UserOperationsImpl uol;
+  private static UserOperationsImpl uol;
   private Session sess;
   private VenusSession vs;
   private int rand;
@@ -761,8 +761,13 @@ public class UserOperationsImplTest extends BaseImplTest {
    Assert.assertEquals("users count should be 2", 2, (int)count);
   }
   
+  public static User createTestUser(String name, VenusSession vsess) throws Exception {
+    Map<String, Object> params = createTestUserParams(name);
+    UserOperations uo = new UserOperationsImpl();
+    return uo.createUpdateUser(name, params, vsess);
+  }
   
-  private Map<String, Object> createTestUserParams(String name) {
+  private static Map<String, Object> createTestUserParams(String name) {
    String userId = name + "-userId";
    String password = name + "-passwd";
    String firstName = name + "-fName";
@@ -807,7 +812,7 @@ public class UserOperationsImplTest extends BaseImplTest {
   /**
    * build the map of optional parameters for the user
    */
-  private Map<String, Object> buildOptionalParams(String userId, String password, String email,
+  private static Map<String, Object> buildOptionalParams(String userId, String password, String email,
               String firstName, String lastName, String gender, String url, String phone, String address1,
               String address2, String city, String country, String postalCode, String photoUrl, Date birthDate,
               Date joinDate, Status status, Date created, Date lastModified) {

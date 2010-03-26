@@ -9,17 +9,17 @@
       <generator class="native"/>
     </id>
 
-    <!-- Name and Institute ID is the Unique Key for the departments table  -->
+    <!-- Username and Institute ID is the Unique Key for the users table  -->
     <natural-id>  
       <!-- XXX: Institute is not yet implemented. So we will use
       simple int type here -->
       
-      <!-- The institute to which this department belongs to -->
+      <!-- The institute to which this user belongs to -->
       <property name="instituteId" type="int" update="true" insert="true">
 	<column name="instituteid" not-null="true" unique="false" unique-key="IDX_USER_INSTITUTE_EMAIL,IDX_USER_INSTITUTE_USERID"/>
       </property>
       
-      <!-- Unique department name in the institute -->
+      <!-- Unique username in the institute -->
       <property name="username" type="string" length="128" update="true" insert="true">
 	<column name="username" not-null="true" sql-type="varchar(128)" unique="false"/>
       </property>

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.venus.model.impl.UserRoleImpl" table="user_roles">
+
+		<id name="ID" type="int" column="id">
+			<generator class="native" />
+		</id>
+
+		<!--
+			The combination of user, department, role is the unique key for
+			user_roles table
+		-->
+		<natural-id>
+			<!-- FK to user -->
+			<many-to-one name="user" cascade="none" outer-join="false"
+				foreign-key="FK_USERROLE_USER_ID" class="com.venus.model.impl.UserImpl">
+				<column name="user" not-null="true" />
+			</many-to-one>
+
+			<!-- FK department in the institute -->
+			<many-to-one name="department" cascade="none" outer-join="false"
+				foreign-key="FK_USERROLE_DEPARTMENT_ID" class="com.venus.model.impl.DepartmentImpl">
+				<column name="department" not-null="false" />
+			</many-to-one>
+
+			<property name="role" type="int" update="true" insert="true">
+				<column name="role" not-null="true" unique="false" />
+			</property>
+
+		</natural-id>
+
+
+		<!-- the status of user role -->
+		<property name="status" type="int" update="true" insert="true"
+			column="status" not-null="true" unique="false" />
+
+		<property name="created" type="java.util.Date" update="true"
+			insert="true" column="created" unique="false" not-null="true" />
+
+		<property name="lastModified" type="java.util.Date" update="true"
+			insert="true" column="lastmodified" unique="false" not-null="true" />
+
+	</class>
+
+</hibernate-mapping>

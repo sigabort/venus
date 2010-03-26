@@ -54,7 +54,7 @@ public interface UserOperations {
    * @param username     The username of the user in the institute
    * @param options      The map of optional parameters. The list include:
    * <ul>
-   *   <li>onlyActive: Boolean</li>
+   *   <li>onlyActive(Boolean): If set to true, only active user will be returned. Defaults to true</li>
    * </ul>
    * @param session       The venus session object
    * @return         The user object if found, null otherwise

@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Date;
 
 import com.venus.model.Status;
+import com.venus.model.Department;
 
 import org.apache.log4j.Logger;
 
@@ -77,6 +78,23 @@ public class OperationsUtilImpl {
       Boolean value = (Boolean) params.get(name);
       if (value != null) {
 	return value;
+      }
+    }
+    return def;    
+  }
+  
+  /**
+   * Get the Department value from the map
+   * @param name      The name of the department parameter
+   * @param params    The map of the parameters to retrieve the parameter from
+   * @param def       The default value, if the param is not found in the map
+   * @return          The value from the list for the param, default otherwise
+   */
+  public static Department getDepartment(String name, Map<String, Object> params, Department def) {
+    if (params != null) {
+      Department value = (Department) params.get(name);
+      if (value != null) {
+        return value;
       }
     }
     return def;    

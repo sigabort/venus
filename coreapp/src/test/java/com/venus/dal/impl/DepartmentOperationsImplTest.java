@@ -16,11 +16,12 @@ import com.venus.model.Department;
 import com.venus.model.Status;
 import com.venus.util.VenusSession;
 import com.venus.dal.DataAccessException;
+import com.venus.dal.DepartmentOperations;
 
 import com.venus.model.impl.BaseImplTest;
 
 public class DepartmentOperationsImplTest extends BaseImplTest {
-  private DepartmentOperationsImpl dol;
+  private static DepartmentOperationsImpl dol;
   private Session sess;
   private VenusSession vs;
   
@@ -663,10 +664,28 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    Assert.assertEquals("list should only contain 2 departments", new Integer(2), count);
   }
 
+  public static Department createTestDepartment(String name, VenusSession vs) throws Exception {
+    Map<String, Object> params = createTestDepartmentParams(name);
+    DepartmentOperations doi = new DepartmentOperationsImpl();
+    Department dept = doi.createUpdateDepartment(name, params, vs);
+    return dept;
+  }
+
+  private static Map<String, Object> createTestDepartmentParams(String name) {
+    String code = name + "-code";
+    String desc = name + "-desc";
+    String photoUrl = name + "-url";
+    String email = name + "-email";
+    Date created = new Date();
+    Date lastModified = new Date();
+    Map<String, Object> params = buildOptionalParams(code, desc, photoUrl, email, Status.Active, created, lastModified);
+    return params;
+  }
+  
   /**
    * build the map of optional parameters for the department
    */
-  private Map<String, Object> buildOptionalParams(String code, String description, String photoUrl,
+  private static Map<String, Object> buildOptionalParams(String code, String description, String photoUrl,
 						  String email, Status status, Date created, Date lastModified) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("code", code);
