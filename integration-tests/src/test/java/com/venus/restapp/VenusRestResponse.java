@@ -1,11 +1,13 @@
-package com.venus.rest;
+package com.venus.restapp;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.Header;;
 
 public class VenusRestResponse {
   private HttpResponse httpResponse;
   private String responseStr;
   private Integer responseCode;
+  private Header[] headers;
   
   public VenusRestResponse(HttpResponse resp, String str, Integer code) {
     this.httpResponse = resp;
@@ -35,6 +37,14 @@ public class VenusRestResponse {
   
   public Integer getResponseCode() {
     return this.responseCode;
+  }
+  
+  public void setHeaders(Header[] headers) {
+    this.headers = headers;
+  }
+  
+  public Header[] getHeaders() {
+    return this.headers;
   }
   
 }

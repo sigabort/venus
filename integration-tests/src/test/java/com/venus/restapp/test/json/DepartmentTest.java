@@ -1,13 +1,17 @@
-package com.venus.rest.test.json;
+package com.venus.restapp.test.json;
 
-import com.venus.rest.VenusRestJSONClient;
-import com.venus.rest.VenusRestResponse;
+import com.venus.restapp.VenusRestJSONClient;
+import com.venus.restapp.VenusRestResponse;
+import com.venus.restapp.test.AbstractTest;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.Before;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Random;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 
@@ -16,14 +20,15 @@ import net.sf.json.JSONObject;
 /**
  * Department related tests
  */
-public class DepartmentTest {
+public class DepartmentTest extends AbstractTest {
 
   private int randInt;
   @Before
   public void setUp() {
-    randInt = new Random(new Random().nextLong()).nextInt();
+    randInt = getRandomNumber();
   }
-
+  
+  
   /* test create department */
   @Test
   public void testCreateDepartment() throws Exception {
@@ -31,24 +36,18 @@ public class DepartmentTest {
     String code = name + "-code";
     VenusRestJSONClient client = new VenusRestJSONClient();
 
-    /* login as admin before creating department */
-    VenusRestResponse r = client.login("rod", "koala");
-    Assert.assertNotNull("Login response is not proper", r);
-
+    /* create admin user and login as that user */
+    createAdminUserAndLogin(client);
+    
     /* create department */
     JSONObject resp = client.createDepartment(name, code, null);
     Assert.assertNotNull("Didn't get the response", resp);
-    JSONObject response = resp.getJSONObject("response");
-    Assert.assertNotNull("Didn't get the response", response);
-    Assert.assertFalse("Response code", response.getBoolean("error"));
+    Assert.assertFalse("Response code", resp.getBoolean("error"));
 
     /* get the department now */
     resp = client.getDepartment(name, null);
-    Assert.assertNotNull("Didn't get the response", resp);    
     Assert.assertNotNull("Didn't get the response", resp);
-    response = resp.getJSONObject("response");
-    Assert.assertNotNull("Didn't get the response", response);
-    Assert.assertFalse("Response code", response.getBoolean("error"));
+    Assert.assertFalse("Response code", resp.getBoolean("error"));
   }
 
   /* test getting departments page - with out any parameters */

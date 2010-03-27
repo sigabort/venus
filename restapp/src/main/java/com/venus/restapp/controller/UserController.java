@@ -66,8 +66,8 @@ public class UserController {
    * Create/Update the User
    * @param userRequest        The {@link UserRequest} object containing all parameters
    * @param result             The {@link BindingResult} object containing the errors if there
+   *                           are any errors found while validating the request object
    * @param request            The {@link HttpServletRequest} object corresponding to this request
-   *                            are any errors found while validating the request object
    * @return the {@link ModelAndView} object containing response of creation/updation of user.
    *             The response object is added as model object. This object contains information
    *             about the exceptions/errors(if any errors found) 

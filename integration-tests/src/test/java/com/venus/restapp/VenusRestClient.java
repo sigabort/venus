@@ -1,4 +1,4 @@
-package com.venus.rest;
+package com.venus.restapp;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -153,12 +153,12 @@ public class VenusRestClient {
     if (entity != null) {
       ByteArrayOutputStream out = null;
       try {
-	out = new ByteArrayOutputStream();
-	entity.writeTo(out);
+        out = new ByteArrayOutputStream();
+        entity.writeTo(out);
       }
       catch (Exception e) {
-	log.error("Error writing the response to output: " + requestStr);
-	return null;
+        log.error("Error writing the response to output: " + requestStr);
+        return null;
       }
       /* get the response string */
       respStr = new String(out.toByteArray());
@@ -166,6 +166,7 @@ public class VenusRestClient {
     /* Build custom response to make sure clients get
      * access to both response object and string */
     VenusRestResponse vrr = new VenusRestResponse(resp, respStr, resp.getStatusLine().getStatusCode());
+    vrr.setHeaders(resp.getAllHeaders());
     log.info("I got the response code: " + resp.getStatusLine());
     return vrr;
   }
@@ -181,6 +182,14 @@ public class VenusRestClient {
     params.put(USER_INPUT_FIELD_NAME, username);
     params.put(USER_PASSWD_FIELD_NAME, passwd);      
     return postRequest(LOGIN_CHECK_PATH, params);
+  }
+
+  /**
+   * Logout - to clear the context
+   * @return The response of the request
+   */
+  public VenusRestResponse logout() {
+    return postRequest(LOGOUT_CHECK_PATH, null);
   }
 
 

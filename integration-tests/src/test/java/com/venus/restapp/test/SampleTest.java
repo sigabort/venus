@@ -1,7 +1,7 @@
-package com.venus.rest.test;
+package com.venus.restapp.test;
 
-import com.venus.rest.VenusRestClient;
-import com.venus.rest.VenusRestResponse;
+import com.venus.restapp.VenusRestClient;
+import com.venus.restapp.VenusRestResponse;
 
 import org.junit.Assert;
 import org.junit.Test;

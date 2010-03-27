@@ -57,4 +57,17 @@ public interface UserService {
    * @throws ResponseException
    */
   public abstract Integer getUsersCount(BaseRequest request)  throws ResponseException;
+  
+  /**
+   * Special API for the Admin Layer to create the admin user. This shouldn't be used by others
+   * Only APIs in 'AdminController' should use this operation
+   * 
+   * @param request      The {@link UserRequest request} containing the 
+   *                     details of user and other parameters
+   * @return             The corresponding {@link User} object if 
+   *                     created/updated with out any errors, null otherwise
+   * @throws ResponseException thrown when there is any error
+   */
+  public abstract User createUpdateAdminUser(UserRequest request) throws ResponseException;
+  
 }

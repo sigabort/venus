@@ -123,4 +123,40 @@ public class UserRoleServiceImpl implements UserRoleService {
     return userRoles;
   }
 
+  /**
+   * Get the user roles for an user in an institute
+   * 
+   * @param user         The {@link User user} object for whom we need to fetch the roles
+   * @param request      The base {@link BaseRequest request} containing all optional parameters
+   * @return             The list of {@link UserRole}s if found, null otherwise
+   * @throws ResponseException thrown when there is any error
+   */
+  public List<UserRole> getUserRoles(User user, BaseRequest request) throws ResponseException {
+    List<UserRole> userRoles = null;
+    try{
+      userRoles = uro.getUserRoles(user, null, vs);
+    }
+    catch (DataAccessException dae) {
+      String errStr = "Error while getting user roles for user: " + user.getUsername() + ", in institute: " + 1;
+      log.error(errStr, dae);
+      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+    }
+    return userRoles;
+  }
+
+  
+  /**
+   * Special API to create the role for Admin. This shouldn't be used by others
+   * 
+   * @param request      The {@link UserRoleRequest request} containing the 
+   *                     details of user, role(s) and other parameters
+   * @return             The corresponding list of {@link UserRole} objects if 
+   *                     created/updated with out any errors, null otherwise
+   * @throws ResponseException thrown when there is any error
+   */
+  public List<UserRole> createUpdateAdminUserRole(UserRoleRequest request) throws ResponseException {
+    return createUpdateUserRole(request);
+  }
+
+  
 }

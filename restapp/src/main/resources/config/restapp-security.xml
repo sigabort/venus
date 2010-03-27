@@ -12,13 +12,23 @@
 
 	<http use-expressions="true">
 		<intercept-url pattern="/**" access="permitAll" />
-		<form-login login-page="/login" default-target-url="/home"/>
+		<intercept-url pattern="/admin*" access="hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1')"/>
+		<form-login login-page="/login" default-target-url="/home" always-use-default-target="false" />
 		<logout logout-success-url="/home" />
 	</http>
 
+	<authentication-manager>
+		<authentication-provider ref="RestAuthenticationProvider" />
+	</authentication-manager>
+
+	<!--
+		auth provider which actually does low level work for authentication
+	-->
+	<beans:bean id="RestAuthenticationProvider" class="com.venus.restapp.auth.RestAuthenticationProvider" />
+
 	<!--
 		Usernames/Passwords are rod/koala dianne/emu scott/wombat peter/opal
-	-->
+	--><!--
 	<authentication-manager>
 		<authentication-provider>
 			<password-encoder hash="md5" />
@@ -33,7 +43,6 @@
 					authorities="ROLE_USER" />
 			</user-service>
 		</authentication-provider>
-	</authentication-manager>
-
-
+	</authentication-manager>-->
+	
 </beans:beans>

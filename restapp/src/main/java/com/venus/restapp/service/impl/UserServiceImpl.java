@@ -203,4 +203,19 @@ public class UserServiceImpl implements UserService {
     }
     return count;
   }
+  
+  
+  /**
+   * Special API for the Admin Layer to create the admin user. This shouldn't be used by others
+   * 
+   * @param request      The {@link UserRequest request} containing the 
+   *                     details of user and other parameters
+   * @return             The corresponding {@link User} object if 
+   *                     created/updated with out any errors, null otherwise
+   * @throws ResponseException thrown when there is any error
+   */
+  public User createUpdateAdminUser(UserRequest request) throws ResponseException {
+    return createUpdateUser(request);
+  }
+
 }
