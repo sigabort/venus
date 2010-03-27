@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.annotation.NumberFormat.Style;
@@ -17,7 +18,7 @@ import org.springframework.format.annotation.NumberFormat.Style;
  * @author sigabort
  *
  */
-public class BaseUserRequest extends BaseRequest {
+public class BaseUserRequest extends BaseUserRoleRequest {
   private String email = null;
   private String userId = null;
   private String password = null;
@@ -49,13 +50,13 @@ public class BaseUserRequest extends BaseRequest {
     return email;
   }
   public void setEmail(String email) {
-    this.email = email;
+    this.email = StringUtils.stripToNull(email);
   }
   public String getUserId() {
     return userId;
   }
   public void setUserId(String userId) {
-    this.userId = userId;
+    this.userId = StringUtils.stripToNull(userId);
   }
   public String getPassword() {
     return password;
@@ -67,67 +68,67 @@ public class BaseUserRequest extends BaseRequest {
     return firstName;
   }
   public void setFirstName(String firstName) {
-    this.firstName = firstName;
+    this.firstName = StringUtils.stripToNull(firstName);
   }
   public String getLastName() {
     return lastName;
   }
   public void setLastName(String lastName) {
-    this.lastName = lastName;
+    this.lastName = StringUtils.stripToNull(lastName);
   }
   public String getGender() {
     return gender;
   }
   public void setGender(String gender) {
-    this.gender = gender;
+    this.gender = StringUtils.stripToNull(gender);
   }
   public String getUrl() {
     return url;
   }
   public void setUrl(String url) {
-    this.url = url;
+    this.url = StringUtils.stripToNull(url);
   }
   public String getPhone() {
     return phone;
   }
   public void setPhone(String phone) {
-    this.phone = phone;
+    this.phone = StringUtils.stripToNull(phone);
   }
   public String getAddress1() {
     return address1;
   }
   public void setAddress1(String address1) {
-    this.address1 = address1;
+    this.address1 = StringUtils.stripToNull(address1);
   }
   public String getAddress2() {
     return address2;
   }
   public void setAddress2(String address2) {
-    this.address2 = address2;
+    this.address2 = StringUtils.stripToNull(address2);
   }
   public String getCity() {
     return city;
   }
   public void setCity(String city) {
-    this.city = city;
+    this.city = StringUtils.stripToNull(city);
   }
   public String getCountry() {
     return country;
   }
   public void setCountry(String country) {
-    this.country = country;
+    this.country = StringUtils.stripToNull(country);
   }
   public String getPostalCode() {
     return postalCode;
   }
   public void setPostalCode(String postalCode) {
-    this.postalCode = postalCode;
+    this.postalCode = StringUtils.stripToNull(postalCode);
   }
   public String getPhotoUrl() {
     return photoUrl;
   }
   public void setPhotoUrl(String photoUrl) {
-    this.photoUrl = photoUrl;
+    this.photoUrl = StringUtils.stripToNull(photoUrl);
   }
   public Date getBirthDate() {
     return birthDate;

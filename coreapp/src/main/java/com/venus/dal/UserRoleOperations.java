@@ -65,24 +65,36 @@ public interface UserRoleOperations {
    *   <li>onlyActive(Boolean): Return only active roles</li>
    *   <li>department({@link Department}): Return only roles in this department </li>
    * </ul>
-   * @param session       The venus session object
-   * @return         The user object if found, null otherwise
+   * @param session       The {@link VenusSession session} object
+   * @return              The list of {@link UserRole role} objects if found, null/empty list otherwise
    * @throws DataAccessException thrown when there is any exception
+   * @throws IllegalArgumentException thrown when wrong data passed
    */
-//  public abstract List<UserRole> getUserRoles(User user, Map<String, Object> options, VenusSession session) throws DataAccessException;
+  public abstract List<UserRole> getUserRoles(User user, Map<String, Object> options, VenusSession session) throws DataAccessException, IllegalArgumentException;
 
   /**
-   * Set status of the user roles. This can be used to delete the roles of a user
-   * @param user          The {@link User user} object for whom the roles' status need to be set
+   * Set status of the user role. This can be used to delete a particular role of a user
+   * @param userRole             The {@link UserRole userRole} object whose status need to be set
    * @param status        The {@link Status status} to be set
-   * @param optionalParams       The list of optional parameters. The list include:
-   * <ul>
-   *   <li>department({@link Department}): Set the specified status to the roles for only this department </li>
-   *   <li>roles(List<{@link Role}>): Only set the status the specified roles </li>
-   * </ul>
    * @param vs            The {@link VenusSession session} object
    * @throws DataAccessException thrown when there is any error
+   * @throws IllegalArgumentException thrown when invalid data is passed
    */
-//  public abstract void setStatus(User user, Status status, Map<String, Object> optionalParams, VenusSession vs) throws DataAccessException;
-  
+  public abstract void setStatus(UserRole userRole, Status status, VenusSession vs) throws DataAccessException, IllegalArgumentException;
+ 
+  /**
+   * Set the status for user roles belonging to one user
+   * @param user         the {@link User user} object for which the roles' status need to be changed 
+   * @param status       The {@link Status status} to be set
+   * @param options      The optional parameters, including:
+   * <ul>
+   *   <li>department({@link Department}): When passed, only roles' status corresponding to this department are changed</li>
+   *   <li>roles(List<{@link Role}>): When passed, only these roles' status are changed</li>
+   * </ul>
+   * @param vs           The {@link VenusSession session} object containing context
+   * @return             The count of user roles whose status is changed
+   * @throws DataAccessException         thrown when there is any error while doing operation
+   * @throws IllegalArgumentException    thrown when invalid data is passed
+   */  
+  public abstract int setStatus(User user, Status status, Map<String, Object> options, VenusSession vs) throws DataAccessException, IllegalArgumentException;
 }

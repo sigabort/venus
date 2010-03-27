@@ -3,6 +3,8 @@ package com.venus.restapp.request;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Main class representing the department request parameters. This object contains
  * all parameters needed for creating a department. The mandatory parameters will
@@ -21,12 +23,17 @@ public class DepartmentRequest extends BaseDepartmentRequest {
   private String name;
 
   public void setName(String name) {
-    this.name = name;
+    this.name = StringUtils.stripToNull(name);
   }
   
   public String getName() {
     return this.name;
   }
 
+  public DepartmentRequest() {}
+  
+  public DepartmentRequest(String name) {
+    this.name = name;
+  }
 
 }

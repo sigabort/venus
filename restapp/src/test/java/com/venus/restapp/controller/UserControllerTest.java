@@ -221,6 +221,66 @@ public class UserControllerTest extends AbstractControllerTest {
     Assert.assertNotNull("Didn't get the response", ur);
     Assert.assertFalse("The error", ur.getError());
   }
+
+  /**
+   * Try to create user, and add role for that user
+   * @throws Exception
+   */
+  @Test
+  public void testCreateUserAndUserRole() throws Exception {
+    /* Login in as user who has role 'ROLE_ADMIN' */
+    Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
+        "ignored", AuthorityUtils.createAuthorityList("ROLE_ADMIN"));
+    SecurityContextHolder.getContext().setAuthentication(authRequest);
+    
+    /* should be POST method, with uri : /create */
+    request.setMethod(HttpMethod.POST.toString());
+    request.setRequestURI("/create");
+
+    String name = "tCUWC-" + getRandomString();
+    /* create new request object */
+    request.setParameter("username", name);
+    request.setParameter("role", new String[] {"principal", "admin"});
+   
+    /* create/update the user now*/
+    final ModelAndView mav = handlerAdapter.handle(request, response, controller);
+    assertViewName(mav, "users/user");
+    final UserResponse ur = assertAndReturnModelAttributeOfType(mav, "response", UserResponse.class);
+    Assert.assertNotNull("Didn't get the response", ur);
+    Assert.assertFalse("The error", ur.getError());
+    Assert.assertEquals("The error code", (int)200, (int)ur.getHttpErrorCode());
+    Assert.assertNotNull("The user object of the response", ur.getEntry());
+  }
+
+  /**
+   * Try to create user, and add invalid role(s) for that user
+   * @throws Exception
+   */
+  @Test
+  public void testCreateUserAndInvalidUserRole() throws Exception {
+    /* Login in as user who has role 'ROLE_ADMIN' */
+    Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
+        "ignored", AuthorityUtils.createAuthorityList("ROLE_ADMIN"));
+    SecurityContextHolder.getContext().setAuthentication(authRequest);
+    
+    /* should be POST method, with uri : /create */
+    request.setMethod(HttpMethod.POST.toString());
+    request.setRequestURI("/create");
+
+    String name = "tCUWC-" + getRandomString();
+    /* create new request object */
+    request.setParameter("username", name);
+    request.setParameter("role", new String[] {"xyz", "dude"});
+   
+    /* create/update the user now*/
+    final ModelAndView mav = handlerAdapter.handle(request, response, controller);
+    assertViewName(mav, "users/createUser");
+    final BaseResponse br = assertAndReturnModelAttributeOfType(mav, "response", BaseResponse.class);
+    Assert.assertNotNull("Didn't get the response", br);
+    Assert.assertTrue("The error", br.getError());
+    Assert.assertEquals("The error code", (int)400, (int)br.getHttpErrorCode());    
+  }
+
   
   /**
    * Test creating user with logged in as normal user
@@ -228,7 +288,7 @@ public class UserControllerTest extends AbstractControllerTest {
    */
   @Test
   public void testCreateUserAsNormalUser() throws Exception {
-    /* Login in as user who has role 'ROLE_ADMIN' */
+    /* Login in as user who has role 'ROLE_USER' */
     Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
         "ignored", AuthorityUtils.createAuthorityList("ROLE_USER"));
     SecurityContextHolder.getContext().setAuthentication(authRequest);

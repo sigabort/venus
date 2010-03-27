@@ -49,8 +49,21 @@
 					<form:label	for="joinDate" path="joinDate" cssErrorClass="error">JoinDate</form:label><br/>
 					<form:input path="joinDate" /> <form:errors path="joinDate" />			
 				</p>
+				<p>
 					<form:label	for="birthDate" path="birthDate" cssErrorClass="error">BirthDate</form:label><br/>
 					<form:input path="birthDate" /> <form:errors path="birthDate" />			
+				</p>
+				<p>
+					<form:label	for="role" path="role" cssErrorClass="error">Role</form:label><br/>
+					<form:select multiple="multiple" size="3" path="role">
+				  	  <form:option value="PRINCIPAL">PRINCIPAL</form:option>
+					  <form:option value="ADMIN">ADMIN</form:option>
+					  <form:option value="HEADOFDEPARTMENT">HEAD OF DEPARTMENT</form:option>
+					  <form:option value="INSTRUCTOR">INSTRUCTOR</form:option>
+					  <form:option value="STUDENT">STUDENT</form:option>
+					  <form:option value="STAFF">STAFF</form:option>
+					</form:select>
+					<form:errors path="role" />
 				</p>
 				<p>	
 					<input type="submit" />

@@ -65,7 +65,15 @@ public class UserOperationsImpl implements UserOperations {
    * @param session          The venus session object consisting of instituteId, hibernate session
    * @return                 The created/updated user object
    * @throws DataAccessException thrown when there is any error
-   */  
+   */
+  /*
+   * The unique keys on User object are: 
+   * 1. (username, institute)
+   * 2. (userid, institute)
+   * 3. (email, institute)
+   *
+   * So, make sure when adding a new entry or updating an existing entry, we dont add duplicate keys 
+   */
   public User createUpdateUser(String username, Map<String, Object> optionalParams, VenusSession session) throws DataAccessException, IllegalArgumentException {
     if (username == null) {
       throw new IllegalArgumentException("createUpdate: Username must be supplied");
@@ -108,7 +116,7 @@ public class UserOperationsImpl implements UserOperations {
    * @throws IllegalArgumentException  thrown if the data passed is wrong
    */
   private boolean isEmailAlreadyUsed(String email, User currentUser, VenusSession session) throws DataAccessException, IllegalArgumentException {
-    if (email != null) {
+    if (!StringUtils.isEmpty(email)) {
       /*
        * If the current user is provided, check if this is used by the current user. If so, return false.
        */
@@ -139,7 +147,7 @@ public class UserOperationsImpl implements UserOperations {
    * @throws IllegalArgumentException  thrown if the data passed is wrong
    */
   private boolean isUserIdAlreadyUsed(String userId, User currentUser, VenusSession session) throws DataAccessException, IllegalArgumentException {
-    if (userId != null) {
+    if (!StringUtils.isEmpty(userId)) {
       /*
        * If the current user is provided, check if this is used by the current user. If so, return false.
        */
@@ -200,7 +208,9 @@ public class UserOperationsImpl implements UserOperations {
     }
     
     /* check if the user is trying to set the email/userId which is already
-     * used by other users. If so, throw an error
+     * used by other users. If so, throw an error:
+     * we have unique keys on: email/institute, userId/institute, username/institute
+     * Adding duplicate will result into constraint violation error.
      */      
     String email = OperationsUtilImpl.getStringValue("email", optionalParams, null);
     if (isEmailAlreadyUsed(email, null, session)) {
@@ -320,7 +330,9 @@ public class UserOperationsImpl implements UserOperations {
     
     
     /* check if the user is trying to set the email/userId which is already
-     * used by other users. If so, throw an error
+     * used by other users. If so, throw an error:
+     * we have unique keys on: email/institute, userId/institute, username/institute
+     * Adding duplicate will result into constraint violation error.
      */      
     String email = OperationsUtilImpl.getStringValue("email", optionalParams, null);
     if (isEmailAlreadyUsed(email, user, session)) {

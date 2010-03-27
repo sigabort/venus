@@ -2,9 +2,11 @@ package com.venus.dal.impl;
 
 import java.util.Map;
 import java.util.Date;
+import java.util.List;
 
 import com.venus.model.Status;
 import com.venus.model.Department;
+import com.venus.model.Role;
 
 import org.apache.log4j.Logger;
 
@@ -99,5 +101,22 @@ public class OperationsUtilImpl {
     }
     return def;    
   }
-
+  
+  
+  /**
+   * Get the {@link Role Roles} from the map
+   * @param name      The name of the role parameter
+   * @param params    The map of the parameters to retrieve the parameter from
+   * @param def       The default value, if the param is not found in the map
+   * @return          The value from the list for the param, default otherwise
+   */
+  public static List<Role> getRoles(String name, Map<String, Object> params, List<Role> def) {
+    if (params != null) {
+      List<Role> value = (List<Role>) params.get(name);
+      if (value != null) {
+        return value;
+      }
+    }
+    return def;    
+  }
 }

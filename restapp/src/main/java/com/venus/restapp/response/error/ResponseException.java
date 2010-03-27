@@ -18,7 +18,8 @@ import org.codehaus.jackson.annotate.JsonWriteNullProperties;
 /* JsonWriteNullProperties: annotation for sending attributes with null values */
 @JsonWriteNullProperties(false)
 public class ResponseException extends Exception {
-  private BaseResponse response;
+  private BaseResponse response = null;
+  private String message = null;
 
   /**
    * Constructor. This populates the proper BaseResponse object depends on the
@@ -32,6 +33,7 @@ public class ResponseException extends Exception {
   public ResponseException(HttpStatus status, String msg, Exception e, Map<String, Object> options) {
     response = new BaseResponse();
     response.setError(true);
+    this.message = msg;
     if (msg != null) {
       response.setErrorDescription(msg);
     }
@@ -44,6 +46,10 @@ public class ResponseException extends Exception {
 
   public void setResponse(BaseResponse response) {
     this.response = response;
+  }
+  
+  public String getMessage() {
+    return this.message;
   }
 
 }

@@ -3,6 +3,8 @@ package com.venus.restapp.request;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Main class representing the user request parameters. This object contains
  * all parameters needed for creating an user. The mandatory parameters will
@@ -21,7 +23,7 @@ public class UserRequest extends BaseUserRequest {
   private String username;
 
   public void setUsername(String username) {
-    this.username = username;
+    this.username = StringUtils.stripToEmpty(username);
   }
   
   public String getUsername() {

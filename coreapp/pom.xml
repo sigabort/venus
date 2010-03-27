@@ -16,7 +16,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.7</version>
+      <version>${junit.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -36,17 +36,17 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-      <version>2.3</version>
+      <version>${commons-lang.version}</version>
     </dependency>    
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.0.4</version>
+      <version>${mysql-connector.version}</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>1.2.15</version>
+      <version>${log4j.version}</version>
       <exclusions>
 	<exclusion>
 	  <groupId>javax.jms</groupId>
@@ -59,6 +59,10 @@
 	<exclusion>
 	  <groupId>com.sun.jmx</groupId>
 	  <artifactId>jmxri</artifactId>
+	</exclusion>
+	<exclusion>
+	  <groupId>javax.mail</groupId>
+	  <artifactId>mail</artifactId>
 	</exclusion>
       </exclusions>
     </dependency>
@@ -139,6 +143,10 @@
   </reporting>
   <properties>
     <org.hibernate.version>3.2.6.ga</org.hibernate.version>
+    <junit.version>4.7</junit.version>
+    <commons-lang.version>2.3</commons-lang.version>
+    <mysql-connector.version>5.0.4</mysql-connector.version>
+    <log4j.version>1.2.15</log4j.version>
   </properties>
 
 </project>
