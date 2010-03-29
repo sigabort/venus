@@ -15,7 +15,7 @@ public class LoginTest {
   @Test
   public void testLogin() throws Exception {
     VenusRestClient client = new VenusRestClient();
-    VenusRestResponse resp = client.login("rod", "koala");
+    VenusRestResponse resp = client.loginRequest("rod", "koala");
     Assert.assertTrue("Response code", resp.getResponseCode() != HttpStatus.SC_FORBIDDEN);
   }
   

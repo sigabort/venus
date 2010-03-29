@@ -30,6 +30,8 @@
 		    <h2> First Name: <c:out value="${user.firstName}" default=""/> </h2>
 	            <h2> Last Name: <c:out value="${user.lastName}" default=""/> </h2>
 	            <h2> Email: <c:out value="${user.email}" default=""/> </h2>
+	            <h2> Join Date: <c:out value="${user.joinDate}" default=""/> </h2>
+	            <h2> birthDate: <c:out value="${user.birthDate}" default=""/> </h2>
 	     	  </div>
 	      	</c:if>
               </c:when>

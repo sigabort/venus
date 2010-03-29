@@ -79,53 +79,7 @@ public class VenusRestJSONClient extends VenusRestClient {
     return getJSONObject(resp);
   }
   
-  /**
-   * Login using given username and password. This is hack...
-   * Once we use VenusRestClient to login, the restapp sends a redirect to
-   * the /home right now. In case of login failure, it redirects to 
-   * \/restapp\/login again. So, checking the header 'Location' and find
-   * if the login succeeded or not. If it succeeded, send JSON reponse with
-   * error as false. If not, send JSON response with error as true.
-   * @param username
-   * @param passwd
-   * @param params
-   * @return
-   */
-  public JSONObject login(String username, String passwd, Map<String, Object> params) {
-    VenusRestResponse resp = login(username, passwd);
-    if (resp != null) {
-      if (resp.getResponseCode() != HttpStatus.SC_UNAUTHORIZED) {
-        Header[] headers = resp.getHeaders();
-        for (int idx = 0; idx < headers.length; idx++) {
-          Header header = headers[idx];
-          if ("Location".equals(header.getName())) {
-            String value = header.getValue();
-            if (value.contains("/restapp/login")) {
-              return loginFailJSONObject();
-            }
-            else {
-              return loginSuccessJSONObject();
-            }
-          }
-        }
-      }
-      return loginFailJSONObject();
-    }
-    return null;
-  }
-  
-  private JSONObject loginFailJSONObject() {
-    String str ="{\"error\":true,\"errorCode\":" + HttpStatus.SC_UNAUTHORIZED + "}";
-    System.out.println("Sending failure response: " + str);
-    return JSONObject.fromObject(str);
-  }
-  
-  private JSONObject loginSuccessJSONObject() {
-    String str ="{\"error\":false,\"errorCode\":" + HttpStatus.SC_OK + "}";
-    System.out.println("Sending success response: " + str);
-    return JSONObject.fromObject(str);
-  }
-  
+ 
   /**
    * Create User
    * @param username        The user's username
@@ -143,9 +97,121 @@ public class VenusRestJSONClient extends VenusRestClient {
     return getJSONObject(resp);
   }
   
+  /**
+   * Get User
+   * @param name        The user's username
+   * @param params      Query parameters to be set
+   * @return The response of the request
+   */
+  public JSONObject getUser(String username, Map<String, Object>params) {
+    if (params == null) {
+      params = new HashMap<String, Object>(1);
+    }
+    
+    VenusRestResponse resp = getRequest("/users/" + username + JSON_EXT, params);
+    return getJSONObject(resp);
+  }
+
+  /**
+   * Logout. Right now, our application redirects to /home when the logout
+   * is successful.
+   * @return
+   */
+  public JSONObject logout() {
+    VenusRestResponse resp = super.logoutRequest();
+    if (resp == null) {
+      return logoutFailJSONObject();
+    }
+    if (validateLocationHeader(resp, "/restapp/login")) {
+      return logoutFailJSONObject();
+    }
+    return logoutSuccessJSONObject();
+  }
+
+  
+  /**
+   * Login using given username and password. This is hack...
+   * Once we use VenusRestClient to login, the restapp sends a redirect to
+   * the /home right now. In case of login failure, it redirects to 
+   * \/restapp\/login again. So, checking the header 'Location' and find
+   * if the login succeeded or not. If it succeeded, send JSON reponse with
+   * error as false. If not, send JSON response with error as true.
+   * @param username
+   * @param passwd
+   * @param params
+   * @return
+   */
+  public JSONObject login(String username, String passwd, Map<String, Object> params) {
+    VenusRestResponse resp = super.loginRequest(username, passwd);
+    if (resp == null) {
+      return loginFailJSONObject();
+    }
+    if (validateLocationHeader(resp, "/restapp/login")) {
+      return loginFailJSONObject();
+    }
+    return loginSuccessJSONObject();
+  }
+
+  private boolean validateLocationHeader(VenusRestResponse resp, String toCheck) {
+    Header[] headers = resp.getHeaders();
+    for (int idx = 0; idx < headers.length; idx++) {
+      Header header = headers[idx];
+      if ("Location".equals(header.getName())) {
+        String value = header.getValue();
+        /* the location header contains the given string, return true */
+        if (value.contains(toCheck)) {
+          return true;
+        }
+        /* the location header doesn't contain the given string
+         * return false
+         */
+        else {
+          return false;
+        }
+      }
+    }
+    /* checked all headers, couldn't find any location header. 
+     * retrun false
+     */
+    return false;
+  }
+  
+  private JSONObject loginFailJSONObject() {
+    String str ="{\"error\":true,\"httpErrorCode\":" + HttpStatus.SC_UNAUTHORIZED + "}";
+    System.out.println("Sending login failure response: " + str);
+    return JSONObject.fromObject(str);
+  }
+  
+  private JSONObject loginSuccessJSONObject() {
+    String str ="{\"error\":false,\"httpErrorCode\":" + HttpStatus.SC_OK + "}";
+    System.out.println("Sending login success response: " + str);
+    return JSONObject.fromObject(str);
+  }
+
+  private JSONObject accessDeniedJSONObject() {
+    String str ="{\"error\":true,\"httpErrorCode\":" + HttpStatus.SC_UNAUTHORIZED + "}";
+    System.out.println("Sending access denied response: " + str);
+    return JSONObject.fromObject(str);
+  }
+
+  private JSONObject logoutFailJSONObject() {
+    String str ="{\"error\":true,\"httpErrorCode\":" + HttpStatus.SC_UNAUTHORIZED + "}";
+    System.out.println("Sending logout failure response: " + str);
+    return JSONObject.fromObject(str);
+  }
+
+  private JSONObject logoutSuccessJSONObject() {
+    String str ="{\"error\":false,\"httpErrorCode\":" + HttpStatus.SC_OK + "}";
+    System.out.println("Sending logout success response: " + str);
+    return JSONObject.fromObject(str);
+  }
+  
   /* get the json object out of the response string */
   private JSONObject getJSONObject(VenusRestResponse resp) {
     if (resp != null) {
+      if (validateLocationHeader(resp, "/restapp/login")) {
+        return accessDeniedJSONObject();
+      }
       String str = resp.getResponseString();
       if (str != null) {
         log.info("The response: " + str);

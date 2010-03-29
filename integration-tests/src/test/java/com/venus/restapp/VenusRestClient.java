@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.RedirectHandler;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,6 +18,8 @@ import org.apache.http.HttpRequest;
 import org.apache.http.RequestLine;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.SyncBasicHttpContext;
@@ -24,6 +27,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.HttpClientParams;
 
 /**
  * Util class to call REST APIs.
@@ -75,7 +80,7 @@ public class VenusRestClient {
       this.host = new HttpHost(hostName, port, DEFAULT_SCHEME);
     }
     this.basePath = path;
-    this.client = new DefaultHttpClient();
+    this.client = getDefaultHttpClient();
     this.context = new SyncBasicHttpContext(new BasicHttpContext());
   }
 
@@ -85,7 +90,7 @@ public class VenusRestClient {
    */
   public VenusRestClient(HttpHost host) {
     this.host = host;
-    this.client = new DefaultHttpClient();
+    this.client = getDefaultHttpClient();
     this.context = new SyncBasicHttpContext(new BasicHttpContext());
   }
 
@@ -94,10 +99,18 @@ public class VenusRestClient {
    */
   public VenusRestClient() {
     this.host = new HttpHost(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_SCHEME);
-    this.client = new DefaultHttpClient();
+    this.client = getDefaultHttpClient();
     this.context = new SyncBasicHttpContext(new BasicHttpContext());
   }
 
+  private DefaultHttpClient getDefaultHttpClient() {
+    HttpParams params = new BasicHttpParams();
+    HttpClientParams.setRedirecting(params, true);
+    DefaultHttpClient client = new DefaultHttpClient(params);
+    System.out.println("Is redirecting: " + HttpClientParams.isRedirecting(client.getParams()));
+    return client;
+  }
+  
   /**
    * Send the GET request with specified path and params
    * @param path     The path for the GET request
@@ -177,7 +190,7 @@ public class VenusRestClient {
    * @param passwd       The passwd used for the login
    * @return The response of the request
    */
-  public VenusRestResponse login(String username, String passwd) {
+  public VenusRestResponse loginRequest(String username, String passwd) {
     Map<String, Object> params = new HashMap<String, Object>(2);
     params.put(USER_INPUT_FIELD_NAME, username);
     params.put(USER_PASSWD_FIELD_NAME, passwd);      
@@ -188,7 +201,7 @@ public class VenusRestClient {
    * Logout - to clear the context
    * @return The response of the request
    */
-  public VenusRestResponse logout() {
+  public VenusRestResponse logoutRequest() {
     return postRequest(LOGOUT_CHECK_PATH, null);
   }
 

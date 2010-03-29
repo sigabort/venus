@@ -40,7 +40,11 @@ public class AbstractTest {
   
   @Test
   public void dummyTest() {}
-  
+
+  /**
+   * Create an admin user and login as that user
+   * @param client      The {@link VenusRestJSONClient} used for sending requests
+   */
   public void createAdminUserAndLogin(VenusRestJSONClient client) {
     String name = getRandomString() + "-" + getRandomNumber();
     /* login as admin before creating department */
@@ -54,4 +58,27 @@ public class AbstractTest {
     resp = client.login(name, name, null);
     Assert.assertFalse("Response code", resp.getBoolean("error"));
   }
-}
+
+  /**
+   * Test whether the response is proper or not
+   * @param response    The {JSONObject response} object to check
+   */
+  public void testNoErrors(JSONObject response) {
+    Assert.assertNotNull(response);
+    Assert.assertFalse("Response error", response.getBoolean("error"));
+    Assert.assertEquals("Response error code", (int) HttpStatus.SC_OK, (int)response.getInt("httpErrorCode"));
+  }
+
+  /**
+   * Test whether the response contains expected error or not
+   * @param response    The {JSONObject response} object to check
+   * @param errorCode   The expected error code
+   */
+  public void testError(JSONObject response, Integer errorCode) {
+    Assert.assertNotNull(response);
+    Assert.assertTrue("Response error", response.getBoolean("error"));
+    Assert.assertEquals("Response error code", (int) errorCode, (int)response.getInt("httpErrorCode"));
+  }
+
+ }
+

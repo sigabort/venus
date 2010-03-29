@@ -13,7 +13,7 @@
       - view names for error views. The default behaviour of DispatcherServlet 
       - is to propagate all exceptions to the servlet container: this will happen 
       - here with all other types of exceptions.
-    -->
+    --><!--
   <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
     <property name="exceptionMappings">
       <props>
@@ -25,7 +25,7 @@
     </property>
   </bean>
 
-  <!-- Configures the @Controller programming model -->
+  --><!-- Configures the @Controller programming model -->
   <context:annotation-config />
   <mvc:annotation-driven />
   

@@ -1,7 +1,7 @@
 package com.venus.restapp;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.Header;;
+import org.apache.http.Header;
 
 public class VenusRestResponse {
   private HttpResponse httpResponse;
