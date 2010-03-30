@@ -106,8 +106,8 @@ public class VenusRestClient {
   private DefaultHttpClient getDefaultHttpClient() {
     HttpParams params = new BasicHttpParams();
     HttpClientParams.setRedirecting(params, true);
+    params.setParameter(ClientPNames.REJECT_RELATIVE_REDIRECT, false);
     DefaultHttpClient client = new DefaultHttpClient(params);
-    System.out.println("Is redirecting: " + HttpClientParams.isRedirecting(client.getParams()));
     return client;
   }
   

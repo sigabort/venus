@@ -205,13 +205,27 @@ public class UserController {
     UserResponse resp = UserResponse.populateUsers(users, totalCount);
     return new ModelAndView("users/home", "response", resp);
   }
-  
+
+  /**
+   * Get the {@link UserRoleRequest} object from the {@ink UserRequest} object
+   * @param req         The {@link UserRequest} object
+   * @return            The {@link UserRoleRequest} object
+   */
   private UserRoleRequest getUserRoleRequest(UserRequest req) {
     UserRoleRequest urr = new UserRoleRequest(req.getUsername(), req.getRole());
     urr.setDepartmentName(req.getDepartmentName());
     return urr;
   }
   
+  /**
+   * Validate the UserRole Request. We use custom validator {@link UserRoleValidator} to validate
+   * the user role request. Validate here, and add the errors to the BindingResult object passed in
+   * (if any)
+   * @param request           The {@link HttpServletRequest} object for getting all the input values
+   * @param result            The {@link BindingResult} object which can be used to add the errors
+   *                          if found
+   * @param requestAttr       The request attribute used for this request
+   */
   public static void validateUserRoleRequest(HttpServletRequest request, BindingResult result, String requestAttr) {
     WebDataBinder binder = new WebDataBinder(new UserRoleRequest(), requestAttr);
     binder.setValidator(new UserRoleValidator());

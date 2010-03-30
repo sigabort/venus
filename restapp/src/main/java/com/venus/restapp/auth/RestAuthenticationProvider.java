@@ -81,13 +81,14 @@ public class RestAuthenticationProvider implements AuthenticationProvider, Initi
       throw new BadCredentialsException("Username/password not correct");      
     }
     
-    /* FIXME: Right now, we are returning error if the roles for existing user dont exist
-     * We may have to re-think about this
-     */
     List<GrantedAuthority> gaList = getAuthorities(user);
-    if (gaList == null) {
-      throw new BadCredentialsException("Username/password not correct");      
-    }
+    /*
+     * The gaList can be empty/null because: the user exists in the Database. 
+     * But, he doesn't have any roles.
+     * Right now, lets add a default role : ROLE_USER. This allows user to
+     * access some information. We have to think about this later.
+     */
+    gaList = addDefaultRoleToUser(gaList);
 
     /* Add the roles to the token */
     upToken = new UsernamePasswordAuthenticationToken(username, token.getCredentials(), (GrantedAuthority[]) gaList.toArray(new GrantedAuthority[gaList.size()]));
@@ -132,6 +133,24 @@ public class RestAuthenticationProvider implements AuthenticationProvider, Initi
       gaList.add(ga);
     }
     return gaList;
+  }
+
+  /**
+   * Add default role ('ROLE_USER') to the existing user
+   * 
+   * @param gaList    The existing list of granted authorities 
+   * @return          The list of granted authorities with added default role(s)
+   */
+  private List<GrantedAuthority> addDefaultRoleToUser(List<GrantedAuthority> existing) {
+    if (existing == null) {
+      existing = new ArrayList<GrantedAuthority>(1);
+    }
+
+    /* add default role to all logged in users */
+    GrantedAuthority ga = new GrantedAuthorityImpl(RestRole.getRoleWithPrefix(RestRole.USER));
+    existing.add(ga);
+
+    return existing;
   }
 
   /**

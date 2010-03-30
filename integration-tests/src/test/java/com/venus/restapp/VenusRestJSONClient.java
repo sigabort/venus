@@ -142,6 +142,7 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @return
    */
   public JSONObject login(String username, String passwd, Map<String, Object> params) {
+    log.info("logging in as user: " + username + ", passwd: " + passwd);
     VenusRestResponse resp = super.loginRequest(username, passwd);
     if (resp == null) {
       return loginFailJSONObject();
@@ -159,6 +160,7 @@ public class VenusRestJSONClient extends VenusRestClient {
       if ("Location".equals(header.getName())) {
         String value = header.getValue();
         /* the location header contains the given string, return true */
+        log.info("[validationLocationHeader] I got the Location header value: " + value);
         if (value.contains(toCheck)) {
           return true;
         }
@@ -188,7 +190,7 @@ public class VenusRestJSONClient extends VenusRestClient {
     return JSONObject.fromObject(str);
   }
 
-  private JSONObject accessDeniedJSONObject() {
+  private JSONObject unAuthorizedJSONObject() {
     String str ="{\"error\":true,\"httpErrorCode\":" + HttpStatus.SC_UNAUTHORIZED + "}";
     System.out.println("Sending access denied response: " + str);
     return JSONObject.fromObject(str);
@@ -206,11 +208,44 @@ public class VenusRestJSONClient extends VenusRestClient {
     return JSONObject.fromObject(str);
   }
   
+  public JSONObject buildJSONObjectWithStatus(Integer errorCode) {
+    String str ="{\"error\":true,\"httpErrorCode\":" + errorCode + "}";
+    System.out.println("Sending custom response: " + str);
+    return JSONObject.fromObject(str);    
+  }
+  
+  private boolean validateStatus(VenusRestResponse resp) {
+    Integer status = resp.getResponseCode();
+    switch(status) {
+    /* 200 - is good */
+    case HttpStatus.SC_OK:
+    /* we check the Location header where it is moved to. 
+     * So, we can send true for this too */
+    case HttpStatus.SC_MOVED_TEMPORARILY:
+      return true;
+    
+    /* for all other status code, return false */
+    default:
+      return false;      
+    }  
+  }
+  
   /* get the json object out of the response string */
   private JSONObject getJSONObject(VenusRestResponse resp) {
     if (resp != null) {
+      /*
+       * See if this action lead to the login page. If so, this action
+       * is not authorized. Throw AccessDenied response
+       */
       if (validateLocationHeader(resp, "/restapp/login")) {
-        return accessDeniedJSONObject();
+        return unAuthorizedJSONObject();
+      }
+      /*
+       * See if the response code is proper or not. If not, build error JSONObject
+       * with the corresponding response code
+       */
+      if (!validateStatus(resp)) {
+        return buildJSONObjectWithStatus(resp.getResponseCode());
       }
       String str = resp.getResponseString();
       if (str != null) {

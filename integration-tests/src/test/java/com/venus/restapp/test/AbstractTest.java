@@ -26,7 +26,7 @@ public class AbstractTest {
    * Generate 20-char random string
    * @return The generated string
    */
-  public String getRandomString() {
+  public static String getRandomString() {
     return RandomStringUtils.random(20, true, true);
   }
   
@@ -34,7 +34,7 @@ public class AbstractTest {
    * Generate random number
    * @return the random number
    */
-  public int getRandomNumber() {
+  public static int getRandomNumber() {
     return RandomUtils.nextInt();
   }
   
@@ -45,7 +45,7 @@ public class AbstractTest {
    * Create an admin user and login as that user
    * @param client      The {@link VenusRestJSONClient} used for sending requests
    */
-  public void createAdminUserAndLogin(VenusRestJSONClient client) {
+  public static void createAdminUserAndLogin(VenusRestJSONClient client) {
     String name = getRandomString() + "-" + getRandomNumber();
     /* login as admin before creating department */
     Map<String, Object> params = new HashMap<String, Object>();
@@ -63,9 +63,10 @@ public class AbstractTest {
    * Test whether the response is proper or not
    * @param response    The {JSONObject response} object to check
    */
-  public void testNoErrors(JSONObject response) {
+  public static void testNoErrors(JSONObject response) {
     Assert.assertNotNull(response);
-    Assert.assertFalse("Response error", response.getBoolean("error"));
+    Boolean error = response.getBoolean("error");
+    Assert.assertFalse("Response error, expected: false. Found: " + error, error);
     Assert.assertEquals("Response error code", (int) HttpStatus.SC_OK, (int)response.getInt("httpErrorCode"));
   }
 
@@ -74,9 +75,10 @@ public class AbstractTest {
    * @param response    The {JSONObject response} object to check
    * @param errorCode   The expected error code
    */
-  public void testError(JSONObject response, Integer errorCode) {
+  public static void testError(JSONObject response, Integer errorCode) {
     Assert.assertNotNull(response);
-    Assert.assertTrue("Response error", response.getBoolean("error"));
+    Boolean error = response.getBoolean("error");
+    Assert.assertTrue("Response error, expected: true. Found: " + error, error);
     Assert.assertEquals("Response error code", (int) errorCode, (int)response.getInt("httpErrorCode"));
   }
 

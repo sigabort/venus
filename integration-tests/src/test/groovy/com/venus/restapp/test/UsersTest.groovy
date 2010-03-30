@@ -11,6 +11,9 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Date;
 
+/**
+ * Class for tests related to user
+ */
 public class UsersTest extends AbstractTest {
 
   private VenusRestJSONClient client = null;
@@ -98,7 +101,155 @@ public class UsersTest extends AbstractTest {
     user = resp?.entry;
     testUserDetails(user, params);
   }
+  
+  /**
+   * Create the user and login as the created user
+   */
+  @Test
+  public void testCreateNormalUserAndLogin() {    
+    /* create an admin user and login as admin */
+    createAdminUserAndLogin(client);
+    def name = "testCNUAL-" + getRandomString();
+    def params = buildUserOptionalParams(name);
 
+    /* create the user and check the details */
+    def resp = client.createUser(name, params);
+    testNoErrors(resp);
+    def user = resp?.entry;
+    params['username'] = name;
+    testUserDetails(user, params);
+
+    /* logout now */
+    resp = client.logout();
+    testNoErrors(resp);
+
+    /* login as the newly created user */
+    resp = client.login(params['username'], params['password'], null);
+    testNoErrors(resp);
+
+    /* get my details */
+    resp = client.getUser(name, null);
+    testNoErrors(resp);
+    user = resp?.entry;
+    testUserDetails(user, params);
+    
+    /* logout now */
+    resp = client.logout();
+    testNoErrors(resp);    
+  }
+  
+  /**
+   * Try to create a user with out logging in
+   */
+  @Test
+  public void testCreateUserAsNotLoggedInUser() {
+    def name = "testCUANIU-" + getRandomString();
+    def params = buildUserOptionalParams(name);
+
+    /* try to create the user */
+    def resp = client.createUser(name, params);
+    testError(resp, HttpStatus.SC_UNAUTHORIZED); // expected : unauthorized(401)
+  }
+  
+  /**
+   * Try to create a user with normal user
+   */
+  @Test
+  public void testCreateUserAsNormalUser() {
+    def name = "testCUANU-" + getRandomString();
+    def user = createTestUser(name);
+    def resp = client.login(user?.username, user?.password, null);
+    testNoErrors(resp);
+ 
+    def name1 = name + "-1";
+    def params1 = buildUserOptionalParams(name1);
+    
+    /* try to create the user now */
+    resp = client.createUser(name1, params1);
+    testError(resp, HttpStatus.SC_FORBIDDEN); // expected: access denied (403)
+  }
+
+  /**
+   * Try to create a user with no username
+   */
+  @Test
+  public void testCreateUserWithNoUsername() {
+    def name = "testCUWWI-" + getRandomString();
+    createAdminUserAndLogin(client);
+        
+    def params = buildUserOptionalParams(name);
+    
+    /* try to create the user with out username */
+    def resp = client.createUser(null, params);
+    testError(resp, HttpStatus.SC_BAD_REQUEST); // expected: bad request (400)
+  }
+
+  /**
+   * Try to create a user with already used email
+   */
+  @Test
+  public void testCreateUserWithAlreadyUsedEmail() {
+    def name = "testCUAUE-" + getRandomString();
+    createAdminUserAndLogin(client);
+
+    def params = buildUserOptionalParams(name);
+    
+    /* create one user with one email */
+    def resp = client.createUser(name, params);
+    testNoErrors(resp);
+    
+    /* try to create a different user with same email */
+    def name1 = name + "-1";
+    params['userId'] = name1;
+    resp = client.createUser(name1, params);
+    testError(resp, HttpStatus.SC_BAD_REQUEST); // expected: bad request (400)    
+  }
+
+  /**
+   * Try to create a user with already used userId
+   */
+  @Test
+  public void testCreateUserWithAlreadyUsedUserId() {
+    def name = "testCUAUUId-" + getRandomString();
+    createAdminUserAndLogin(client);
+
+    def params = buildUserOptionalParams(name);
+    
+    /* create one user with one userId */
+    def resp = client.createUser(name, params);
+    testNoErrors(resp);
+    
+    /* try to create a different user with same userId */
+    def name1 = name + "-1";
+    params['email'] = name1;
+    resp = client.createUser(name1, params);
+    testError(resp, HttpStatus.SC_BAD_REQUEST); // expected: bad request (400)    
+  }
+
+  
+  /**
+   * Create one test user and return user
+   * This can be used by other tests to create a user quickly
+   */
+  public static Object createTestUser(name) {
+    VenusRestJSONClient myClient = new VenusRestJSONClient();
+    createAdminUserAndLogin(myClient);
+    
+    def params = buildUserOptionalParams(name);
+  
+    /* create user */
+    def resp = myClient.createUser(name, params);
+    testNoErrors(resp);
+    def user = resp?.entry;
+    params['username'] = name;
+    testUserDetails(user, params);
+
+    /* log out as admin */
+    resp = myClient.logout();  
+    testNoErrors(resp);
+    return user;
+  }
+  
   /**
    * create optional parameters for creating user, and build a map of the optional params
    * and return. The optional parameters are based on the 'name' sent as argument

@@ -34,25 +34,12 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-
-	<!-- Serves static resource content from .jar files such as spring-js.jar -->
-	<servlet>
-		<servlet-name>Resource Servlet</servlet-name>
-		<servlet-class>org.springframework.js.resource.ResourceServlet</servlet-class>
-	</servlet>
-
-	<!-- Map all /resources requests to the Resource Servlet for handling -->
-	<servlet-mapping>
-		<servlet-name>Resource Servlet</servlet-name>
-		<url-pattern>/resources/*</url-pattern>
-	</servlet-mapping>
-	
+		
 	<servlet-mapping>
 		<servlet-name>default</servlet-name>
-		<url-pattern>/static/*</url-pattern>
-	</servlet-mapping>	
-
-	
+		<url-pattern>*.css</url-pattern>
+	</servlet-mapping>
+		
 	<servlet>
 		<servlet-name>restapp</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -60,7 +47,7 @@
 			<param-name>contextConfigLocation</param-name>
 			<param-value/>
 		</init-param>
-		<load-on-startup>1</load-on-startup>
+		<load-on-startup>2</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
@@ -83,7 +70,7 @@
   
     <filter-mapping>
 		<filter-name>httpMethodFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<servlet-name>restapp</servlet-name>
 	</filter-mapping>
 
 	<session-config>
