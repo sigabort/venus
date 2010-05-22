@@ -76,7 +76,7 @@ public class UserRoleServiceImpl implements UserRoleService {
       else {
         String errStr = "Department with name: " + deptName + ", doesn't exist";
         log.error(errStr);
-        throw new ResponseException(HttpStatus.BAD_REQUEST, errStr, null, null);        
+        throw new ResponseException(HttpStatus.NOT_FOUND, errStr, null, null);        
       }
     }
     /* see if the user is existing or not */
@@ -84,7 +84,7 @@ public class UserRoleServiceImpl implements UserRoleService {
     if (user == null) {
       String errStr = "User with username: " + username + ", doesn't exist";
       log.error(errStr);
-      throw new ResponseException(HttpStatus.BAD_REQUEST, errStr, null, null);
+      throw new ResponseException(HttpStatus.NOT_FOUND, errStr, null, null);
     }
     if (roles != null) {
       log.info("i am going to create the user role now.....");
@@ -108,6 +108,7 @@ public class UserRoleServiceImpl implements UserRoleService {
       }
       /* arguments are not proper */
       catch (IllegalArgumentException iae) {
+        log.error(iae.getMessage());        
         throw new ResponseException(HttpStatus.BAD_REQUEST, iae.getMessage(), iae, null);
       }
       if (userRole != null) {

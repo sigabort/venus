@@ -39,17 +39,14 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @param params      Query parameters to be set
    * @return The response of the request
    */
-  public JSONObject createDepartment(String name, String code, Map<String, Object>params) {
+  public JSONObject createDepartment(String name, Map<String, Object>params) {
     if (params == null) {
-      params = new HashMap<String, Object>(2);
+      params = new HashMap<String, Object>(1);
     }
     if (name != null) {
       params.put("name", name);
     }
-    if (code != null) {
-      params.put("code", code);
-    }
-    
+
     VenusRestResponse resp = postRequest("/departments/create" + JSON_EXT, params);
     return getJSONObject(resp);
   }
@@ -103,12 +100,37 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @param params      Query parameters to be set
    * @return The response of the request
    */
-  public JSONObject getUser(String username, Map<String, Object>params) {
+  public JSONObject getUser(String username, Map<String, Object>params) {    
+    VenusRestResponse resp = getRequest("/users/" + username + JSON_EXT, params);
+    return getJSONObject(resp);
+  }
+
+  /**
+   * Create/Add User Roles
+   * @param username        The user's username for whom the roles need to be added/created
+   * @param params      Query parameters to be set
+   * @return The response of the request
+   */
+  public JSONObject createUserRoles(String username, Map<String, Object>params) {
     if (params == null) {
       params = new HashMap<String, Object>(1);
     }
+    if (username != null) {
+      params.put("username", username);
+    }
     
-    VenusRestResponse resp = getRequest("/users/" + username + JSON_EXT, params);
+    VenusRestResponse resp = postRequest("/userroles/create" + JSON_EXT, params);
+    return getJSONObject(resp);
+  }
+
+  /**
+   * Get User roles
+   * @param name        The user's username
+   * @param params      Query parameters to be set
+   * @return The response of the request
+   */
+  public JSONObject getUserRoles(String username, Map<String, Object>params) {    
+    VenusRestResponse resp = getRequest("/userroles/" + username + JSON_EXT, params);
     return getJSONObject(resp);
   }
 

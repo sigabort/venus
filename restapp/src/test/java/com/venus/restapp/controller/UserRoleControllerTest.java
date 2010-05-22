@@ -108,7 +108,9 @@ public class UserRoleControllerTest extends AbstractControllerTest {
     Assert.assertNotNull("Didn't get the response", resp);
     Assert.assertFalse("The error", resp.getError());
     Assert.assertEquals("The error code", (int)200, (int)resp.getHttpErrorCode());
-    Assert.assertNotNull("The user object of the response", resp.getEntries());
+    List entries = resp.getEntries();
+    Assert.assertNotNull("The user roles", entries);    
+    Assert.assertEquals("The number of roles for user", 2, entries.size());
   }
 
   /**
@@ -140,6 +142,38 @@ public class UserRoleControllerTest extends AbstractControllerTest {
     Assert.assertEquals("The error code", (int)400, (int)br.getHttpErrorCode());    
   }
 
+  /**
+   * Try to create user, add roles with out departments which require
+   * department as mandatory parameter
+   * @throws Exception
+   */
+  @Test
+  public void testCreateUserRolesWithOutMandatoryDept() throws Exception {
+    /* Create the user first */
+    String name = "tCURWOMD-" + getRandomString();
+    createTestUser(name);
+
+    /* Login in as user who has role 'ROLE_ADMIN' */
+    Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
+        "ignored", AuthorityUtils.createAuthorityList("ROLE_ADMIN"));
+    SecurityContextHolder.getContext().setAuthentication(authRequest);
+    
+    /* should be POST method, with uri : /create */
+    request.setMethod(HttpMethod.POST.toString());
+    request.setRequestURI("/create");
+
+    /* create new request object */
+    request.setParameter("username", name);
+    request.setParameter("role", "Student");
+   
+    /* create/update the user now*/
+    final ModelAndView mav = handlerAdapter.handle(request, response, controller);
+    assertViewName(mav, "userroles/createUserRole");
+    final BaseResponse br = assertAndReturnModelAttributeOfType(mav, "response", BaseResponse.class);
+    Assert.assertNotNull("Didn't get the response", br);
+    Assert.assertTrue("The error", br.getError());
+    Assert.assertEquals("The error code", (int)400, (int)br.getHttpErrorCode());    
+  }
   
   /**
    * Test creating user with logged in as normal user
@@ -171,6 +205,64 @@ public class UserRoleControllerTest extends AbstractControllerTest {
     Assert.fail();
   }
   
+  /**
+   * Try to get user roles
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRoles() throws Exception {
+    /* Create the user first */
+    String name = "tGetURs-" + getRandomString();
+    createTestUser(name);
+
+    /* Login in as user who has role 'ROLE_ADMIN' */
+    Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
+        "ignored", AuthorityUtils.createAuthorityList("ROLE_ADMIN"));
+    SecurityContextHolder.getContext().setAuthentication(authRequest);
+    
+    /* should be POST method, with uri : /create */
+    request.setMethod(HttpMethod.POST.toString());
+    request.setRequestURI("/create");
+
+    /* create new request object */
+    request.setParameter("username", name);
+    request.setParameter("role", new String[] {"Admin", "staff"});
+   
+    /* create/update the user now*/
+    ModelAndView mav = handlerAdapter.handle(request, response, controller);
+    assertViewName(mav, "userroles/userRole");
+    UserRoleResponse resp = assertAndReturnModelAttributeOfType(mav, "response", UserRoleResponse.class);
+    Assert.assertNotNull("Didn't get the response", resp);
+    Assert.assertFalse("The error", resp.getError());
+    Assert.assertEquals("The error code", (int)200, (int)resp.getHttpErrorCode());
+    List entries = resp.getEntries();
+    Assert.assertNotNull("The user roles", entries);    
+    Assert.assertEquals("The number of roles for user", 2, entries.size());
+    
+    /* get user roles now */
+    /*
+     * XXX: using HandlerAdapter.handle() for GET /username requests is not working
+     * The exception is regarding the @PathVariable. 
+     * The problem is related to : 
+     * http://stackoverflow.com/questions/1401128/how-to-unit-test-a-spring-mvc-controller-using-pathvariable
+     * So, using workaround:
+     * 
+     * calling the method directly using binder to validate the request
+     */
+    BaseRequest br = new BaseRequest();
+    WebDataBinder binder = new WebDataBinder(br, "request");
+    binder.bind(new MutablePropertyValues(request.getParameterMap()));
+
+    mav = controller.getUserRoles(name, br, binder.getBindingResult());
+    resp = assertAndReturnModelAttributeOfType(mav, "response", UserRoleResponse.class);
+    Assert.assertNotNull("Didn't get the response", resp);
+    Assert.assertFalse("The error", resp.getError());
+    Assert.assertEquals("The error code", (int)200, (int)resp.getHttpErrorCode());
+    entries = resp.getEntries();
+    Assert.assertNotNull("The user roles", entries);    
+    Assert.assertEquals("The number of roles for user", 2, entries.size());
+  }
+
 
   /**
    * Creates a test user with given name as username.

@@ -226,6 +226,36 @@ public class UsersTest extends AbstractTest {
     testError(resp, HttpStatus.SC_BAD_REQUEST); // expected: bad request (400)    
   }
 
+  /**
+   * Create user and update the details
+   */
+  @Test
+  public void testUpdateUser() {    
+    /* create an admin user and login as admin */
+    createAdminUserAndLogin(client);
+    def name = "testUU-" + getRandomString();
+    def params = buildUserOptionalParams(name);
+
+    /* create the user and check the details */
+    def resp = client.createUser(name, params);
+    testNoErrors(resp);
+    def user = resp?.entry;
+    params['username'] = name;
+    testUserDetails(user, params);
+
+    /* update the same user with different optional params */
+    def newName = name + "-1";
+    params = buildUserOptionalParams(newName);
+    
+    /* get the created user info now */
+    resp = client.createUser(name, params);
+    testNoErrors(resp);
+    user = resp?.entry;
+    params['username'] = name;
+    /* the other values should be updated */
+    testUserDetails(user, params);
+  }
+  
   
   /**
    * Create one test user and return user
@@ -250,11 +280,12 @@ public class UsersTest extends AbstractTest {
     return user;
   }
   
+  
   /**
    * create optional parameters for creating user, and build a map of the optional params
    * and return. The optional parameters are based on the 'name' sent as argument
    */
-  public static Map buildUserOptionalParams(def name) {
+  public static Map buildUserOptionalParams(name) {
     def password = name + "-passwd";
     def userId = name + "-userId";
     def email = name + "-email";
