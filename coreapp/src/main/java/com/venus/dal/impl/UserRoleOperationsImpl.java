@@ -54,7 +54,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
    *   <li>created(Date): The created date of this object</li>
    *   <li>lastModified(Date): The last modified date of this object</li>
    * </ul>
-   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @param session          The venus session object consisting of institute, hibernate session
    * @return                 The created/updated user role object
    * @throws DataAccessException thrown when there is any error
    */
@@ -132,7 +132,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
       sess.save(ur);
     }
     catch (HibernateException he) {
-      String errStr = "Unable to create user role for user: " + user.getUsername() + ", role: " + role.toString() + " for institute: " + session.getInstituteId();
+      String errStr = "Unable to create user role for user: " + user.getUsername() + ", role: " + role.toString() + " for institute: " + session.getInstitute().getName();
       log.error(errStr, he);
       if (txn != null && txn.isActive()) {
         txn.rollback();
@@ -173,7 +173,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
     if (update) {
       Transaction txn = null;
       if (log.isDebugEnabled()) {
-        log.debug("Updating user role for user: " + ur.getUser().getUsername() + ", role: " + ur.getRole() + " in institute : " + session.getInstituteId());
+        log.debug("Updating user role for user: " + ur.getUser().getUsername() + ", role: " + ur.getRole() + " in institute : " + session.getInstitute().getName());
       }
       try {
         /* set last modified date */
@@ -183,7 +183,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
         sess.update(ur);
       }
       catch (HibernateException he) {
-        String errStr = "Unable to update user role for user: " + ur.getUser().getUsername()  + ", role: " + ur.getRole() + ", in institute: " + session.getInstituteId();
+        String errStr = "Unable to update user role for user: " + ur.getUser().getUsername()  + ", role: " + ur.getRole() + ", in institute: " + session.getInstitute().getName();
         log.error(errStr, he);
         if (txn != null && txn.isActive()) {
           txn.rollback();
@@ -225,7 +225,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
     Department department = OperationsUtilImpl.getDepartment("department", options, null);
 
     if (log.isDebugEnabled()) {
-      log.debug("Finding user role with username: " + user.getUsername() + ", role: " + role.toString() + ", for institute with id: " + session.getInstituteId());
+      log.debug("Finding user role with username: " + user.getUsername() + ", role: " + role.toString() + ", for institute with id: " + session.getInstitute().getName());
     }
 
     /* use naturalid restrictions to find the user role here */
@@ -250,7 +250,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
       return userRole;
     }
     catch (HibernateException he) {
-      String errStr = "Unable to find user role with username: " + user.getUsername() + ", role: " + role.toString() + ", in institute with id: " + session.getInstituteId();
+      String errStr = "Unable to find user role with username: " + user.getUsername() + ", role: " + role.toString() + ", in institute with id: " + session.getInstitute().getName();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
@@ -279,7 +279,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
     Department department = OperationsUtilImpl.getDepartment("department", options, null);
 
     if (log.isDebugEnabled()) {
-      log.debug("Finding user roles with username: " + user.getUsername() + ", for institute with id: " + session.getInstituteId());
+      log.debug("Finding user roles with username: " + user.getUsername() + ", for institute with id: " + session.getInstitute().getName());
     }
 
     /* use naturalid restrictions to find the user roles here */
@@ -302,7 +302,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
       return criteria.list();
     }
     catch (HibernateException he) {
-      String errStr = "Unable to find user roles with username: " + user.getUsername() + ", in institute with id: " + session.getInstituteId();
+      String errStr = "Unable to find user roles with username: " + user.getUsername() + ", in institute with id: " + session.getInstitute().getName();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
@@ -370,7 +370,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
       count = query.executeUpdate();
     }
     catch (HibernateException he) {
-      String errStr = "Error while setting status to user: " + user.getUsername() + ", status: " + status.toString() + ", in institute: " + vs.getInstituteId();
+      String errStr = "Error while setting status to user: " + user.getUsername() + ", status: " + status.toString() + ", in institute: " + vs.getInstitute().getName();
       log.error(errStr, he);
       if (txn != null && txn.isActive()) {
         txn.rollback();
@@ -410,7 +410,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
     Transaction txn = null;
     if (update) {
       if (log.isDebugEnabled()) {
-        log.debug("Changing the status of UserRole, for user: " + userRole.getUser().getUsername() + ", role: " + userRole.getRole() +", in institute with id: " + vs.getInstituteId());
+        log.debug("Changing the status of UserRole, for user: " + userRole.getUser().getUsername() + ", role: " + userRole.getRole() +", in institute with id: " + vs.getInstitute().getName());
       }
       try {
         /* change the last modified date */
@@ -421,7 +421,7 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
         sess.update(userRole);
       }
       catch (HibernateException he) {
-        String errStr = "Unable to change the status of UserRole for user: " + userRole.getUser().getUsername() + ", role: " + userRole.getRole() + ", in institute with id: " + vs.getInstituteId();
+        String errStr = "Unable to change the status of UserRole for user: " + userRole.getUser().getUsername() + ", role: " + userRole.getRole() + ", in institute with id: " + vs.getInstitute().getName();
         log.error(errStr, he);
         if (txn != null && txn.isActive()) {
           txn.rollback();

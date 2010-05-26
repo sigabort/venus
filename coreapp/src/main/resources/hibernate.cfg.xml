@@ -15,6 +15,7 @@
     <property name="hibernate.hbm2ddl.auto">update</property>
 
     <!-- Mapping files -->
+    <mapping resource="com/venus/model/impl/InstituteImpl.hbm.xml"/>
     <mapping resource="com/venus/model/impl/DepartmentImpl.hbm.xml"/>
     <mapping resource="com/venus/model/impl/ProgramImpl.hbm.xml"/>
     <mapping resource="com/venus/model/impl/UserImpl.hbm.xml"/>

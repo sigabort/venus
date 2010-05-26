@@ -62,7 +62,7 @@ public class UserOperationsImpl implements UserOperations {
    *   <li>created(Date): The created date of this object</li>
    *   <li>lastModified(Date): The last modified date of this object</li>
    * </ul>
-   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @param session          The venus session object consisting of institute, hibernate session
    * @return                 The created/updated user object
    * @throws DataAccessException thrown when there is any error
    */
@@ -194,7 +194,7 @@ public class UserOperationsImpl implements UserOperations {
    *   <li>created(Date): The created date of this object</li>
    *   <li>lastModified(Date): The last modified date of this object</li>
    * </ul>
-   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @param session          The venus session object consisting of institute, hibernate session
    * @return                 The created/updated user object
    * @throws DataAccessException thrown when there is any error
    */
@@ -204,7 +204,7 @@ public class UserOperationsImpl implements UserOperations {
     }
     
     if (log.isDebugEnabled()) {
-      log.debug("Creating User with name: " + username + ", for institute with id: " + session.getInstituteId());
+      log.debug("Creating User with name: " + username + ", for institute with id: " + session.getInstitute().getName());
     }
     
     /* check if the user is trying to set the email/userId which is already
@@ -227,8 +227,8 @@ public class UserOperationsImpl implements UserOperations {
 
     /* set user name */
     user.setUsername(username);
-    /* set the institute Id */
-    user.setInstituteId(session.getInstituteId());
+    /* set the institute */
+    user.setInstitute(session.getInstitute());
     
     /****** set the optional parameters now *******/
     /* userId - can be user's roll number, employee id, etc */
@@ -277,7 +277,7 @@ public class UserOperationsImpl implements UserOperations {
       sess.save(user);
     }
     catch (HibernateException he) {
-      String errStr = "Unable to create user: " + username + " for institute: " + session.getInstituteId();
+      String errStr = "Unable to create user: " + username + " for institute: " + session.getInstitute().getName();
       log.error(errStr, he);
       if (txn != null && txn.isActive()) {
         txn.rollback();
@@ -318,7 +318,7 @@ public class UserOperationsImpl implements UserOperations {
    *   <li>created(Date): The created date of this object</li>
    *   <li>lastModified(Date): The last modified date of this object</li>
    * </ul>
-   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @param session          The venus session object consisting of institute, hibernate session
    * @return                 The created/updated user object
    * @throws DataAccessException thrown when there is any error
    */
@@ -476,7 +476,7 @@ public class UserOperationsImpl implements UserOperations {
     Transaction txn = null;
     if (update) {
       if (log.isDebugEnabled()) {
-        log.debug("Updating user: " + user.getUsername()+ ", in institute : " + session.getInstituteId());
+        log.debug("Updating user: " + user.getUsername()+ ", in institute : " + session.getInstitute().getName());
       }
       try{
         user.setLastModified(new Date());
@@ -485,7 +485,7 @@ public class UserOperationsImpl implements UserOperations {
         sess.update(user);
       }
       catch (HibernateException he) {
-        String errStr = "Unable to update user: " + user.getUsername() + " in institute: " + session.getInstituteId();
+        String errStr = "Unable to update user: " + user.getUsername() + " in institute: " + session.getInstitute().getName();
         log.error(errStr, he);
         if (txn != null && txn.isActive()) {
           txn.rollback();
@@ -522,14 +522,14 @@ public class UserOperationsImpl implements UserOperations {
     Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
 
     if (log.isDebugEnabled()) {
-      log.debug("Finding user with username: " + username + ", for institute with id: " + vs.getInstituteId());
+      log.debug("Finding user with username: " + username + ", for institute with id: " + vs.getInstitute().getName());
     }
 
     /* use naturalid restrictions to find the user here */
     try {
       Criteria criteria = vs.getHibernateSession().createCriteria(UserImpl.class);
       NaturalIdentifier naturalId = Restrictions.naturalId().set("username", username);
-      naturalId.set("instituteId", vs.getInstituteId());
+      naturalId.set("institute", vs.getInstitute());
       
       criteria.add(naturalId);
       criteria.setCacheable(false);
@@ -543,7 +543,7 @@ public class UserOperationsImpl implements UserOperations {
       return user;
     }
     catch (HibernateException he) {
-      String errStr = "Unable to find user with username: " + username + ", in institute with id: " + vs.getInstituteId();
+      String errStr = "Unable to find user with username: " + username + ", in institute with id: " + vs.getInstitute().getName();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
@@ -572,7 +572,7 @@ public class UserOperationsImpl implements UserOperations {
     Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
 
     if (log.isDebugEnabled()) {
-      log.debug("Finding User with userId: " + userId + ", for institute with id: " + vs.getInstituteId());
+      log.debug("Finding User with userId: " + userId + ", for institute with id: " + vs.getInstitute().getName());
     }
 
     try {
@@ -581,7 +581,7 @@ public class UserOperationsImpl implements UserOperations {
       /* find now using named query */
       Query query = sess.getNamedQuery(FIND_USER_BY_USERID_STR);
       query.setString(0, userId);
-      query.setInteger(1, vs.getInstituteId());
+      query.setInteger(1, vs.getInstitute().getID());
       
       /* get the result */
       User user = (UserImpl) query.uniqueResult();
@@ -594,7 +594,7 @@ public class UserOperationsImpl implements UserOperations {
       return user;
     }
     catch (HibernateException he) {
-      String errStr = "Unable to find user with userId: " + userId + ", in institute with id: " + vs.getInstituteId();
+      String errStr = "Unable to find user with userId: " + userId + ", in institute with id: " + vs.getInstitute().getName();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
@@ -623,7 +623,7 @@ public class UserOperationsImpl implements UserOperations {
     Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
 
     if (log.isDebugEnabled()) {
-      log.debug("Finding User with email: " + email + ", for institute with id: " + vs.getInstituteId());
+      log.debug("Finding User with email: " + email + ", for institute with id: " + vs.getInstitute().getName());
     }
 
     try {
@@ -632,7 +632,7 @@ public class UserOperationsImpl implements UserOperations {
       /* find now using named query */
       Query query = sess.getNamedQuery(FIND_USER_BY_EMAIL_STR);
       query.setString(0, email);
-      query.setInteger(1, vs.getInstituteId());
+      query.setInteger(1, vs.getInstitute().getID());
       
       /* get the result */
       User user = (UserImpl) query.uniqueResult();
@@ -645,7 +645,7 @@ public class UserOperationsImpl implements UserOperations {
       return user;
     }
     catch (HibernateException he) {
-      String errStr = "Unable to find user with email: " + email + ", in institute with id: " + vs.getInstituteId();
+      String errStr = "Unable to find user with email: " + email + ", in institute with id: " + vs.getInstitute().getName();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
@@ -685,7 +685,7 @@ public class UserOperationsImpl implements UserOperations {
       Criteria c = sess.createCriteria(UserImpl.class);
 
       /* set the institute id */
-      c.add(Expression.eq("instituteId", vs.getInstituteId()));
+      c.add(Expression.eq("institute", vs.getInstitute()));
       
       /* set the condition on status, if we need only active users */
       if (onlyActive) {
@@ -707,7 +707,7 @@ public class UserOperationsImpl implements UserOperations {
       return c.list();
     }
     catch (HibernateException he) {
-      String errStr = "Unable to get users, with institute id: " + vs.getInstituteId();
+      String errStr = "Unable to get users, with institute id: " + vs.getInstitute().getName();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
@@ -737,7 +737,7 @@ public class UserOperationsImpl implements UserOperations {
     Transaction txn = null;
     if (update) {
       if (log.isDebugEnabled()) {
-        log.debug("Changing the status for user: " + user.getUsername() + ", in institute with id: " + user.getInstituteId());
+        log.debug("Changing the status for user: " + user.getUsername() + ", in institute with id: " + user.getInstitute().getName());
       }
       try {
         /* change the last modified date */
@@ -748,7 +748,7 @@ public class UserOperationsImpl implements UserOperations {
         sess.update(user);
       }
       catch (HibernateException he) {
-        String errStr = "Unable to change the status for user: " + user.getUsername() + ", in institute with id: " + user.getInstituteId();
+        String errStr = "Unable to change the status for user: " + user.getUsername() + ", in institute with id: " + user.getInstitute().getName();
         log.error(errStr, he);
         if (txn != null && txn.isActive()) {
           txn.rollback();
@@ -791,7 +791,7 @@ public class UserOperationsImpl implements UserOperations {
       Criteria c = sess.createCriteria(UserImpl.class);
 
       /* set the institute id */
-      c.add(Expression.eq("instituteId", vs.getInstituteId()));
+      c.add(Expression.eq("institute", vs.getInstitute()));
       
       /* set the condition on status, if we need only active users */
       if (onlyActive) {
@@ -806,7 +806,7 @@ public class UserOperationsImpl implements UserOperations {
       return ((Number)c.uniqueResult()).intValue();
     }
     catch (HibernateException he) {
-      String errStr = "Unable to get users count, with institute id: " + vs.getInstituteId();
+      String errStr = "Unable to get users count, with institute id: " + vs.getInstitute().getName();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }

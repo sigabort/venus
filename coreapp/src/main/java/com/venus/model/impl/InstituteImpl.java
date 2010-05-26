@@ -1,7 +1,6 @@
 package com.venus.model.impl;
 
 import com.venus.model.Department;
-import com.venus.model.Program;
 import com.venus.model.Institute;
 
 import java.util.Date;
@@ -9,17 +8,18 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Implementation class for Department bean
+ * Implementation class for Institute bean
  * @author sigabort
  */
-public class DepartmentImpl extends BaseModelImpl implements Department {
+public class InstituteImpl extends BaseModelImpl implements Institute {
   private String name;
-  private Institute institute;
+  private String displayName;
+  private Institute parent;
   private String description;
   private String code;
   private String photoUrl;
   private String email;
-  private List<Program> programs = new ArrayList<Program>();
+  private List<Department> departments = new ArrayList<Department>();
   private Date created;
   private Date lastModified;
 
@@ -29,11 +29,17 @@ public class DepartmentImpl extends BaseModelImpl implements Department {
   public void setName(String name) {
     this.name = name;
   }
-  public Institute getInstitute() {
-    return institute;
+  public String getDisplayName() {
+    return displayName;
   }
-  public void setInstitute(Institute institute) {
-    this.institute = institute;
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
+  public Institute getParent() {
+    return parent;
+  }
+  public void setParent(Institute parent) {
+    this.parent = parent;
   }
   public String getDescription() {
     return description;
@@ -59,11 +65,11 @@ public class DepartmentImpl extends BaseModelImpl implements Department {
   public void setEmail(String email) {
     this.email = email;
   }
-  public List<Program> getPrograms() {
-    return programs;
+  public List<Department> getDepartments() {
+    return departments;
   }
-  public void setPrograms(List<Program> programs) {
-    this.programs = programs;
+  public void setDepartments(List<Department> departments) {
+    this.departments = departments;
   }
   public Date getCreated() {
     return created;

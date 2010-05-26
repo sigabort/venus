@@ -13,15 +13,17 @@
     <natural-id>  
       <!-- XXX: Institute is not yet implemented. So we will use
       simple int type here -->
-      
+            
       <!-- The institute to which this user belongs to -->
-      <property name="instituteId" type="int" update="true" insert="true">
-	<column name="instituteid" not-null="true" unique="false" unique-key="IDX_USER_INSTITUTE_EMAIL,IDX_USER_INSTITUTE_USERID"/>
-      </property>
-      
+     <many-to-one name="institute" cascade="none" outer-join="false"
+                      foreign-key="FK1_INSTITUTE_USER"
+                      class="com.venus.model.impl.InstituteImpl">
+        <column name="institute" not-null="true" unique-key="IDX_USER_INSTITUTE_EMAIL,IDX_USER_INSTITUTE_USERID"/>
+      </many-to-one>
+            
       <!-- Unique username in the institute -->
       <property name="username" type="string" length="128" update="true" insert="true">
-	<column name="username" not-null="true" sql-type="varchar(128)" unique="false"/>
+      	<column name="username" not-null="true" sql-type="varchar(128)" unique="false"/>
       </property>
     </natural-id>
 
@@ -96,7 +98,7 @@
   <query name="findUserByEmail">
     <![CDATA[
   	from UserImpl as u
-  	where u.email=? and u.instituteId=?
+  	where u.email=? and u.institute=?
       ]]>
   </query>
   
@@ -104,7 +106,7 @@
    <query name="findUserByUserId">
     <![CDATA[
   	from UserImpl as u
-  	where u.userId=? and u.instituteId=?
+  	where u.userId=? and u.institute=?
       ]]>
   </query>
 

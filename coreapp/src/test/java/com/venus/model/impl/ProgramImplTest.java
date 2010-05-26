@@ -11,6 +11,7 @@ import org.hibernate.Transaction;
 
 import com.venus.model.Program;
 import com.venus.model.Department;
+import com.venus.model.Institute;
 import com.venus.model.Status;
 import com.venus.util.VenusSession;
 import com.venus.util.VenusSessionFactory;
@@ -23,10 +24,11 @@ public class ProgramImplTest extends BaseImplTest {
   @Before
   public void setUp() {
     vs = getVenusSession();
-    /* XXX: we need to set this by creating actual institute */
-    vs.setInstituteId(1);
-//     vs.setInstitute(institute);
+    String name = "PgmImplTest-" + getRandomString();
+    Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.save(institute);
+    vs.setInstitute(institute);
   }
 
   @Test

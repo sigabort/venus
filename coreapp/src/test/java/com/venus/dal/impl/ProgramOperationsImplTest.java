@@ -13,11 +13,13 @@ import org.hibernate.Transaction;
 
 import com.venus.model.Program;
 import com.venus.model.Status;
+import com.venus.model.Institute;
 import com.venus.model.Department;
 import com.venus.util.VenusSession;
 
 import com.venus.model.impl.BaseImplTest;
 import com.venus.model.impl.DepartmentImplTest;
+import com.venus.model.impl.InstituteImplTest;
 
 public class ProgramOperationsImplTest extends BaseImplTest {
   private ProgramOperationsImpl pol;
@@ -29,11 +31,11 @@ public class ProgramOperationsImplTest extends BaseImplTest {
   public void setUp() {
     pol = new ProgramOperationsImpl();
     vs = getVenusSession();
-    /* XXX: we need to do this after creating the institute */
-    Integer randInt = new Random(new Random().nextLong()).nextInt();
-    vs.setInstituteId(randInt);
-//     vs.setInstitute(institute);
+    String name = "PgmOpsImplTest-" + getRandomString();
+    Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.save(institute);
+    vs.setInstitute(institute);
     Transaction txn = sess.beginTransaction();
     testDept = DepartmentImplTest.createTestDepartment("ProgramOpsImplTest-" + getRandomString(), vs);
     sess.save(testDept);

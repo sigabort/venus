@@ -4,26 +4,30 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Department bean representing the Department in an institute
+ * Institute bean representing the an institute
  * @author sigabort
  */
-public interface Department extends BaseModel {
+public interface Institute extends BaseModel {
 
   public abstract String getName();
 
   public abstract void setName(String name);
+  
+  public abstract String getCode();
 
-  public abstract Institute getInstitute();
+  public abstract void setCode(String code);  
 
-  public abstract void setInstitute(Institute institute);
+  public abstract String getDisplayName();
+
+  public abstract void setDisplayName(String displayName);
+
+  public abstract Institute getParent();
+
+  public abstract void setParent(Institute parent);
 
   public abstract String getDescription();
 
   public abstract void setDescription(String description);
-
-  public abstract String getCode();
-
-  public abstract void setCode(String code);
 
   public abstract String getPhotoUrl();
 
@@ -33,10 +37,6 @@ public interface Department extends BaseModel {
 
   public abstract void setEmail(String email);
   
-  public abstract void setPrograms(List<Program> programs);
-
-  public abstract List<Program> getPrograms();
-
   public abstract Date getCreated();
 
   public abstract void setCreated(Date created);

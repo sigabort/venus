@@ -29,7 +29,7 @@ public interface DepartmentOperations {
    *   <li>created(Date): The created date of the department</li>
    *   <li>lastModified(Date): The last modified date of the department</li>
    * </ul>
-   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @param session          The venus session object consisting of institute, hibernate session
    * @return                 The created/updated department object
    * @throws DataAccessException thrown when there is any error
    */

@@ -4,6 +4,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
+import com.venus.model.Institute;
 
 public class VenusSessionFactory {
   
@@ -15,9 +16,9 @@ public class VenusSessionFactory {
     return vs;
   }
 
-  public static VenusSession getVenusSession(Integer instituteId) {
+  public static VenusSession getVenusSession(Institute institute) {
     VenusSession vs = getVenusSession();
-    vs.setInstituteId(instituteId);
+    vs.setInstitute(institute);
     return vs;
   }
   

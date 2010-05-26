@@ -13,12 +13,14 @@ import org.junit.Assert;
 import org.hibernate.Session;
 
 import com.venus.model.Department;
+import com.venus.model.Institute;
 import com.venus.model.Status;
 import com.venus.util.VenusSession;
 import com.venus.dal.DataAccessException;
 import com.venus.dal.DepartmentOperations;
 
 import com.venus.model.impl.BaseImplTest;
+import com.venus.model.impl.InstituteImplTest;
 
 public class DepartmentOperationsImplTest extends BaseImplTest {
   private static DepartmentOperationsImpl dol;
@@ -29,11 +31,11 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
   public void setUp() {
     dol = new DepartmentOperationsImpl();
     vs = getVenusSession();
-    /* XXX: we need to do this after creating the institute */
-    Integer randInt = new Random(new Random().nextLong()).nextInt();
-    vs.setInstituteId(randInt);
-//     vs.setInstitute(institute);
+    String name = "deptOpsImplTest-" + getRandomString();
+    Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.save(institute);
+    vs.setInstitute(institute);
   }
 
   /* create and test department */
@@ -55,7 +57,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params, dept);
    
    Assert.assertEquals("department name", name, dept.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept.getInstitute().getID());
    Assert.assertEquals("department status", (int)Status.Deleted.ordinal(), (int)dept.getStatus());
    Assert.assertEquals("department created date", created, dept.getCreated());
    Assert.assertEquals("department last modified date", lastModified, dept.getLastModified());
@@ -71,11 +73,11 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
 
    /* validate the optional fields of the dept object */
    /* As we set the code even if it is not passed, lets add it to the optional params */
-   Map<String, Object> params = buildOptionalParams(name + "-" + vs.getInstituteId(), null, null, null, null, null, null);
+   Map<String, Object> params = buildOptionalParams(name + "-" + vs.getInstitute().getName(), null, null, null, null, null, null);
    validateDepartmentOptionalFields(params, dept);
    
    Assert.assertEquals("department name", name, dept.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept.getInstitute().getID());
    Assert.assertEquals("department status", (int)Status.Active.ordinal(), (int)dept.getStatus());
    Assert.assertNotNull("department created date", dept.getCreated());
    Assert.assertNotNull("department last modified date", dept.getLastModified());
@@ -101,7 +103,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params, dept);
    
    Assert.assertEquals("department name", name, dept.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept.getInstitute().getID());
    Assert.assertEquals("department status", (int)Status.Active.ordinal(), (int)dept.getStatus());
    Assert.assertEquals("department created date", created, dept.getCreated());
    Assert.assertEquals("department lastModified date", lastModified, dept.getLastModified());
@@ -120,7 +122,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(newParams, dept1);
 
    Assert.assertEquals("department name", name, dept1.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept1.getInstitute().getID());
    Assert.assertEquals("department status", (int)Status.Active.ordinal(), (int)dept1.getStatus());
    Assert.assertEquals("department created date", created, dept1.getCreated());
    Assert.assertNotNull("department last modified date", dept1.getLastModified());
@@ -159,7 +161,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params, dept);
    
    Assert.assertEquals("department name", name, dept.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept.getInstitute().getID());
    Assert.assertEquals("department status", (int)Status.Active.ordinal(), (int)dept.getStatus());
    Assert.assertNotNull("department created date", dept.getCreated());
    Assert.assertNotNull("department lastModified date", dept.getLastModified());
@@ -202,7 +204,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params, dept);
    
    Assert.assertEquals("department name", name, dept.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept.getInstitute().getID());
    Assert.assertEquals("department status", (int)Status.Suspended.ordinal(), (int)dept.getStatus());
    Assert.assertNotNull("department created date", dept.getCreated());
    Assert.assertNotNull("department lastModified date", dept.getLastModified());
@@ -217,7 +219,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    Assert.assertNotNull(dept2);
 
    Assert.assertEquals("department name", name, dept2.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept2.getInstitute().getID());
    Assert.assertEquals("department status", (int)Status.Suspended.ordinal(), (int)dept2.getStatus());
 
    /* check with findDepartmentByCode */
@@ -230,7 +232,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    Assert.assertNotNull(dept2);
 
    Assert.assertEquals("department name", name, dept2.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept2.getInstitute().getID());
    Assert.assertEquals("department status", (int)Status.Suspended.ordinal(), (int)dept2.getStatus());
   }
 
@@ -251,7 +253,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params, dept);
 
    Assert.assertEquals("department name", name, dept.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept.getInstitute().getID());
    Assert.assertNotNull("department created date", dept.getCreated());
    Assert.assertNotNull("department lastModified date", dept.getLastModified());
 
@@ -278,7 +280,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params, dept);
    
    Assert.assertEquals("department name", name, dept.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept.getInstitute().getID());
    Assert.assertNotNull("department created date", dept.getCreated());
    Assert.assertNotNull("department last modified date", dept.getLastModified());
 
@@ -299,7 +301,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(newParams, dept1);
    
    Assert.assertEquals("department name", name, dept1.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept1.getInstitute().getID());
    Assert.assertNotNull("department created date", dept1.getCreated());
    Assert.assertNotNull("department last modified date", dept1.getLastModified());
   }
@@ -322,7 +324,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params, dept);
    
    Assert.assertEquals("department name", name, dept.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept.getInstitute().getID());
    Assert.assertNotNull("department created date", dept.getCreated());
    Assert.assertNotNull("department last modified date", dept.getLastModified());
 
@@ -355,7 +357,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params1, dept1);
    
    Assert.assertEquals("department name", name1, dept1.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept1.getInstitute().getID());
    Assert.assertNotNull("department created date", dept1.getCreated());
    Assert.assertNotNull("department last modified date", dept1.getLastModified());
 
@@ -368,7 +370,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params2, dept2);
    
    Assert.assertEquals("department name", name2, dept2.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept2.getInstitute().getID());
    Assert.assertNotNull("department created date", dept2.getCreated());
    Assert.assertNotNull("department last modified date", dept2.getLastModified());
 
@@ -390,8 +392,6 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String photoUrl = name + "-url";
    String email = name + "-email";
    Integer randInt = new Random(new Random().nextLong()).nextInt();
-   /* Set the new institue ID */
-   vs.setInstituteId(randInt);
 
    Map<String, Object> params1 = buildOptionalParams(code1, desc1, photoUrl, email, null, null, null);
 
@@ -403,7 +403,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params1, dept1);
    
    Assert.assertEquals("department name", name1, dept1.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept1.getInstitute().getID());
 
    /* create another department */
    Map<String, Object> params2 = buildOptionalParams(code2, desc2, photoUrl, email, null, null, null);
@@ -414,7 +414,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params2, dept2);
    
    Assert.assertEquals("department name", name2, dept2.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept2.getInstitute().getID());
 
    /* fetch the departments now */
    List<Department> list = dol.getDepartments(0, 10, null, vs);
@@ -460,8 +460,6 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String photoUrl = name + "-url";
    String email = name + "-email";
    Integer randInt = new Random(new Random().nextLong()).nextInt();
-   /* Set the new institue ID */
-   vs.setInstituteId(randInt);
 
    Map<String, Object> params1 = buildOptionalParams(code1, desc1, photoUrl, email, null, null, null);
 
@@ -473,7 +471,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params1, dept1);
    
    Assert.assertEquals("department name", name1, dept1.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept1.getInstitute().getID());
 
    /* create another department */
    Map<String, Object> params2 = buildOptionalParams(code2, desc2, photoUrl, email, null, null, null);
@@ -484,7 +482,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params2, dept2);
    
    Assert.assertEquals("department name", name2, dept2.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept2.getInstitute().getID());
 
    /* fetch the departments now */
    List<Department> list = dol.getDepartments(0, 10, null, vs);
@@ -555,8 +553,6 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String photoUrl = name + "-url";
    String email = name + "-email";
    Integer randInt = new Random(new Random().nextLong()).nextInt();
-   /* Set the new institue ID */
-   vs.setInstituteId(randInt);
 
    Map<String, Object> params1 = buildOptionalParams(code1, desc1, photoUrl, email, null, null, null);
 
@@ -568,7 +564,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params1, dept1);
    
    Assert.assertEquals("department name", name1, dept1.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept1.getInstitute().getID());
 
    /* create another department */
    Map<String, Object> params2 = buildOptionalParams(code2, desc2, photoUrl, email, null, null, null);
@@ -579,7 +575,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params2, dept2);
    
    Assert.assertEquals("department name", name2, dept2.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept2.getInstitute().getID());
 
    /* fetch the departments now */
    List<Department> list = dol.getDepartments(0, 10, null, vs);
@@ -620,8 +616,6 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    String photoUrl = name + "-url";
    String email = name + "-email";
    Integer randInt = new Random(new Random().nextLong()).nextInt();
-   /* Set the new institue ID */
-   vs.setInstituteId(randInt);
 
    Map<String, Object> params1 = buildOptionalParams(code1, desc1, photoUrl, email, null, null, null);
 
@@ -633,7 +627,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params1, dept1);
    
    Assert.assertEquals("department name", name1, dept1.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept1.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept1.getInstitute().getID());
 
    /* create another department */
    Map<String, Object> params2 = buildOptionalParams(code2, desc2, photoUrl, email, null, null, null);
@@ -644,7 +638,7 @@ public class DepartmentOperationsImplTest extends BaseImplTest {
    validateDepartmentOptionalFields(params2, dept2);
    
    Assert.assertEquals("department name", name2, dept2.getName());
-   Assert.assertEquals("department institute Id", vs.getInstituteId(), dept2.getInstituteId());
+   Assert.assertEquals("department institute Id", vs.getInstitute().getID(), dept2.getInstitute().getID());
 
    /* get the departments count now */
    Integer count = dol.getDepartmentsCount(null, vs);

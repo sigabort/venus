@@ -33,7 +33,7 @@ public interface UserRoleOperations {
    *   <li>created(Date): The created date of this object</li>
    *   <li>lastModified(Date): The last modified date of this object</li>
    * </ul>
-   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @param session          The venus session object consisting of institute, hibernate session
    * @return                 The created/updated user role object
    * @throws DataAccessException thrown when there is any error
    */

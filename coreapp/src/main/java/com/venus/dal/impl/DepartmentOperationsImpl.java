@@ -52,7 +52,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
    *   <li>created(Date): The created date of the department</li>
    *   <li>lastModified(Date): The last modified date of the department</li>
    * </ul>
-   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @param session          The venus session object consisting of institute, hibernate session
    * @return                 The created/updated department object
    * @throws DataAccessException thrown when there is any error
    */
@@ -106,7 +106,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
    *   <li>created(Date): The created date of the department</li>
    *   <li>lastModified(Date): The last modified date of the department</li>
    * </ul>
-   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @param session          The venus session object consisting of institute, hibernate session
    * @return                 The created department object
    * @throws DataAccessException thrown when there is any error
    */
@@ -117,19 +117,19 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     }
     
     if (log.isDebugEnabled()) {
-      log.debug("Creating Department with name: " + name + ", for institute with id: " + session.getInstituteId());
+      log.debug("Creating Department with name: " + name + ", for institute with id: " + session.getInstitute().getName());
     }
 
     /* create new object */
     Department dept = new DepartmentImpl();
     dept.setName(name);
 
-    /* set the institute Id */
-    dept.setInstituteId(session.getInstituteId());
+    /* set the institute */
+    dept.setInstitute(session.getInstitute());
 
     /****** set the optional parameters now *******/
-    /* code - uniquely identifying the department. If not set, use name+"-"+InstituteId for now */
-    dept.setCode(OperationsUtilImpl.getStringValue("code", optionalParams, name + "-" + session.getInstituteId()));
+    /* code - uniquely identifying the department. If not set, use name+"-"+Institute name for now */
+    dept.setCode(OperationsUtilImpl.getStringValue("code", optionalParams, name + "-" + session.getInstitute().getName()));
     /* description of the department */
     dept.setDescription(OperationsUtilImpl.getStringValue("description", optionalParams, null));
     dept.setPhotoUrl(OperationsUtilImpl.getStringValue("photoUrl", optionalParams, null));
@@ -148,7 +148,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       sess.save(dept);
     }
     catch (HibernateException he) {
-      String errStr = "Unable to create department: " + name + ", for institute: " + session.getInstituteId();
+      String errStr = "Unable to create department: " + name + ", for institute: " + session.getInstitute().getName();
       if (txn != null && txn.isActive()) {
 	txn.rollback();
       }
@@ -178,7 +178,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
    *   <li>created(Date): The created date of the department</li>
    *   <li>lastModified(Date): The last modified date of the department</li>
    * </ul>
-   * @param session          The venus session object consisting of instituteId, hibernate session
+   * @param session          The venus session object consisting of institute, hibernate session
    * @return                 The updated department object
    * @throws DataAccessException thrown when there is any error
    */
@@ -228,7 +228,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     /* is update needed? */
     if (update) {
       if (log.isDebugEnabled()) {
-	log.debug("Updating Department with name: " + dept.getName() + ", for institute with id: " + dept.getInstituteId());
+	log.debug("Updating Department with name: " + dept.getName() + ", for institute with id: " + dept.getInstitute().getName());
       }
       Transaction txn = null;
       try {
@@ -239,7 +239,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
 	sess.update(dept);
       }
       catch (HibernateException he) {
-	String errStr = "Unable to update department: " + dept.getName() + ", for institute: " + dept.getInstituteId();
+	String errStr = "Unable to update department: " + dept.getName() + ", for institute: " + dept.getInstitute().getName();
 	if (txn != null && txn.isActive()) {
 	  txn.rollback();
 	}
@@ -277,14 +277,14 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
 
     if (log.isDebugEnabled()) {
-      log.debug("Finding Department with name: " + name + ", for institute with id: " + vs.getInstituteId());
+      log.debug("Finding Department with name: " + name + ", for institute with id: " + vs.getInstitute().getName());
     }
 
     /* use naturalid restrictions to find the department here */
     try {
       Criteria criteria = vs.getHibernateSession().createCriteria(DepartmentImpl.class);
       NaturalIdentifier naturalId = Restrictions.naturalId().set("name", name);
-      naturalId.set("instituteId", vs.getInstituteId());
+      naturalId.set("institute", vs.getInstitute());
       
       criteria.add(naturalId);
       criteria.setCacheable(false);
@@ -298,7 +298,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       return dept;
     }
     catch (HibernateException he) {
-      String errStr = "Unable to find department with name: " + name + ", in institute with id: " + vs.getInstituteId();
+      String errStr = "Unable to find department with name: " + name + ", in institute with id: " + vs.getInstitute();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
@@ -326,16 +326,16 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
 
     if (log.isDebugEnabled()) {
-      log.debug("Finding Department with code: " + code + ", for institute with id: " + vs.getInstituteId());
+      log.debug("Finding Department with code: " + code + ", for institute with id: " + vs.getInstitute());
     }
 
     try {
       /* get hibernate session */
       Session sess = vs.getHibernateSession();
       /* create query */
-      Query query = sess.createQuery("from DepartmentImpl dept where dept.code=:code and dept.instituteId=:instituteId ");
+      Query query = sess.createQuery("from DepartmentImpl dept where dept.code=:code and dept.institute=:institute ");
       query.setString("code", code);
-      query.setInteger("instituteId", vs.getInstituteId());
+      query.setEntity("institute", vs.getInstitute());
 
       /* find now */
       Department dept = (Department)query.uniqueResult();
@@ -348,7 +348,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       return dept;
     }
     catch (HibernateException he) {
-      String errStr = "Unable to find department with code: " + code + ", in institute with id: " + vs.getInstituteId();
+      String errStr = "Unable to find department with code: " + code + ", in institute with id: " + vs.getInstitute();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
@@ -376,7 +376,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     Transaction txn = null;
     if (update) {
       if (log.isDebugEnabled()) {
-        log.debug("Changing the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstituteId());
+        log.debug("Changing the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstitute());
       }
       try {
         dept.setLastModified(new Date());
@@ -386,7 +386,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
         sess.update(dept);
       }
       catch (HibernateException he) {
-        String errStr = "Unable to change the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstituteId();
+        String errStr = "Unable to change the status for department: " + dept.getName() + ", in institute with id: " + dept.getInstitute();
         log.error(errStr, he);
         if (txn != null && txn.isActive()) {
           txn.rollback();
@@ -433,7 +433,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       Criteria c = sess.createCriteria(DepartmentImpl.class);
 
       /* set the institute id */
-      c.add(Expression.eq("instituteId", vs.getInstituteId()));
+      c.add(Expression.eq("institute", vs.getInstitute()));
       
       /* set the condition on status, if we need only active departments */
       if (onlyActive) {
@@ -455,7 +455,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       return c.list();
     }
     catch (HibernateException he) {
-      String errStr = "Unable to get departments, with institute id: " + vs.getInstituteId();
+      String errStr = "Unable to get departments, with institute id: " + vs.getInstitute();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }
@@ -489,7 +489,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       Criteria c = sess.createCriteria(DepartmentImpl.class);
 
       /* set the institute id */
-      c.add(Expression.eq("instituteId", vs.getInstituteId()));
+      c.add(Expression.eq("institute", vs.getInstitute()));
       
       /* set the condition on status, if we need only active departments */
       if (onlyActive) {
@@ -504,7 +504,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
       return ((Number)c.uniqueResult()).intValue();
     }
     catch (HibernateException he) {
-      String errStr = "Unable to get departments count, with institute id: " + vs.getInstituteId();
+      String errStr = "Unable to get departments count, with institute id: " + vs.getInstitute();
       log.error(errStr, he);
       throw new DataAccessException(errStr, he);
     }

@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="com.venus.model.impl.InstituteImpl" table="institutes">
+
+    <!-- auto generated id -->
+    <id name="ID" type="int" column="id" >
+      <generator class="native"/>
+    </id>
+    
+    <!-- Unique institute name -->
+    <property name="name" type="string" length="128" update="true" insert="true">
+      <column name="name" not-null="true" sql-type="varchar(128)" unique="true"/>
+    </property>
+
+    <!-- Unique institute's code -->
+    <property name="code" type="string" length="128" update="true" insert="true">
+      <column name="code" not-null="false" sql-type="varchar(128)" unique="true"/>
+    </property>
+
+    <!-- institute's display name -->
+    <property name="displayName" type="string" update="true" insert="true">
+      <column name="displayname" not-null="false" unique="false"/>
+    </property>
+
+    <!-- institute's description -->
+    <property name="description" type="string" update="true" insert="true">
+      <column name="description" not-null="false" unique="false"/>
+    </property>
+
+    <!-- institute's photo url -->
+    <property name="photoUrl" type="string" update="true" insert="true">
+      <column name="photourl" not-null="false" unique="false"/>
+    </property>
+
+    <!-- institute's email id -->
+    <property name="email" type="string" update="true" insert="true">
+      <column name="email" not-null="false" unique="false"/>
+    </property>
+
+    <!-- institute's parent (if any) -->
+    <many-to-one name="parent" cascade="none" outer-join="false"
+                    foreign-key="FK1_INSTITUTE_PARENT_ID"
+                    class="com.venus.model.impl.InstituteImpl">
+      <column name="parent" not-null="false"/>
+    </many-to-one>
+
+    <!-- institute's departments --><!--
+    <bag name="departments" cascade="none" inverse="true" batch-size="10">
+      <key column="institute" />
+      <one-to-many class="com.venus.model.impl.DepartmentImpl" />
+    </bag>
+
+    --><!-- the status of institute -->
+    <property name="status" type="int" update="true" insert="true" 
+        column="status" not-null="true" unique="false" />
+
+    <!-- created time of the object  -->
+    <property name="created" type="java.util.Date" update="true" insert="true"
+        column="created" unique="false" not-null="true" />
+    
+    <!-- last modified time of the object  -->
+    <property name="lastModified" type="java.util.Date" update="true"
+      insert="true" column="lastmodified" unique="false" not-null="true" />
+
+  </class>
+
+</hibernate-mapping>

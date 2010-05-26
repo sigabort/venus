@@ -2,10 +2,11 @@ package com.venus.util;
 
 import org.hibernate.Session;
 
+import com.venus.model.Institute;
+
 public class VenusSession {
   private Session session;
-  private Integer instituteId;
-//   private Institute institute;
+  private Institute institute;
   
   public Session getHibernateSession() {
     return this.session;
@@ -13,21 +14,13 @@ public class VenusSession {
   public void setHibernateSession(Session session) {
     this.session = session;
   }
-
-  public Integer getInstituteId() {
-    return this.instituteId;
+ 
+  public Institute getInstitute() {
+    return this.institute;
   }
   
-  public void setInstituteId(Integer instituteId) {
-    this.instituteId = instituteId;
+  public void setInstitute(Institute institute) {
+    this.institute = institute;
   }
-
-//   public Institute getInstitute() {
-//     return this.institute;
-//   }
-  
-//   public void setInstitute(Institute institute) {
-//     this.institute = institute;
-//   }
   
 }

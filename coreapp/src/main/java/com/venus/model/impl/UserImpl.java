@@ -1,12 +1,13 @@
 package com.venus.model.impl;
 
 import com.venus.model.User;
+import com.venus.model.Institute;
 
 import java.util.Date;
 
 public class UserImpl extends BaseModelImpl implements User {
   private String username;
-  private Integer instituteId;
+  private Institute institute;
   private String userId;
   private String password;
   private String firstName;
@@ -32,11 +33,11 @@ public class UserImpl extends BaseModelImpl implements User {
   public void setUsername(String username) {
     this.username = username;
   }
-  public Integer getInstituteId() {
-    return instituteId;
+  public Institute getInstitute() {
+    return institute;
   }
-  public void setInstituteId(Integer instituteId) {
-    this.instituteId = instituteId;
+  public void setInstitute(Institute institute) {
+    this.institute = institute;
   }
   public String getUserId() {
     return userId;

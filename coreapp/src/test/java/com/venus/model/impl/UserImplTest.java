@@ -9,6 +9,7 @@ import java.util.Date;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.venus.model.Institute;
 import com.venus.model.User;
 import com.venus.model.Status;
 import com.venus.util.VenusSession;
@@ -22,10 +23,11 @@ public class UserImplTest extends BaseImplTest {
   @Before
   public void setUp() {
     vs = getVenusSession();
-    /* XXX: we need to set this by creating actual institute */
-    vs.setInstituteId(1);
-//     vs.setInstitute(institute);
+    String name = "UserImplTest-" + getRandomString();
+    Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.save(institute);
+    vs.setInstitute(institute);
   }
 
   @Test
@@ -34,7 +36,7 @@ public class UserImplTest extends BaseImplTest {
 
    User user = new UserImpl();
    user.setUsername("ravi-" + getRandomString());
-   user.setInstituteId(vs.getInstituteId());
+   user.setInstitute(vs.getInstitute());
    user.setFirstName("ravi");
    user.setLastName("ravi");
    user.setStatus(Status.Active.ordinal());

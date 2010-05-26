@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.venus.model.Department;
+import com.venus.model.Institute;
 import com.venus.model.Status;
 import com.venus.util.VenusSession;
 import com.venus.util.VenusSessionFactory;
@@ -22,10 +23,11 @@ public class DepartmentImplTest extends BaseImplTest {
   @Before
   public void setUp() {
     vs = getVenusSession();
-    /* XXX: we need to set this by creating actual institute */
-    vs.setInstituteId(1);
-//     vs.setInstitute(institute);
+    String name = "deptImplTest-" + getRandomString();
+    Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.save(institute);
+    vs.setInstitute(institute);
   }
 
   @Test
@@ -48,7 +50,7 @@ public class DepartmentImplTest extends BaseImplTest {
 
     Department dept = new DepartmentImpl();
     dept.setName(name);
-    dept.setInstituteId(vs.getInstituteId());
+    dept.setInstitute(vs.getInstitute());
     dept.setCode(code);
     dept.setDescription(desc);
     dept.setPhotoUrl(photoUrl);

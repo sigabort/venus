@@ -8,9 +8,9 @@ public interface User extends BaseModel {
 
   public abstract void setUsername(String username);
 
-  public abstract Integer getInstituteId();
+  public abstract Institute getInstitute();
 
-  public abstract void setInstituteId(Integer instituteId);
+  public abstract void setInstitute(Institute institute);
 
   public abstract String getUserId();
 

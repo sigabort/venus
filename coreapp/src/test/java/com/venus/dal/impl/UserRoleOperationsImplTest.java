@@ -16,12 +16,14 @@ import org.hibernate.Session;
 import com.venus.model.User;
 import com.venus.model.UserRole;
 import com.venus.model.Role;
+import com.venus.model.Institute;
 import com.venus.model.Department;
 import com.venus.model.Status;
 import com.venus.util.VenusSession;
 import com.venus.dal.DataAccessException;
 
 import com.venus.model.impl.BaseImplTest;
+import com.venus.model.impl.InstituteImplTest;
 
 /**
  * Class containing tests for {@link UserRoleOperations}
@@ -40,11 +42,11 @@ public class UserRoleOperationsImplTest extends BaseImplTest {
   public void setUp() throws Exception {
     uro = new UserRoleOperationsImpl();
     vs = getVenusSession();
-    /* XXX: we need to do this after creating the institute */
-    rand = getRandomNumber();
-    vs.setInstituteId(rand);
-//     vs.setInstitute(institute);
+    String name = "UsrRolesOpImplTest-" + getRandomString();
+    Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.save(institute);
+    vs.setInstitute(institute);
     testUser = UserOperationsImplTest.createTestUser(getRandomString(), vs);
     testDept = DepartmentOperationsImplTest.createTestDepartment(getRandomString(), vs);
   }
