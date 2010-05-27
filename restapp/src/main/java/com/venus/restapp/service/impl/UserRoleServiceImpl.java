@@ -47,7 +47,7 @@ public class UserRoleServiceImpl implements UserRoleService {
   private UserService userService;
   
   private UserRoleOperations uro = new UserRoleOperationsImpl();
-  private VenusSession vs = VenusSessionFactory.getVenusSession(new Integer(1));
+  private VenusSession vs = VenusSessionFactory.getVenusSession(null);
   private static final Logger log = Logger.getLogger(UserRoleService.class);
 
   /**

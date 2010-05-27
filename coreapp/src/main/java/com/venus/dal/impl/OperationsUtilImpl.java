@@ -119,4 +119,23 @@ public class OperationsUtilImpl {
     }
     return def;    
   }
+  
+  /**
+   * Get object from the map
+   * @param name      The name of the parameter
+   * @param params    The map of the parameters to retrieve the parameter from
+   * @param def       The default value, if the param is not found in the map
+   * @return          The value from the list for the param, default otherwise
+   */
+  public static Object getObject(String name, Map<String, Object> params, Object def) {
+    if (params != null) {
+      Object value = (Object) params.get(name);
+      if (value != null) {
+        return value;
+      }
+    }
+    return def;    
+  }
+  
+  
 }

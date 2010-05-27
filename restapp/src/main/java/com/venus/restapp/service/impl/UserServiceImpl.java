@@ -36,7 +36,7 @@ import org.apache.commons.lang.StringUtils;
 @Service
 public class UserServiceImpl implements UserService {
   private UserOperations uo = new UserOperationsImpl();
-  private VenusSession vs = VenusSessionFactory.getVenusSession(new Integer(1));
+  private VenusSession vs = VenusSessionFactory.getVenusSession(null);
   private static final Logger log = Logger.getLogger(UserService.class);
 
   /**

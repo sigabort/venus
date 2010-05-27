@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 public class MyAccountServiceImpl implements MyAccountService {
 
   private DepartmentOperations dol = new DepartmentOperationsImpl();
-  private VenusSession vs = VenusSessionFactory.getVenusSession(new Integer(1));
+  private VenusSession vs = VenusSessionFactory.getVenusSession(null);
   private static final Logger log = Logger.getLogger(MyAccountServiceImpl.class);
 
   public List<MyAccount> findAll() {

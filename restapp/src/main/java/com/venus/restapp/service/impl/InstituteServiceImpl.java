@@ -6,17 +6,17 @@ import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 
-import com.venus.model.Department;
-import com.venus.dal.DepartmentOperations;
+import com.venus.model.Institute;
+import com.venus.dal.InstituteOperations;
 import com.venus.dal.DataAccessException;
-import com.venus.dal.impl.DepartmentOperationsImpl;
+import com.venus.dal.impl.InstituteOperationsImpl;
 import com.venus.util.VenusSession;
 import com.venus.util.VenusSessionFactory;
 
-import com.venus.restapp.request.DepartmentRequest;
+import com.venus.restapp.request.InstituteRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.error.ResponseException;
-import com.venus.restapp.service.DepartmentService;
+import com.venus.restapp.service.InstituteService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
@@ -25,52 +25,74 @@ import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
 
 @Service
-public class DepartmentServiceImpl implements DepartmentService {
-  private DepartmentOperations dol = new DepartmentOperationsImpl();
+public class InstituteServiceImpl implements InstituteService {
+  private InstituteOperations iol = new InstituteOperationsImpl();
   private VenusSession vs = VenusSessionFactory.getVenusSession(null);
-  private static final Logger log = Logger.getLogger(DepartmentService.class);
+  private static final Logger log = Logger.getLogger(InstituteService.class);
 
-  public Department createUpdateDepartment(DepartmentRequest req) throws ResponseException {
+  public Institute createUpdateInstitute(InstituteRequest req) throws ResponseException {
     String name = req.getName();
-    Department dept = null;
+    Institute institute = null;
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("code", req.getCode());
+    params.put("displayName", req.getDisplayName());    
     params.put("description", req.getDescription());
     params.put("photoUrl", req.getPhotoUrl());
     params.put("email", req.getEmail());
+
+    /* see if the parent exists */
+    String parent = req.getParent();
+    if (!StringUtils.isBlank(parent)) {
+      Institute parentInst = null;
+      try {
+        parentInst = iol.findInstituteByName(parent, null, vs);
+      }
+      catch (DataAccessException dae) {
+        String errStr = "Error while getting parent institute : " + parent;
+        log.error(errStr, dae);
+        throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      }
+      if (parentInst == null) {
+        String errStr = "Parent institute : " + parent + " doesn't exist";
+        log.error(errStr);
+        throw new ResponseException(HttpStatus.NOT_FOUND, errStr, null, null);        
+      } 
+      params.put("parent", parentInst);
+    }
     
+    /* create/update the institute now */
     try {
-      dept  = dol.createUpdateDepartment(name, params, vs);
+      institute  = iol.createUpdateInstitute(name, params, vs);
     }
     catch (DataAccessException dae) {
-      String errStr = "Error while creating/updating department with name: " + name;
+      String errStr = "Error while creating/updating institute with name: " + name;
       log.error(errStr, dae);
       throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
     }
-    return dept;
+    return institute;
   }
 
 
-  public Department getDepartment(String name, BaseRequest request) throws ResponseException {
-    Department department = null;
+  public Institute getInstitute(String name, BaseRequest request) throws ResponseException {
+    Institute institute = null;
     try {
-      department = dol.findDepartmentByName(name, null, vs);
+      institute = iol.findInstituteByName(name, null, vs);
     }
     catch (DataAccessException dae) {
-      String errStr = "Error while getting department with name: " + name;
+      String errStr = "Error while getting institute with name: " + name;
       log.error(errStr, dae);
       throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
     }
-    return department;
+    return institute;
   }
 
   /**
-   * Get the departments
+   * Get the institutes
    * @param request        The request parameter containing the optional parameters
-   * @return               The list of departments
+   * @return               The list of institutes
    * @throws ResponseException if there is any error
    */
-  public List<Department> getDepartments(BaseRequest request) throws ResponseException {
+  public List<Institute> getInstitutes(BaseRequest request) throws ResponseException {
     int offset = request.getStartIndex();
     int maxRet = request.getItemsPerPage();
     String sortBy = request.getSortBy();
@@ -86,15 +108,15 @@ public class DepartmentServiceImpl implements DepartmentService {
      */
     if (!StringUtils.isBlank(sortBy)) {
       if (params == null) {
-	params = new HashMap<String, Object>();
+        params = new HashMap<String, Object>();
       }
       params.put("sortBy", sortBy);
       /* check whether the order is asc/desc. Default is 'asc' */
       if (StringUtils.equals("descending", sortOrder)) {
-	params.put("isAscending", Boolean.FALSE);
+        params.put("isAscending", Boolean.FALSE);
       }
       else {
-	params.put("isAscending", Boolean.TRUE);
+        params.put("isAscending", Boolean.TRUE);
       }
     }
     /* if the filterBy option is set, pass it to the DAL layer to 
@@ -102,33 +124,33 @@ public class DepartmentServiceImpl implements DepartmentService {
      */
     if (!StringUtils.isBlank(filterBy) && !StringUtils.isBlank(filterValue)) {
       if (params == null) {
-	params = new HashMap<String, Object>();
+        params = new HashMap<String, Object>();
       }
       params.put("filterBy", filterBy);
       params.put("filterValue", filterValue);
       params.put("filterOp", filterOp);
     }
 
-    /* get the departments now */
-    List<Department> departments = null;
+    /* get the institutes now */
+    List<Institute> institutes = null;
     try {
-      departments = dol.getDepartments(offset, maxRet, params, vs);
+      institutes = iol.getInstitutes(offset, maxRet, params, vs);
     }
     catch (DataAccessException dae) {
-      String errStr = "Error while getting departments";
+      String errStr = "Error while getting institutes";
       log.error(errStr, dae);
       throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
     }
-    return departments;
+    return institutes;
   }
 
   /**
-   * Get the departments count in the institute
+   * Get the institutes count
    * @param request        The request parameter containing the optional parameters
-   * @return               The count of total departments in the institute
+   * @return               The count of total institutes in the institute
    * @throws ResponseException if there is any error
    */
-  public Integer getDepartmentsCount(BaseRequest request) throws ResponseException {
+  public Integer getInstitutesCount(BaseRequest request) throws ResponseException {
    /* Time to parse the query parameters */
     Boolean onlyActive = request.getOnlyActive();
     String filterBy = request.getFilterBy();
@@ -136,7 +158,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     String filterOp = request.getFilterOp();
     
     Map<String, Object> params = new HashMap<String, Object>();
-    /* needed only count of active departments? */
+    /* needed only count of active institutes? */
     params.put("onlyActive", onlyActive);
 
     /* if the filterBy option is set, pass it to the DAL layer to 
@@ -148,13 +170,13 @@ public class DepartmentServiceImpl implements DepartmentService {
       params.put("filterOp", filterOp);
     }
 
-    /* get the departments now */
+    /* get the institutes now */
     Integer count = null;
     try {
-      count = dol.getDepartmentsCount(params, vs);
+      count = iol.getInstitutesCount(params, vs);
     }
     catch (DataAccessException dae) {
-      String errStr = "Error while getting departments count";
+      String errStr = "Error while getting institutes count";
       log.error(errStr, dae);
       throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
     }
