@@ -14,7 +14,7 @@
     <natural-id>  
     <!-- which institute, this department belongs to -->
     <many-to-one name="institute" cascade="none" outer-join="false"
-                    foreign-key="FK1_DEPARTMENT_INSTITUTE_"
+                    foreign-key="FK1_DEPARTMENT_INSTITUTE"
                     class="com.venus.model.impl.InstituteImpl">
       <column name="institute" not-null="true" unique-key="IDX_DEPT_INSTITUTE_CODE"/>
     </many-to-one>

@@ -3,6 +3,8 @@ package com.venus.restapp;
 import java.util.Map;
 import java.util.HashMap;
 
+import junit.framework.Assert;
+
 import net.sf.json.JSONObject;
 
 import org.apache.http.Header;
@@ -10,9 +12,33 @@ import org.apache.http.HttpStatus;
 
 import org.apache.log4j.Logger;
 
-public class VenusRestJSONClient extends VenusRestClient { 
+public class VenusRestJSONClient extends VenusRestClient {
   public static String JSON_EXT = ".json";
   private static final Logger log = Logger.getLogger(VenusRestJSONClient.class);
+  private static String institute = null;
+  private static String REST_REQUEST_CODE_ATTR = "__REST_REQUEST_CODE_ATTR__";  
+
+  public VenusRestJSONClient() {
+    //empty constructor
+  }
+
+  private Map<String, Object> initParams(Map<String, Object> params) {
+    if (params == null) {
+      params = new HashMap<String, Object>(1);
+    }
+    if (this.institute != null) {
+      params.put(REST_REQUEST_CODE_ATTR, this.institute);
+    }
+    return params;
+  }
+  
+  public VenusRestJSONClient(String institute) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("code", institute);
+    JSONObject resp = this.createParentInstitute(institute, params);
+    Assert.assertFalse("Creating parent institute", resp.getBoolean("error"));
+    this.institute = institute;
+  }
   
   /**
    * Create an Admin User with specified user name
@@ -22,9 +48,7 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @return           The JSON Object containing the result
    */
   public JSONObject createAdminUser(String username, Map<String, Object> params) {
-    if (params == null) {
-      params = new HashMap<String, Object>(1);
-    }
+    params = initParams(params);
     if (username != null) {
       params.put("username", username);
     }
@@ -39,9 +63,7 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @return           The JSON Object containing the result
    */
   public JSONObject createParentInstitute(String name, Map<String, Object> params) {
-    if (params == null) {
-      params = new HashMap<String, Object>(1);
-    }
+    params = initParams(params);
     if (name != null) {
       params.put("name", name);
     }
@@ -52,14 +74,11 @@ public class VenusRestJSONClient extends VenusRestClient {
   /**
    * Create Department
    * @param name        The department's name
-   * @param code        The department's code
    * @param params      Query parameters to be set
    * @return The response of the request
    */
   public JSONObject createDepartment(String name, Map<String, Object>params) {
-    if (params == null) {
-      params = new HashMap<String, Object>(1);
-    }
+    params = initParams(params);
     if (name != null) {
       params.put("name", name);
     }
@@ -75,9 +94,7 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @return The response of the request
    */
   public JSONObject getDepartment(String name, Map<String, Object>params) {
-    if (params == null) {
-      params = new HashMap<String, Object>(1);
-    }
+    params = initParams(params);
     
     VenusRestResponse resp = getRequest("/departments/" + name + JSON_EXT, params);
     return getJSONObject(resp);
@@ -89,11 +106,53 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @return The response of the request
    */
   public JSONObject getDepartments(Map<String, Object>params) {
+    params = initParams(params);
     VenusRestResponse resp = getRequest("/departments" + JSON_EXT, params);
     return getJSONObject(resp);
   }
   
- 
+
+  /**
+   * Create Institute
+   * @param name        The institute's name
+   * @param params      Query parameters to be set
+   * @return The response of the request
+   */
+  public JSONObject createInstitute(String name, Map<String, Object>params) {
+    params = initParams(params);
+    if (name != null) {
+      params.put("name", name);
+    }
+
+    VenusRestResponse resp = postRequest("/institutes/create" + JSON_EXT, params);
+    return getJSONObject(resp);
+  }
+
+  /**
+   * Get Institute
+   * @param name        The institute's name
+   * @param params      Query parameters to be set
+   * @return The response of the request
+   */
+  public JSONObject getInstitute(String name, Map<String, Object>params) {
+    params = initParams(params);
+    
+    VenusRestResponse resp = getRequest("/institutes/" + name + JSON_EXT, params);
+    return getJSONObject(resp);
+  }
+
+  /**
+   * Get all of the institutes in an institute
+   * @param params      Query parameters to be set
+   * @return The response of the request
+   */
+  public JSONObject getInstitutes(Map<String, Object>params) {
+    params = initParams(params);
+    VenusRestResponse resp = getRequest("/institutes" + JSON_EXT, params);
+    return getJSONObject(resp);
+  }
+
+  
   /**
    * Create User
    * @param username        The user's username
@@ -101,9 +160,7 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @return The response of the request
    */
   public JSONObject createUser(String username, Map<String, Object>params) {
-    if (params == null) {
-      params = new HashMap<String, Object>(1);
-    }
+    params = initParams(params);
     if (username != null) {
       params.put("username", username);
     }
@@ -118,6 +175,7 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @return The response of the request
    */
   public JSONObject getUser(String username, Map<String, Object>params) {    
+    params = initParams(params);
     VenusRestResponse resp = getRequest("/users/" + username + JSON_EXT, params);
     return getJSONObject(resp);
   }
@@ -129,9 +187,7 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @return The response of the request
    */
   public JSONObject createUserRoles(String username, Map<String, Object>params) {
-    if (params == null) {
-      params = new HashMap<String, Object>(1);
-    }
+    params = initParams(params);
     if (username != null) {
       params.put("username", username);
     }
@@ -147,6 +203,7 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @return The response of the request
    */
   public JSONObject getUserRoles(String username, Map<String, Object>params) {    
+    params = initParams(params);
     VenusRestResponse resp = getRequest("/userroles/" + username + JSON_EXT, params);
     return getJSONObject(resp);
   }
@@ -181,8 +238,9 @@ public class VenusRestJSONClient extends VenusRestClient {
    * @return
    */
   public JSONObject login(String username, String passwd, Map<String, Object> params) {
+    params = initParams(params);
     log.info("logging in as user: " + username + ", passwd: " + passwd);
-    VenusRestResponse resp = super.loginRequest(username, passwd);
+    VenusRestResponse resp = super.loginRequest(username, passwd, params);
     if (resp == null) {
       return loginFailJSONObject();
     }

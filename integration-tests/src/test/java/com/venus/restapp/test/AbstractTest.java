@@ -60,18 +60,6 @@ public class AbstractTest {
   }
 
   /**
-   * Create an institute
-   * @param client      The {@link VenusRestJSONClient} used for sending requests
-   */
-  public static void createParentInstitute(String name, VenusRestJSONClient client) {
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("code", name);
-    JSONObject resp = client.createParentInstitute(name, params);
-    Assert.assertNotNull("Didn't get the response", resp);
-    Assert.assertFalse("Response code", resp.getBoolean("error"));
-  }
-
-  /**
    * Test whether the response is proper or not
    * @param response    The {JSONObject response} object to check
    */

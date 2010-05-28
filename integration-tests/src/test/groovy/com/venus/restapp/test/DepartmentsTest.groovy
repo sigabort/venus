@@ -18,7 +18,7 @@ public class DepartmentsTest extends AbstractTest {
   
   @Before
   public void setUp() {
-    client = new VenusRestJSONClient();
+    client = new VenusRestJSONClient('DeptTest-' + getRandomString());
   }
   
   
@@ -49,9 +49,7 @@ public class DepartmentsTest extends AbstractTest {
    * Create one test department and return that department
    * This can be used by other tests to create a department quickly
    */
-  public static Object createTestDepartment(name) {
-    VenusRestJSONClient myClient = new VenusRestJSONClient();
-    createAdminUserAndLogin(myClient);
+  public static Object createTestDepartment(myClient, name) {
     
     def params = buildDepartmentOptionalParams(name);
 
@@ -62,9 +60,6 @@ public class DepartmentsTest extends AbstractTest {
     params['name'] = name;
     testDepartmentDetails(dept, params);
 
-    /* log out as admin */
-    resp = myClient.logout();  
-    testNoErrors(resp);
     return dept;
   }
 

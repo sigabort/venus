@@ -56,7 +56,7 @@ public class VenusRestClient {
   public static String USER_PASSWD_FIELD_NAME = "j_password";
 
   /** Default host of the application server */
-  public static String DEFAULT_HOST = "localhost";
+  public static String DEFAULT_HOST = "127.0.0.1";
   /** Default port of the application server */
   public static int DEFAULT_PORT = 8080;
   /** Default path for the REST APIs */
@@ -190,8 +190,10 @@ public class VenusRestClient {
    * @param passwd       The passwd used for the login
    * @return The response of the request
    */
-  public VenusRestResponse loginRequest(String username, String passwd) {
-    Map<String, Object> params = new HashMap<String, Object>(2);
+  public VenusRestResponse loginRequest(String username, String passwd, Map<String, Object> params) {
+    if (params == null) {
+      params = new HashMap<String, Object>(2);
+    }
     params.put(USER_INPUT_FIELD_NAME, username);
     params.put(USER_PASSWD_FIELD_NAME, passwd);      
     return postRequest(LOGIN_CHECK_PATH, params);

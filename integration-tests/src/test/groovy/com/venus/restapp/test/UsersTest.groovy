@@ -20,7 +20,7 @@ public class UsersTest extends AbstractTest {
   
   @Before
   public void setUp() {
-    client = new VenusRestJSONClient();
+    client = new VenusRestJSONClient('UTest-' + getRandomString());
   }
 
   /**
@@ -157,8 +157,13 @@ public class UsersTest extends AbstractTest {
   @Test
   public void testCreateUserAsNormalUser() {
     def name = "testCUANU-" + getRandomString();
-    def user = createTestUser(name);
-    def resp = client.login(user?.username, user?.password, null);
+    createAdminUserAndLogin(client);
+    def user = createTestUser(client, name);
+    /* log out as admin */
+    def resp = client.logout();  
+    testNoErrors(resp);
+
+    resp = client.login(user?.username, user?.password, null);
     testNoErrors(resp);
  
     def name1 = name + "-1";
@@ -261,10 +266,7 @@ public class UsersTest extends AbstractTest {
    * Create one test user and return user
    * This can be used by other tests to create a user quickly
    */
-  public static Object createTestUser(name) {
-    VenusRestJSONClient myClient = new VenusRestJSONClient();
-    createAdminUserAndLogin(myClient);
-    
+  public static Object createTestUser(myClient, name) {
     def params = buildUserOptionalParams(name);
   
     /* create user */
@@ -274,9 +276,6 @@ public class UsersTest extends AbstractTest {
     params['username'] = name;
     testUserDetails(user, params);
 
-    /* log out as admin */
-    resp = myClient.logout();  
-    testNoErrors(resp);
     return user;
   }
   

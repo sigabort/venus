@@ -19,7 +19,7 @@ public class UserRolesTest extends AbstractTest {
   
   @Before
   public void setUp() {
-    client = new VenusRestJSONClient();
+    client = new VenusRestJSONClient('URoleTest-' + getRandomString());
   }
 
   /**
@@ -61,7 +61,7 @@ public class UserRolesTest extends AbstractTest {
     createAdminUserAndLogin(client);
     def name = "testCreateUserAAddRole-" + getRandomString();
 
-    def user = UsersTest.createTestUser(name);
+    def user = UsersTest.createTestUser(client, name);
     
     /* set roles */
     def params = [role:['ADMIN', 'STAFF']];
@@ -73,7 +73,11 @@ public class UserRolesTest extends AbstractTest {
     Assert.assertNotNull("user roles not proper", userRoles);
     params['username'] = name;
     testUserRoles(userRoles, params);
-    
+
+    /* log out as admin */
+    resp = client.logout();  
+    testNoErrors(resp);
+
     /* fetch the roles of the user and double check */
     resp = client.getUserRoles(name, null);
     testNoErrors(resp);
@@ -118,18 +122,22 @@ public class UserRolesTest extends AbstractTest {
   @Test
   public void testCreateUserRolesWithDept() {
     def name = "testCURWD-" + getRandomString();
-    def dept = DepartmentsTest.createTestDepartment(name);
-    def user = UsersTest.createTestUser(name);
+    /* create an admin user and login as admin */
+    createAdminUserAndLogin(client);
+    def dept = DepartmentsTest.createTestDepartment(client, name);
+    def user = UsersTest.createTestUser(client, name);
     
     def params = [role:['ADMIN', 'STAFF'], departmentName:dept?.name];
     
-    /* create an admin user and login as admin */
-    createAdminUserAndLogin(client);
     def resp = client.createUserRoles(user?.username, params);
     testNoErrors(resp);
     def userRoles = resp?.entries;
     params['username'] = user?.username;
     testUserRoles(userRoles, params);
+    
+    /* log out as admin */
+    resp = client.logout();  
+    testNoErrors(resp);
   }
   
   /**
