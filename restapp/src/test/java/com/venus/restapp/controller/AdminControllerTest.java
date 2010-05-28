@@ -2,6 +2,7 @@ package com.venus.restapp.controller;
 
 import org.junit.Assert;
 
+
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,10 @@ import com.venus.restapp.response.UserResponse;
 import com.venus.restapp.request.UserRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
+import com.venus.restapp.util.RestUtil;
+
+import com.venus.util.VenusSession;
+import com.venus.model.Institute;
 
 
 /**
@@ -43,6 +48,7 @@ public class AdminControllerTest extends AbstractControllerTest {
   private MockHttpServletRequest request;
   private MockHttpServletResponse response;
   private static AdminController controller;
+  private static VenusSession vs;
 
   /**
    * Create the setup for each request.
@@ -61,6 +67,9 @@ public class AdminControllerTest extends AbstractControllerTest {
       // Get the controller from the context
       controller = appContext.getBean(AdminController.class);
     }
+    Institute inst = InstituteControllerTest.createTestInstitute("adminCTest-" + getRandomString());
+    vs = RestUtil.createVenusSession(inst);
+    RestUtil.setVenusSession(request, vs);
   }
   
   /**
@@ -98,7 +107,7 @@ public class AdminControllerTest extends AbstractControllerTest {
     final WebDataBinder binder = new WebDataBinder(ur, "request");
     binder.bind(new MutablePropertyValues(request.getParameterMap()));
 
-    final ModelAndView mav = controller.createAdminUser(ur, binder.getBindingResult());
+    final ModelAndView mav = controller.createAdminUser(ur, binder.getBindingResult(), request);
 
     //final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "users/user");

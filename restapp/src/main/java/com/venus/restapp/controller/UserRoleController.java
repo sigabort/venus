@@ -27,6 +27,7 @@ import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
 import com.venus.restapp.response.UserRoleResponse;
 import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.util.RestUtil;
 
 import com.venus.model.User;
 
@@ -95,7 +96,7 @@ public class UserRoleController {
     /* add/update the user roles now */
     List roles = null;
     try {
-      roles = userRoleService.createUpdateUserRole(userRoleRequest);
+      roles = userRoleService.createUpdateUserRole(userRoleRequest, RestUtil.getVenusSession(request));
     }
     catch (ResponseException re) {
       log.error("Can't create/update user roles for user: " + userRoleRequest.getUsername());
@@ -123,7 +124,7 @@ public class UserRoleController {
    *             about the exceptions/errors(if any errors found) 
    */
   @RequestMapping(value="{username}", method=RequestMethod.GET)
-  public ModelAndView getUserRoles(@PathVariable String username, @Valid BaseRequest request, BindingResult result) {
+  public ModelAndView getUserRoles(@PathVariable String username, @Valid BaseRequest request, BindingResult result, HttpServletRequest req) {
     if (result.hasErrors()) {
       /* XXX: We need to populate the response with the actual errors. Need to check
        * how 'create' is populating the errors properly in case of invalid request.
@@ -135,7 +136,7 @@ public class UserRoleController {
     log.info("Fetching user: " + username);
     User user = null;
     try {
-      user = userService.getUser(username, request);
+      user = userService.getUser(username, request, RestUtil.getVenusSession(req));
     }
     catch (ResponseException re) {
       log.info("Error while finding User with name: " + username, re);
@@ -152,7 +153,7 @@ public class UserRoleController {
     List roles = null;
     
     try {
-      roles = userRoleService.getUserRoles(user, request);
+      roles = userRoleService.getUserRoles(user, request, RestUtil.getVenusSession(req));
     }
     catch (ResponseException re) {
       log.info("Error while finding User Roles for user: " + username, re);

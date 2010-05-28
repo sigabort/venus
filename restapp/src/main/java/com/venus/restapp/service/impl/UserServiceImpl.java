@@ -36,7 +36,6 @@ import org.apache.commons.lang.StringUtils;
 @Service
 public class UserServiceImpl implements UserService {
   private UserOperations uo = new UserOperationsImpl();
-  private VenusSession vs = VenusSessionFactory.getVenusSession(null);
   private static final Logger log = Logger.getLogger(UserService.class);
 
   /**
@@ -48,7 +47,7 @@ public class UserServiceImpl implements UserService {
    *                     created/updated with out any errors, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public User createUpdateUser(UserRequest req) throws ResponseException {
+  public User createUpdateUser(UserRequest req, VenusSession vs) throws ResponseException {
     String username = req.getUsername();
     User user = null;
     Map<String, Object> params = new HashMap<String, Object>();
@@ -94,7 +93,7 @@ public class UserServiceImpl implements UserService {
    * @return             The corresponding {@link User} object if found, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public User getUser(String username, BaseRequest request) throws ResponseException {
+  public User getUser(String username, BaseRequest request, VenusSession vs) throws ResponseException {
     User user = null;
     try {
       user = uo.findUserByUsername(username, null, vs);
@@ -113,7 +112,7 @@ public class UserServiceImpl implements UserService {
    * @return               The list of users
    * @throws ResponseException if there is any error
    */
-  public List<User> getUsers(BaseRequest request) throws ResponseException {
+  public List<User> getUsers(BaseRequest request, VenusSession vs) throws ResponseException {
     int offset = request.getStartIndex();
     int maxRet = request.getItemsPerPage();
     String sortBy = request.getSortBy();
@@ -171,7 +170,7 @@ public class UserServiceImpl implements UserService {
    * @return               The count of total users in the institute
    * @throws ResponseException if there is any error
    */
-  public Integer getUsersCount(BaseRequest request) throws ResponseException {
+  public Integer getUsersCount(BaseRequest request, VenusSession vs) throws ResponseException {
    /* Time to parse the query parameters */
     Boolean onlyActive = request.getOnlyActive();
     String filterBy = request.getFilterBy();
@@ -214,8 +213,8 @@ public class UserServiceImpl implements UserService {
    *                     created/updated with out any errors, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public User createUpdateAdminUser(UserRequest request) throws ResponseException {
-    return createUpdateUser(request);
+  public User createUpdateAdminUser(UserRequest request, VenusSession vs) throws ResponseException {
+    return createUpdateUser(request, vs);
   }
 
 }

@@ -34,6 +34,11 @@ import com.venus.restapp.request.DepartmentRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
 
+import com.venus.restapp.util.RestUtil;
+
+import com.venus.util.VenusSession;
+import com.venus.model.Institute;
+
 
 /**
  * unit tests for {@link DepartmentController}
@@ -44,6 +49,7 @@ public class DepartmentControllerTest extends AbstractControllerTest {
   private MockHttpServletRequest request;
   private MockHttpServletResponse response;
   private static DepartmentController controller;
+  private static VenusSession vs;
 
   /**
    * Create the setup for each request.
@@ -63,6 +69,10 @@ public class DepartmentControllerTest extends AbstractControllerTest {
       controller = appContext.getBean(DepartmentController.class);
       Assert.assertTrue("Handler class is not supported for invoking methods", handlerAdapter.supports(controller));
     }
+    Institute inst = InstituteControllerTest.createTestInstitute("userRoleCTest-" + getRandomString());
+    vs = RestUtil.createVenusSession(inst);
+    RestUtil.setVenusSession(request, vs);
+
   }
   
   /**
@@ -109,7 +119,7 @@ public class DepartmentControllerTest extends AbstractControllerTest {
     final WebDataBinder binder = new WebDataBinder(br, "request");
     binder.bind(new MutablePropertyValues(request.getParameterMap()));
     
-    final ModelAndView mav = controller.getDepartment(name, br, binder.getBindingResult());
+    final ModelAndView mav = controller.getDepartment(name, br, binder.getBindingResult(), request);
     
     //final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "departments/department");

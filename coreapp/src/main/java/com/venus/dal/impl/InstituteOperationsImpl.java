@@ -484,6 +484,7 @@ public class InstituteOperationsImpl implements InstituteOperations {
     Boolean isAscending = OperationsUtilImpl.getBoolean("isAscending", options, OperationsUtil.DEFAULT_SORT_ORDER);
     /* see if the parent institute is set. If yes, only the children of parent institute are sent */
     Institute parent = (Institute) OperationsUtilImpl.getObject("parent", options, null);
+    Boolean onlyParents = OperationsUtilImpl.getBoolean("onlyParents", options, Boolean.FALSE);
     String filterBy = OperationsUtilImpl.getStringValue("filterBy", options, null);
     String filterValue = OperationsUtilImpl.getStringValue("filterValue", options, null);
     String filterOp = OperationsUtilImpl.getStringValue("filterOp", options, OperationsUtil.DEFAULT_FILTER_OP);
@@ -508,6 +509,20 @@ public class InstituteOperationsImpl implements InstituteOperations {
       }
       
       /*XXX: Add filtering*/
+      if (StringUtils.isNotEmpty(filterBy)) {
+        if ("equals".equals(filterOp)) {
+          /* see if the filter value is null. If yes,return only items with filterby as null */
+          if (filterValue == null) {
+            c.add(Restrictions.isNull(filterBy));
+          }
+          else {
+            c.add(Restrictions.eq(filterBy, filterValue));
+          }
+        }
+        else if ("contains".equals(filterOp)) {
+          c.add(Restrictions.like(filterBy, "%" + filterValue + "%"));
+        }
+      }
       
       /* set pagination */
       c.setFirstResult(offset);

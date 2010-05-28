@@ -13,12 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.venus.restapp.service.UserService;
 import com.venus.restapp.service.UserRoleService;
+import com.venus.restapp.util.RestUtil;
+import com.venus.restapp.filter.SessionFilter;
+
 import com.venus.model.UserRole;
 import com.venus.model.Role;
 import com.venus.model.User;
+import com.venus.util.VenusSession;
 
 import java.util.List;
 import java.util.ArrayList;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 
 public class RestAuthenticationProvider implements AuthenticationProvider, InitializingBean {
@@ -65,9 +72,13 @@ public class RestAuthenticationProvider implements AuthenticationProvider, Initi
     if ((username == null) || ("".equals(username)) || ("".equals(username.trim()))) {
       throw new BadCredentialsException("UserName is not supplied or is empty");
     }
+    HttpServletRequest request = (HttpServletRequest) SessionFilter.getStoredRequest();
+    VenusSession vs = RestUtil.getVenusSession(request);
+    SessionFilter.clearRequestStore();
+
     User user = null;
     try {
-      user = userService.getUser(username, null);
+      user = userService.getUser(username, null, vs);
     }
     catch (Exception e) {
       log.error("Internal error", e);
@@ -81,7 +92,7 @@ public class RestAuthenticationProvider implements AuthenticationProvider, Initi
       throw new BadCredentialsException("Username/password not correct");      
     }
     
-    List<GrantedAuthority> gaList = getAuthorities(user);
+    List<GrantedAuthority> gaList = getAuthorities(user, vs);
     /*
      * The gaList can be empty/null because: the user exists in the Database. 
      * But, he doesn't have any roles.
@@ -90,8 +101,11 @@ public class RestAuthenticationProvider implements AuthenticationProvider, Initi
      */
     gaList = addDefaultRoleToUser(gaList);
 
-    /* Add the roles to the token */
-    upToken = new UsernamePasswordAuthenticationToken(username, token.getCredentials(), (GrantedAuthority[]) gaList.toArray(new GrantedAuthority[gaList.size()]));
+    /* build the custom user details object for storing other information in the context */
+    RestUserDetails userDetails = RestUserDetails.getRestUserDetails(user, true, gaList);
+    
+    /* Add the userDetails object, password and roles to the token */
+    upToken = new UsernamePasswordAuthenticationToken(userDetails, token.getCredentials(), (GrantedAuthority[]) gaList.toArray(new GrantedAuthority[gaList.size()]));
     upToken.setDetails(token.getDetails());
 
     log.info("RestAuthenticationProvider: returning token for: " + username);
@@ -106,12 +120,12 @@ public class RestAuthenticationProvider implements AuthenticationProvider, Initi
    * @param user    The user model object for finding the roles
    * @return        The list of granted authorities
    */
-  private List<GrantedAuthority> getAuthorities(User user) {
+  private List<GrantedAuthority> getAuthorities(User user, VenusSession vs) {
     List<UserRole> roles = null;
     List<GrantedAuthority> gaList = null;
     
     try {
-      roles = userRoleService.getUserRoles(user, null);
+      roles = userRoleService.getUserRoles(user, null, vs);
     }
     catch (Exception e) {
       log.error("Internal error", e);

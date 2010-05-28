@@ -16,7 +16,7 @@
     <many-to-one name="institute" cascade="none" outer-join="false"
                     foreign-key="FK1_DEPARTMENT_INSTITUTE_"
                     class="com.venus.model.impl.InstituteImpl">
-      <column name="parent" not-null="true" unique-key="IDX_DEPT_INSTITUTE_CODE"/>
+      <column name="institute" not-null="true" unique-key="IDX_DEPT_INSTITUTE_CODE"/>
     </many-to-one>
 
       <!-- Unique department name in the institute -->

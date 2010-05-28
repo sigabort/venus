@@ -3,6 +3,7 @@ package com.venus.restapp.service;
 import java.util.List;
 
 import com.venus.model.User;
+import com.venus.util.VenusSession;
 
 import com.venus.restapp.request.UserRequest;
 import com.venus.restapp.request.BaseRequest;
@@ -28,7 +29,7 @@ public interface UserService {
    * @throws ResponseException thrown when there is any error
    */
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public abstract User createUpdateUser(UserRequest request) throws ResponseException;
+  public abstract User createUpdateUser(UserRequest request, VenusSession vs) throws ResponseException;
 
   /**
    * Get the user. This operation can be called by any
@@ -37,7 +38,7 @@ public interface UserService {
    * @return             The corresponding {@link User} object if found, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public abstract User getUser(String username, BaseRequest request) throws ResponseException;
+  public abstract User getUser(String username, BaseRequest request, VenusSession vs) throws ResponseException;
 
   /**
    * Get the users in an institute. This operation can be called by any
@@ -46,7 +47,7 @@ public interface UserService {
    * @return             The list of {@link User}s if found, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public abstract List<User> getUsers(BaseRequest request) throws ResponseException;
+  public abstract List<User> getUsers(BaseRequest request, VenusSession vs) throws ResponseException;
 
   /**
    * Get the users count in an institute. This operation can be called by any.
@@ -56,7 +57,7 @@ public interface UserService {
    *                     (with filtering, if any filters provided in request)
    * @throws ResponseException
    */
-  public abstract Integer getUsersCount(BaseRequest request)  throws ResponseException;
+  public abstract Integer getUsersCount(BaseRequest request, VenusSession vs) throws ResponseException;
   
   /**
    * Special API for the Admin Layer to create the admin user. This shouldn't be used by others
@@ -68,6 +69,6 @@ public interface UserService {
    *                     created/updated with out any errors, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public abstract User createUpdateAdminUser(UserRequest request) throws ResponseException;
+  public abstract User createUpdateAdminUser(UserRequest request, VenusSession vs) throws ResponseException;
   
 }

@@ -28,6 +28,7 @@ import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
 import com.venus.restapp.response.UserResponse;
 import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.util.RestUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -82,6 +83,7 @@ public class UserController {
       ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
       return new ModelAndView("users/createUser", "response", re.getResponse());
     }
+
     /* see if role(s) provided */
     String[] role = userRequest.getRole();
     UserRoleRequest urr = null;
@@ -99,7 +101,7 @@ public class UserController {
     log.info("Adding/Updating user" + userRequest.getUsername());
     Object user = null;
     try {
-      user = userService.createUpdateUser(userRequest);
+      user = userService.createUpdateUser(userRequest, RestUtil.getVenusSession(request));
     }
     catch (ResponseException re) {
       log.error("Can't create/update user : " + userRequest.getUsername() + ", reason: " + re.getMessage());
@@ -109,7 +111,7 @@ public class UserController {
     /* if roles are also provided, try to create the roles */
     if (urr != null) {
       try {
-        Object ur = userRoleService.createUpdateUserRole(urr);
+        Object ur = userRoleService.createUpdateUserRole(urr, RestUtil.getVenusSession(request));
       }
       catch (ResponseException re) {
         log.error("Can't create/update user role: " + role[0] + ", for user: " + userRequest.getUsername());
@@ -130,7 +132,7 @@ public class UserController {
    *             about the exceptions/errors(if any errors found) 
    */
   @RequestMapping(value="{username}", method=RequestMethod.GET)
-  public ModelAndView getUser(@PathVariable String username, @Valid BaseRequest request, BindingResult result) {
+  public ModelAndView getUser(@PathVariable String username, @Valid BaseRequest request, BindingResult result, HttpServletRequest req) {
     if (result.hasErrors()) {
       /* XXX: We need to populate the response with the actual errors. Need to check
        * how 'create' is populating the errors properly in case of invalid request.
@@ -139,10 +141,11 @@ public class UserController {
       ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
       return new ModelAndView("users/user", "response", re.getResponse());
     }
+
     log.info("Fetching user: " + username);
     Object user = null;
     try {
-      user = userService.getUser(username, request);
+      user = userService.getUser(username, request, RestUtil.getVenusSession(req));
     }
     catch (ResponseException re) {
       log.info("Error while finding User with name: " + username, re);
@@ -170,7 +173,7 @@ public class UserController {
    *             about the exceptions/errors(if any errors found) 
    */
   @RequestMapping(method=RequestMethod.GET)
-  public ModelAndView getUsers(@Valid BaseRequest request, BindingResult result) {
+  public ModelAndView getUsers(@Valid BaseRequest request, BindingResult result, HttpServletRequest req) {
     if (result.hasErrors()) {
       /* XXX: We need to populate the response with the actual errors. Need to check
        * how 'create' is populating the errors properly in case of invalid request.
@@ -186,9 +189,9 @@ public class UserController {
     Integer totalCount = null;
 
     try {
-      users = userService.getUsers(request);
+      users = userService.getUsers(request, RestUtil.getVenusSession(req));
       /* get the total users count */
-      totalCount = userService.getUsersCount(request);
+      totalCount = userService.getUsersCount(request, RestUtil.getVenusSession(req));
     }
     catch (ResponseException re) {
       return new ModelAndView("users/home", "response", re.getResponse());

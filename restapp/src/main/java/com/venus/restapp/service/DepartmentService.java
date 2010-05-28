@@ -3,6 +3,7 @@ package com.venus.restapp.service;
 import java.util.List;
 
 import com.venus.model.Department;
+import com.venus.util.VenusSession;
 
 import com.venus.restapp.request.DepartmentRequest;
 import com.venus.restapp.request.BaseRequest;
@@ -28,7 +29,7 @@ public interface DepartmentService {
    * @throws ResponseException thrown when there is any error
    */
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public abstract Department createUpdateDepartment(DepartmentRequest request) throws ResponseException;
+  public abstract Department createUpdateDepartment(DepartmentRequest request, VenusSession vs) throws ResponseException;
 
   /**
    * Get the department. This operation can be called by any
@@ -37,7 +38,7 @@ public interface DepartmentService {
    * @return             The corresponding {@link Department} object if found, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public abstract Department getDepartment(String name, BaseRequest request) throws ResponseException;
+  public abstract Department getDepartment(String name, BaseRequest request, VenusSession vs) throws ResponseException;
 
   /**
    * Get the departments in an institute. This operation can be called by any
@@ -46,7 +47,7 @@ public interface DepartmentService {
    * @return             The list of {@link Department}s if found, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public abstract List<Department> getDepartments(BaseRequest request) throws ResponseException;
+  public abstract List<Department> getDepartments(BaseRequest request, VenusSession vs) throws ResponseException;
 
   /**
    * Get the departments count in an institute. This operation can be called by any.
@@ -56,5 +57,5 @@ public interface DepartmentService {
    *                     (with filtering, if any filters provided in request)
    * @throws ResponseException
    */
-  public abstract Integer getDepartmentsCount(BaseRequest request)  throws ResponseException;
+  public abstract Integer getDepartmentsCount(BaseRequest request, VenusSession vs) throws ResponseException;
 }

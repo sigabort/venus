@@ -3,6 +3,7 @@ package com.venus.restapp.controller;
 import java.util.Map;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
 import com.venus.restapp.response.DepartmentResponse;
 import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.util.RestUtil;
 
 import org.apache.log4j.Logger;
 
@@ -60,7 +62,7 @@ public class DepartmentController {
    *             about the exceptions/errors(if any errors found) 
    */
   @RequestMapping(method=RequestMethod.POST)
-  public ModelAndView create(@Valid DepartmentRequest departmentRequest, BindingResult result) {
+  public ModelAndView create(@Valid DepartmentRequest departmentRequest, BindingResult result, HttpServletRequest req) {
     if (result.hasErrors()) {
       /* XXX: We need to populate the response with the actual errors. Need to check
        * how 'create' is populating the errors properly in case of invalid request.
@@ -72,7 +74,7 @@ public class DepartmentController {
     log.info("Adding/Updating department" + departmentRequest.getName());
     Object dept = null;
     try {
-      dept = departmentService.createUpdateDepartment(departmentRequest);
+      dept = departmentService.createUpdateDepartment(departmentRequest, RestUtil.getVenusSession(req));
     }
     catch (ResponseException re) {
       return new ModelAndView("departments/createDepartment", "response", re.getResponse());
@@ -91,7 +93,7 @@ public class DepartmentController {
    *             about the exceptions/errors(if any errors found) 
    */
   @RequestMapping(value="{name}", method=RequestMethod.GET)
-  public ModelAndView getDepartment(@PathVariable String name, @Valid BaseRequest request, BindingResult result) {
+  public ModelAndView getDepartment(@PathVariable String name, @Valid BaseRequest request, BindingResult result, HttpServletRequest req) {
     if (result.hasErrors()) {
       /* XXX: We need to populate the response with the actual errors. Need to check
        * how 'create' is populating the errors properly in case of invalid request.
@@ -103,7 +105,7 @@ public class DepartmentController {
     log.info("Fetching department: " + name);
     Object dept = null;
     try {
-      dept = departmentService.getDepartment(name, request);
+      dept = departmentService.getDepartment(name, request, RestUtil.getVenusSession(req));
     }
     catch (ResponseException re) {
       log.info("Error while finding Department with name: " + name, re);
@@ -131,7 +133,7 @@ public class DepartmentController {
    *             about the exceptions/errors(if any errors found) 
    */
   @RequestMapping(method=RequestMethod.GET)
-  public ModelAndView getDepartments(@Valid BaseRequest request, BindingResult result) {
+  public ModelAndView getDepartments(@Valid BaseRequest request, BindingResult result, HttpServletRequest req) {
     if (result.hasErrors()) {
       /* XXX: We need to populate the response with the actual errors. Need to check
        * how 'create' is populating the errors properly in case of invalid request.
@@ -147,9 +149,9 @@ public class DepartmentController {
     Integer totalCount = null;
 
     try {
-      depts = departmentService.getDepartments(request);
+      depts = departmentService.getDepartments(request, RestUtil.getVenusSession(req));
       /* get the total departments count */
-      totalCount = departmentService.getDepartmentsCount(request);
+      totalCount = departmentService.getDepartmentsCount(request, RestUtil.getVenusSession(req));
     }
     catch (ResponseException re) {
       return new ModelAndView("departments/home", "response", re.getResponse());

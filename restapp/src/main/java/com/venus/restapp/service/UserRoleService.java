@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.venus.model.UserRole;
 import com.venus.model.User;
+import com.venus.util.VenusSession;
 
 import com.venus.restapp.request.UserRoleRequest;
 import com.venus.restapp.request.BaseRequest;
@@ -29,7 +30,7 @@ public interface UserRoleService {
    * @throws ResponseException thrown when there is any error
    */
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public abstract List<UserRole> createUpdateUserRole(UserRoleRequest request) throws ResponseException;
+  public abstract List<UserRole> createUpdateUserRole(UserRoleRequest request, VenusSession vs) throws ResponseException;
 
   /**
    * Get the user roles for an user in an institute. This operation can be called by any
@@ -39,7 +40,7 @@ public interface UserRoleService {
    * @return             The list of {@link UserRole}s if found, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public abstract List<UserRole> getUserRoles(User user, BaseRequest request) throws ResponseException;
+  public abstract List<UserRole> getUserRoles(User user, BaseRequest request, VenusSession vs) throws ResponseException;
 
   /**
    * Special API to create the role for Admin. This shouldn't be used by others.
@@ -51,6 +52,6 @@ public interface UserRoleService {
    *                     created/updated with out any errors, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public abstract List<UserRole> createUpdateAdminUserRole(UserRoleRequest request) throws ResponseException;
+  public abstract List<UserRole> createUpdateAdminUserRole(UserRoleRequest request, VenusSession vs) throws ResponseException;
 
 }

@@ -47,7 +47,6 @@ public class UserRoleServiceImpl implements UserRoleService {
   private UserService userService;
   
   private UserRoleOperations uro = new UserRoleOperationsImpl();
-  private VenusSession vs = VenusSessionFactory.getVenusSession(null);
   private static final Logger log = Logger.getLogger(UserRoleService.class);
 
   /**
@@ -59,7 +58,7 @@ public class UserRoleServiceImpl implements UserRoleService {
    *                     created/updated with out any errors, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public List<UserRole> createUpdateUserRole(UserRoleRequest request) throws ResponseException {
+  public List<UserRole> createUpdateUserRole(UserRoleRequest request, VenusSession vs) throws ResponseException {
     String username = request.getUsername();
     String[] roles = request.getRole();
     String deptName = request.getDepartmentName();
@@ -68,7 +67,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     /* see the department */
     if (!StringUtils.isEmpty(deptName)) {
-      Department department = deptService.getDepartment(deptName, new BaseRequest());
+      Department department = deptService.getDepartment(deptName, new BaseRequest(), vs);
       if (department != null) {
         params = new HashMap<String, Object>();
         params.put("department", department);
@@ -80,7 +79,7 @@ public class UserRoleServiceImpl implements UserRoleService {
       }
     }
     /* see if the user is existing or not */
-    User user = userService.getUser(username, new BaseRequest());
+    User user = userService.getUser(username, new BaseRequest(), vs);
     if (user == null) {
       String errStr = "User with username: " + username + ", doesn't exist";
       log.error(errStr);
@@ -132,7 +131,7 @@ public class UserRoleServiceImpl implements UserRoleService {
    * @return             The list of {@link UserRole}s if found, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public List<UserRole> getUserRoles(User user, BaseRequest request) throws ResponseException {
+  public List<UserRole> getUserRoles(User user, BaseRequest request, VenusSession vs) throws ResponseException {
     List<UserRole> userRoles = null;
     try{
       userRoles = uro.getUserRoles(user, null, vs);
@@ -155,8 +154,8 @@ public class UserRoleServiceImpl implements UserRoleService {
    *                     created/updated with out any errors, null otherwise
    * @throws ResponseException thrown when there is any error
    */
-  public List<UserRole> createUpdateAdminUserRole(UserRoleRequest request) throws ResponseException {
-    return createUpdateUserRole(request);
+  public List<UserRole> createUpdateAdminUserRole(UserRoleRequest request, VenusSession vs) throws ResponseException {
+    return createUpdateUserRole(request, vs);
   }
 
   

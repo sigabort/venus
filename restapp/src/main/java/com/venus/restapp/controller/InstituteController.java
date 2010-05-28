@@ -37,6 +37,10 @@ public class InstituteController {
   private InstituteService instituteService;
   private static final Logger log = Logger.getLogger(InstituteController.class);
 
+  public InstituteService getInstituteService() {
+    return this.instituteService;
+  }
+  
   /**
    * Get the Model object for creating the institute
    * This is mostly used by the UI clients when they want to create a institute

@@ -2,6 +2,7 @@ package com.venus.restapp.controller;
 
 import org.junit.Assert;
 
+
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,10 @@ import com.venus.restapp.request.UserRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
 
+import com.venus.restapp.util.RestUtil;
+
+import com.venus.util.VenusSession;
+import com.venus.model.Institute;
 
 /**
  * unit tests for {@link UserController}
@@ -40,10 +45,11 @@ import com.venus.restapp.response.BaseResponse;
  */
 public class UserControllerTest extends AbstractControllerTest {
 
-  private MockHttpServletRequest request;
-  private MockHttpServletResponse response;
+  private static MockHttpServletRequest request;
+  private static MockHttpServletResponse response;
   private static UserController controller;
-
+  private static VenusSession vs;
+  
   /**
    * Create the setup for each request.
    * Calls super() to make sure the appContext is created before creating mock objects.
@@ -61,6 +67,9 @@ public class UserControllerTest extends AbstractControllerTest {
       // Get the controller from the context
       controller = appContext.getBean(UserController.class);
     }
+    Institute inst = InstituteControllerTest.createTestInstitute("userCTest-" + getRandomString());
+    vs = RestUtil.createVenusSession(inst);
+    RestUtil.setVenusSession(request, vs);
   }
   
   /**
@@ -107,7 +116,7 @@ public class UserControllerTest extends AbstractControllerTest {
     final WebDataBinder binder = new WebDataBinder(br, "request");
     binder.bind(new MutablePropertyValues(request.getParameterMap()));
 
-    final ModelAndView mav = controller.getUser(name, br, binder.getBindingResult());
+    final ModelAndView mav = controller.getUser(name, br, binder.getBindingResult(), request);
 
     //final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "users/user");
@@ -159,7 +168,7 @@ public class UserControllerTest extends AbstractControllerTest {
     final WebDataBinder binder = new WebDataBinder(br, "request");
     binder.bind(new MutablePropertyValues(request.getParameterMap()));
 
-    final ModelAndView mav1 = controller.getUser(name, br, binder.getBindingResult());
+    final ModelAndView mav1 = controller.getUser(name, br, binder.getBindingResult(), request);
 
     //final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav1, "users/user");
@@ -310,5 +319,45 @@ public class UserControllerTest extends AbstractControllerTest {
     }
     Assert.fail();
   }
+  
+  
+
+  /**
+   * Creates a test user with given name as username.
+   * IMP: Before calling this function, Setup() method should be called
+   * to make sure the controller bean is created.
+   * @param name    The username
+   */
+  public static void createTestUser(String name, VenusSession vs) throws Exception {
+    /* create mock requests, responses - different for each test */
+    request = new MockHttpServletRequest();
+    response = new MockHttpServletResponse();
+    RestUtil.setVenusSession(request, vs);
+
+    if (controller == null) {
+      // Get the controller from the context
+      controller = appContext.getBean(UserController.class);
+    }
+    /* Login in as user who has role 'ROLE_ADMIN' */
+    Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
+        "ignored", AuthorityUtils.createAuthorityList("ROLE_ADMIN"));
+    SecurityContextHolder.getContext().setAuthentication(authRequest);
+    
+    /* should be POST method, with uri : /create */
+    request.setMethod(HttpMethod.POST.toString());
+    request.setRequestURI("/create");
+
+    /* create new request object */
+    request.setParameter("username", name);
+   
+    /* create/update the user now*/
+    final ModelAndView mav = handlerAdapter.handle(request, response, controller);
+    assertViewName(mav, "users/user");
+    final UserResponse ur = assertAndReturnModelAttributeOfType(mav, "response", UserResponse.class);
+    SecurityContextHolder.clearContext();
+    Assert.assertNotNull("Didn't get the response", ur);
+    Assert.assertFalse("The error", ur.getError());
+  }
+
   
 }

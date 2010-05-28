@@ -15,6 +15,7 @@
 		<intercept-url pattern="/admin*" access="hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1')"/>
 		<form-login login-page="/login" default-target-url="/home" always-use-default-target="false" />
 		<logout logout-success-url="/home"/>
+		<custom-filter ref="sessionFilter" after="SECURITY_CONTEXT_FILTER"/>
 	</http>
 
 	<authentication-manager>
@@ -25,5 +26,8 @@
 		auth provider which actually does low level work for authentication
 	-->
 	<beans:bean id="RestAuthenticationProvider" class="com.venus.restapp.auth.RestAuthenticationProvider" />
+
+  <!-- Filter to set/validate session -->
+  <beans:bean id="sessionFilter" class="com.venus.restapp.filter.SessionFilter"/>
 	
 </beans:beans>

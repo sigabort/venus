@@ -611,6 +611,226 @@ public class InstituteOperationsImplTest extends BaseImplTest {
    Assert.assertTrue("list should at least contain institutes as earlier (before deletion)", newCount >= count);   
   }
 
+  /* create some institutes and fetch them with filtering */
+  @Test
+  public void testGetInstitutesWithFilterOnCode() throws Exception {
+   String name = "testGetInstitutesWithFilter-" + getRandomString();
+   String name1 = name + "-name1", name2 = name + "-name2";
+   String code1 = name + "-code1", code2 = name + "-code2";
+   String dispName1 = name + "-dispName1", dispName2 = name + "-dispName2";
+   String desc1 = name + "-desc1", desc2 = name + "-desc2";
+   String photoUrl = name + "-url";
+   String email = name + "-email";
+
+   Map<String, Object> params1 = buildOptionalParams(code1, dispName1, desc1, photoUrl, email, null, null, null);
+
+   /* create one institute */
+   Institute institute1 = iol.createUpdateInstitute(name1, params1, vs);
+   Assert.assertNotNull(institute1);
+
+   /* validate the optional fields of the institute object */
+   validateInstituteOptionalFields(params1, institute1);
+   
+   Assert.assertEquals("institute name", name1, institute1.getName());
+
+   /* create another institute */
+   Map<String, Object> params2 = buildOptionalParams(code2, dispName2, desc2, photoUrl, email, null, null, null);
+   Institute institute2 = iol.createUpdateInstitute(name2, params2, vs);
+   Assert.assertNotNull(institute2);
+
+   /* validate the optional fields of the institute object */
+   validateInstituteOptionalFields(params2, institute2);
+   
+   Assert.assertEquals("institute name", name2, institute2.getName());
+
+   /* fetch the institutes now */
+   List<Institute> list = iol.getInstitutes(0, 10, null, vs);
+   Assert.assertNotNull(list);
+   Assert.assertTrue("list should contain at least 2 institutes", list.size() >= 2);
+   
+   /* set filter on "code" */
+   Map<String, Object> options = new HashMap<String, Object>();
+   options.put("filterBy", "code");
+   options.put("filterValue", code2);   
+   options.put("filterOp", "equals");
+
+   /* get the institutes sorted by id, ascending */
+   list = iol.getInstitutes(0, 10, options, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should contain only one institute", 1, list.size());
+   /* the institute should be second one */
+   Institute inst = (Institute) list.get(0);
+   Assert.assertNotNull("Institute with code2", inst);
+   Assert.assertEquals("institute name", name2, inst.getName());
+   validateInstituteOptionalFields(params2, inst);
+  }
+
+
+  /* create some institutes and fetch them with filtering */
+  @Test
+  public void testGetInstitutesWithFilterByName() throws Exception {
+   String name = "testGetInstsWithFilterByName-" + getRandomString();
+   String name1 = name + "-name1", name2 = name + "-name2";
+   String code1 = name + "-code1", code2 = name + "-code2";
+   String dispName1 = name + "-dispName1", dispName2 = name + "-dispName2";
+   String desc1 = name + "-desc1", desc2 = name + "-desc2";
+   String photoUrl = name + "-url";
+   String email = name + "-email";
+
+   Map<String, Object> params1 = buildOptionalParams(code1, dispName1, desc1, photoUrl, email, null, null, null);
+
+   /* create one institute */
+   Institute institute1 = iol.createUpdateInstitute(name1, params1, vs);
+   Assert.assertNotNull(institute1);
+
+   /* validate the optional fields of the institute object */
+   validateInstituteOptionalFields(params1, institute1);
+   
+   Assert.assertEquals("institute name", name1, institute1.getName());
+
+   /* create another institute */
+   Map<String, Object> params2 = buildOptionalParams(code2, dispName2, desc2, photoUrl, email, null, null, null);
+   Institute institute2 = iol.createUpdateInstitute(name2, params2, vs);
+   Assert.assertNotNull(institute2);
+
+   /* validate the optional fields of the institute object */
+   validateInstituteOptionalFields(params2, institute2);
+   
+   Assert.assertEquals("institute name", name2, institute2.getName());
+
+   /* fetch the institutes now */
+   List<Institute> list = iol.getInstitutes(0, 10, null, vs);
+   Assert.assertNotNull(list);
+   Assert.assertTrue("list should contain at least 2 institutes", list.size() >= 2);
+   
+   /* set filter on "code" */
+   Map<String, Object> options = new HashMap<String, Object>();
+   options.put("filterBy", "name");
+   options.put("filterValue", name1);   
+   options.put("filterOp", "contains");
+
+   /* get the institutes sorted by id, ascending */
+   list = iol.getInstitutes(0, 10, options, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should contain only one institute", 1, list.size());
+   /* the institute should be second one */
+   Institute inst = (Institute) list.get(0);
+   Assert.assertNotNull("Institute with name1", inst);
+   Assert.assertEquals("institute name", name1, inst.getName());
+   validateInstituteOptionalFields(params1, inst);
+  }
+
+  
+  /* create child institute(s) and fetch */
+  @Test
+  public void testGetChildInstitutes() throws Exception {
+   String name = "testGetChildInstitues-" + getRandomString();
+   String name1 = name + "-name1", name2 = name + "-name2";
+   String code1 = name + "-code1", code2 = name + "-code2";
+   String dispName1 = name + "-dispName1", dispName2 = name + "-dispName2";
+   String desc1 = name + "-desc1", desc2 = name + "-desc2";
+   String photoUrl = name + "-url";
+   String email = name + "-email";
+
+   Map<String, Object> params1 = buildOptionalParams(code1, dispName1, desc1, photoUrl, email, null, null, null);
+
+   /* create one institute */
+   Institute institute1 = iol.createUpdateInstitute(name1, params1, vs);
+   Assert.assertNotNull(institute1);
+
+   /* validate the optional fields of the institute object */
+   validateInstituteOptionalFields(params1, institute1);
+   
+   Assert.assertEquals("institute name", name1, institute1.getName());
+
+   /* create another institute */
+   Map<String, Object> params2 = buildOptionalParams(code2, dispName2, desc2, photoUrl, email, null, null, null);
+   params2.put("parent", institute1);
+   Institute institute2 = iol.createUpdateInstitute(name2, params2, vs);
+   Assert.assertNotNull(institute2);
+   Assert.assertEquals("institute name", name2, institute2.getName());
+
+   /* validate the optional fields of the institute object */
+   validateInstituteOptionalFields(params2, institute2);
+   Assert.assertEquals("parent institute", institute1, institute2.getParent());   
+ 
+   /* fetch the institutes now */
+   List<Institute> list = iol.getInstitutes(0, 10, null, vs);
+   Assert.assertNotNull(list);
+   Assert.assertTrue("list should contain at least 2 institutes", list.size() >= 2);
+   
+   /* get only child institutes of institute-1 */
+   Map<String, Object> options = new HashMap<String, Object>();
+   options.put("parent", institute1);
+
+   /* get the institutes sorted by id, ascending */
+   list = iol.getInstitutes(0, 10, options, vs);
+   Assert.assertNotNull(list);
+   Assert.assertEquals("list should contain only one institute", 1, list.size());
+   /* the institute should be second one */
+   Institute inst = (Institute) list.get(0);
+   Assert.assertNotNull("Child institute", inst);
+   Assert.assertEquals("child institute name", name2, inst.getName());
+   validateInstituteOptionalFields(params2, inst);
+  }
+
+  /* create child institute(s) and fetch institutes excluding children */
+  @Test
+  public void testGetOnlyParentInstitutes() throws Exception {
+   String name = "testGetOnlyParentInstitues-" + getRandomString();
+   String name1 = name + "-name1", name2 = name + "-name2";
+   String code1 = name + "-code1", code2 = name + "-code2";
+   String dispName1 = name + "-dispName1", dispName2 = name + "-dispName2";
+   String desc1 = name + "-desc1", desc2 = name + "-desc2";
+   String photoUrl = name + "-url";
+   String email = name + "-email";
+
+   Map<String, Object> params1 = buildOptionalParams(code1, dispName1, desc1, photoUrl, email, null, null, null);
+
+   /* create one institute */
+   Institute institute1 = iol.createUpdateInstitute(name1, params1, vs);
+   Assert.assertNotNull(institute1);
+
+   /* validate the optional fields of the institute object */
+   validateInstituteOptionalFields(params1, institute1);
+   
+   Assert.assertEquals("institute name", name1, institute1.getName());
+
+   /* create another institute */
+   Map<String, Object> params2 = buildOptionalParams(code2, dispName2, desc2, photoUrl, email, null, null, null);
+   params2.put("parent", institute1);
+   Institute institute2 = iol.createUpdateInstitute(name2, params2, vs);
+   Assert.assertNotNull(institute2);
+   Assert.assertEquals("institute name", name2, institute2.getName());
+
+   /* validate the optional fields of the institute object */
+   validateInstituteOptionalFields(params2, institute2);
+   Assert.assertEquals("parent institute", institute1, institute2.getParent());   
+ 
+   /* fetch the institutes now */
+   List<Institute> list = iol.getInstitutes(0, 10, null, vs);
+   Assert.assertNotNull(list);
+   Assert.assertTrue("list should contain at least 2 institutes", list.size() >= 2);
+   
+   /* get only institute which dont have parents */
+   Map<String, Object> options = new HashMap<String, Object>();
+   options.put("filterBy", "parent");
+   options.put("filterValue", null);   
+   options.put("filterOp", "equals");
+   options.put("sortBy", "id");
+   options.put("isAscending", Boolean.TRUE);
+   
+   /* get the institutes sorted by id, ascending */
+   list = iol.getInstitutes(0, 200, options, vs);
+   Assert.assertNotNull(list);
+   Assert.assertTrue("Institutes list with out parents", list.size() >= 1);
+   for (Institute inst : list) {
+     if (inst.getName().equals(name2)) {
+       Assert.fail("Child institute is included in the list");
+     }
+   }
+ }  
+  
   public static Institute createTestInstitute(String name, VenusSession vs) throws Exception {
     Map<String, Object> params = createTestInstituteParams(name);
     InstituteOperations doi = new InstituteOperationsImpl();

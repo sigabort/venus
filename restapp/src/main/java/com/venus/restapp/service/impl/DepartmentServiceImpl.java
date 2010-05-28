@@ -1,6 +1,7 @@
 package com.venus.restapp.service.impl;
 
 import java.util.List;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -27,10 +28,9 @@ import org.apache.commons.lang.StringUtils;
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
   private DepartmentOperations dol = new DepartmentOperationsImpl();
-  private VenusSession vs = VenusSessionFactory.getVenusSession(null);
   private static final Logger log = Logger.getLogger(DepartmentService.class);
 
-  public Department createUpdateDepartment(DepartmentRequest req) throws ResponseException {
+  public Department createUpdateDepartment(DepartmentRequest req, VenusSession vs) throws ResponseException {
     String name = req.getName();
     Department dept = null;
     Map<String, Object> params = new HashMap<String, Object>();
@@ -51,7 +51,7 @@ public class DepartmentServiceImpl implements DepartmentService {
   }
 
 
-  public Department getDepartment(String name, BaseRequest request) throws ResponseException {
+  public Department getDepartment(String name, BaseRequest request, VenusSession vs) throws ResponseException {
     Department department = null;
     try {
       department = dol.findDepartmentByName(name, null, vs);
@@ -70,7 +70,7 @@ public class DepartmentServiceImpl implements DepartmentService {
    * @return               The list of departments
    * @throws ResponseException if there is any error
    */
-  public List<Department> getDepartments(BaseRequest request) throws ResponseException {
+  public List<Department> getDepartments(BaseRequest request, VenusSession vs) throws ResponseException {
     int offset = request.getStartIndex();
     int maxRet = request.getItemsPerPage();
     String sortBy = request.getSortBy();
@@ -128,7 +128,7 @@ public class DepartmentServiceImpl implements DepartmentService {
    * @return               The count of total departments in the institute
    * @throws ResponseException if there is any error
    */
-  public Integer getDepartmentsCount(BaseRequest request) throws ResponseException {
+  public Integer getDepartmentsCount(BaseRequest request, VenusSession vs) throws ResponseException {
    /* Time to parse the query parameters */
     Boolean onlyActive = request.getOnlyActive();
     String filterBy = request.getFilterBy();

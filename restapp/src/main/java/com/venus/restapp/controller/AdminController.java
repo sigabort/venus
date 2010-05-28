@@ -28,6 +28,7 @@ import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
 import com.venus.restapp.response.UserResponse;
 import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.util.RestUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -58,7 +59,7 @@ public class AdminController {
    *             about the exceptions/errors(if any errors found) 
    */
   @RequestMapping(value="createAdminUser", method=RequestMethod.POST)
-  public ModelAndView createAdminUser(@Valid UserRequest userRequest, BindingResult result) {
+  public ModelAndView createAdminUser(@Valid UserRequest userRequest, BindingResult result, HttpServletRequest req) {
     if (result.hasErrors()) {
       /* XXX: We need to populate the response with the actual errors. Need to check
        * how 'create' is populating the errors properly in case of invalid request.
@@ -71,7 +72,7 @@ public class AdminController {
     log.info("Adding/Updating user" + userRequest.getUsername());
     Object user = null;
     try {
-      user = userService.createUpdateAdminUser(userRequest);
+      user = userService.createUpdateAdminUser(userRequest, RestUtil.getVenusSession(req));
     }
     catch (ResponseException re) {
       log.error("Can't create/update user : " + userRequest.getUsername() + ", reason: " + re.getMessage());
@@ -84,7 +85,7 @@ public class AdminController {
     /* if roles are also provided, try to create the roles */
     if (urr != null) {
       try {
-        Object ur = userRoleService.createUpdateAdminUserRole(urr);
+        Object ur = userRoleService.createUpdateAdminUserRole(urr, RestUtil.getVenusSession(req));
       }
       catch (ResponseException re) {
         log.error("Can't create/update admin role for user: " + userRequest.getUsername());

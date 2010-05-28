@@ -33,7 +33,10 @@ import com.venus.restapp.response.UserResponse;
 import com.venus.restapp.request.UserRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
+import com.venus.restapp.util.RestUtil;
 
+import com.venus.util.VenusSession;
+import com.venus.model.Institute;
 
 /**
  * unit tests for {@link UserRoleController}
@@ -41,10 +44,11 @@ import com.venus.restapp.response.BaseResponse;
  */
 public class UserRoleControllerTest extends AbstractControllerTest {
 
-  private MockHttpServletRequest request;
-  private MockHttpServletResponse response;
+  private static MockHttpServletRequest request;
+  private static MockHttpServletResponse response;
   private static UserRoleController controller;
-  private static UserController userController;  
+  private static UserController userController;
+  private static VenusSession vs;
 
   /**
    * Create the setup for each request.
@@ -67,7 +71,9 @@ public class UserRoleControllerTest extends AbstractControllerTest {
       // Get the controller from the context
       userController = appContext.getBean(UserController.class);
     }
-    
+    Institute inst = InstituteControllerTest.createTestInstitute("userRoleCTest-" + getRandomString());
+    vs = RestUtil.createVenusSession(inst);
+    RestUtil.setVenusSession(request, vs);
   }
   
   /**
@@ -86,7 +92,7 @@ public class UserRoleControllerTest extends AbstractControllerTest {
   public void testCreateUserRole() throws Exception {
     /* Create the user first */
     String username = "tCreateUR-" + getRandomString();
-    createTestUser(username);
+    UserControllerTest.createTestUser(username, vs);
     
     /* Login in as user who has role 'ROLE_ADMIN' */
     Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
@@ -151,7 +157,7 @@ public class UserRoleControllerTest extends AbstractControllerTest {
   public void testCreateUserRolesWithOutMandatoryDept() throws Exception {
     /* Create the user first */
     String name = "tCURWOMD-" + getRandomString();
-    createTestUser(name);
+    UserControllerTest.createTestUser(name, vs);
 
     /* Login in as user who has role 'ROLE_ADMIN' */
     Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
@@ -213,7 +219,7 @@ public class UserRoleControllerTest extends AbstractControllerTest {
   public void testGetUserRoles() throws Exception {
     /* Create the user first */
     String name = "tGetURs-" + getRandomString();
-    createTestUser(name);
+    UserControllerTest.createTestUser(name, vs);
 
     /* Login in as user who has role 'ROLE_ADMIN' */
     Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
@@ -253,7 +259,7 @@ public class UserRoleControllerTest extends AbstractControllerTest {
     WebDataBinder binder = new WebDataBinder(br, "request");
     binder.bind(new MutablePropertyValues(request.getParameterMap()));
 
-    mav = controller.getUserRoles(name, br, binder.getBindingResult());
+    mav = controller.getUserRoles(name, br, binder.getBindingResult(), request);
     resp = assertAndReturnModelAttributeOfType(mav, "response", UserRoleResponse.class);
     Assert.assertNotNull("Didn't get the response", resp);
     Assert.assertFalse("The error", resp.getError());
@@ -263,34 +269,6 @@ public class UserRoleControllerTest extends AbstractControllerTest {
     Assert.assertEquals("The number of roles for user", 2, entries.size());
   }
 
-
-  /**
-   * Creates a test user with given name as username.
-   * IMP: Before calling this function, Setup() method should be called
-   * to make sure the controller bean is created.
-   * @param name    The username
-   */
-  public void createTestUser(String name) throws Exception {
-    /* Login in as user who has role 'ROLE_ADMIN' */
-    Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
-        "ignored", AuthorityUtils.createAuthorityList("ROLE_ADMIN"));
-    SecurityContextHolder.getContext().setAuthentication(authRequest);
-    
-    /* should be POST method, with uri : /create */
-    request.setMethod(HttpMethod.POST.toString());
-    request.setRequestURI("/create");
-
-    /* create new request object */
-    request.setParameter("username", name);
-   
-    /* create/update the user now*/
-    final ModelAndView mav = handlerAdapter.handle(request, response, userController);
-    assertViewName(mav, "users/user");
-    final UserResponse ur = assertAndReturnModelAttributeOfType(mav, "response", UserResponse.class);
-    Assert.assertNotNull("Didn't get the response", ur);
-    Assert.assertFalse("The error", ur.getError());
-    SecurityContextHolder.clearContext();
-  }
   
   
 }
