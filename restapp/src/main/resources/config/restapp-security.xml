@@ -12,7 +12,7 @@
 
 	<http use-expressions="true">
 		<intercept-url pattern="/**" access="permitAll" />
-		<intercept-url pattern="/admin*" access="hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1')"/>
+		<intercept-url pattern="/restricted/**" access="hasIpAddress('127.0.0.1')"/>
 		<form-login login-page="/login" default-target-url="/home" always-use-default-target="false" />
 		<logout logout-success-url="/home"/>
 		<custom-filter ref="sessionFilter" after="SECURITY_CONTEXT_FILTER"/>

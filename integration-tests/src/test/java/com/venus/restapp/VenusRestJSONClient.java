@@ -28,7 +28,7 @@ public class VenusRestJSONClient extends VenusRestClient {
     if (username != null) {
       params.put("username", username);
     }
-    VenusRestResponse resp = postRequest("/admin/createAdminUser" + JSON_EXT, params);
+    VenusRestResponse resp = postRequest("/restricted/users/create" + JSON_EXT, params);
     return getJSONObject(resp);
   }
   

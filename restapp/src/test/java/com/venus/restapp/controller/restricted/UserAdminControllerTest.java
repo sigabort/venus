@@ -1,4 +1,4 @@
-package com.venus.restapp.controller;
+package com.venus.restapp.controller.restricted;
 
 import org.junit.Assert;
 
@@ -38,23 +38,25 @@ import com.venus.restapp.util.RestUtil;
 import com.venus.util.VenusSession;
 import com.venus.model.Institute;
 
+import com.venus.restapp.controller.AbstractControllerTest;
+import com.venus.restapp.controller.InstituteControllerTest;
 
 /**
- * unit tests for {@link UserController}
+ * unit tests for {@link UserAdminController}
  * @author sigabort
  */
-public class AdminControllerTest extends AbstractControllerTest {
+public class UserAdminControllerTest extends AbstractControllerTest {
 
   private MockHttpServletRequest request;
   private MockHttpServletResponse response;
-  private static AdminController controller;
+  private static UserAdminController controller;
   private static VenusSession vs;
 
   /**
    * Create the setup for each request.
    * Calls super() to make sure the appContext is created before creating mock objects.
    * After getting appContext, creates mock request, mock response objects and gets the bean for
-   * {@link AdminController} class. 
+   * {@link UserAdminController} class. 
    */
   @Before
   public void setUp() {
@@ -65,9 +67,9 @@ public class AdminControllerTest extends AbstractControllerTest {
 
     if (controller == null) {
       // Get the controller from the context
-      controller = appContext.getBean(AdminController.class);
+      controller = appContext.getBean(UserAdminController.class);
     }
-    Institute inst = InstituteControllerTest.createTestInstitute("adminCTest-" + getRandomString());
+    Institute inst = InstituteControllerTest.createTestInstitute("usrAdminCTest-" + getRandomString());
     vs = RestUtil.createVenusSession(inst);
     RestUtil.setVenusSession(request, vs);
   }
@@ -88,7 +90,7 @@ public class AdminControllerTest extends AbstractControllerTest {
   public void testCreateAdminUser() throws Exception {
     /* should be POST method, with uri : /create */
     request.setMethod(HttpMethod.POST.toString());
-    request.setRequestURI("/createAdminUser");
+    request.setRequestURI("/restricted/users/create");
 
     String name = "tCAdminUser-" + getRandomString();
     /* create new request object */

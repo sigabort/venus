@@ -76,17 +76,23 @@ public class SessionFilter extends GenericFilterBean {
    * check if the institute is already existing or not. If not, throw error. If not, use that.
    * 
    * If the user is not logged in, we need to fetch the institute in 2 ways:
-   * (a) Institute id is set in the request parameters
-   * (b) Institute id is not set.
+   * (a) Institute code is set in the request parameters
+   * (b) Institute code is not set.
    * <ul>
    *   <li>
-   *     Institute Id is set: Check if the institute is existing or not. If exists, use it.
-   *     If institute doesn't exist with the mentioned institute id, throw error. 
+   *     (a)Institute code is set: Check if the institute is existing or not. If exists, use it.
+   *     If institute doesn't exist with the mentioned institute code, fall for option (b). 
    *   </li>
    *   <li>
-   *     Intitute Id is not set: For now, we check the URL of the request. Depends on the URL, we
+   *     (b)Intitute Id is not set: For now, we check the URL of the request. Depends on the URL, we
    *     choose the institute. As, institute URL is set as code of the institute, check if the institute
-   *     exists with the URL as code or not. If yes, use it. Otherwise, throw error.
+   *     exists with the URL as code or not. If yes, use it. 
+   *     XXX: Otherwise,
+   *     Get all the institutes which don't have parent institues (main institutes). And, use the first one
+   *     as the institute. Right now, as we are targetting for only one institute, there is only a chance that
+   *     the server will be deployed for only one istitute. So this will result in the proper result.
+   *     If we are going to support more than one institute in the same server, we will need to change the logic 
+   *     here
    *   </li>
    * </ul>
    *

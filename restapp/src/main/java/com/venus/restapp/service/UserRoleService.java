@@ -44,7 +44,7 @@ public interface UserRoleService {
 
   /**
    * Special API to create the role for Admin. This shouldn't be used by others.
-   * Only APIs in 'AdminController' should use this operation
+   * Only APIs in 'UserAdminController' should use this operation
    * 
    * @param request      The {@link UserRoleRequest request} containing the 
    *                     details of user, role(s) and other parameters

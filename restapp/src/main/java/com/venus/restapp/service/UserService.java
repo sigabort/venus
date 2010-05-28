@@ -61,7 +61,7 @@ public interface UserService {
   
   /**
    * Special API for the Admin Layer to create the admin user. This shouldn't be used by others
-   * Only APIs in 'AdminController' should use this operation
+   * Only APIs in 'UserAdminController' should use this operation
    * 
    * @param request      The {@link UserRequest request} containing the 
    *                     details of user and other parameters

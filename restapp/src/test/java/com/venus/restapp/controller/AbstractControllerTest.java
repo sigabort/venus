@@ -19,9 +19,9 @@ public class AbstractControllerTest {
   public static final String WEB_CONFIG_FILE = "config/restapp-config.xml";
 
   /** handler adapter used to execute the requests */
-  static HandlerAdapter handlerAdapter;
+  public static HandlerAdapter handlerAdapter;
   /** application context */
-  static ClassPathXmlApplicationContext appContext;
+  public static ClassPathXmlApplicationContext appContext;
   
   /**
    * Generate 20-char random string

@@ -1,4 +1,4 @@
-package com.venus.restapp.controller;
+package com.venus.restapp.controller.restricted;
 
 import java.util.Map;
 import java.util.List;
@@ -35,19 +35,23 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 /**
- * Controller class for handling all users related requests.
+ * Controller class for handling all admin users related requests.
  * Handles REST requests: create/update/delete/get
  * 
+ * This should be only allowed to run from the localhost. Or infact, this code should not be
+ * used in the deployment version at all. But, to run the tests, this can be included in the 
+ * non-deployment versions.
+ * 
  */
-@Controller("adminController")
-@RequestMapping(value="/admin")
-public class AdminController {
+@Controller("userAdminController")
+@RequestMapping(value="/restricted/users")
+public class UserAdminController {
   @Autowired
   private UserService userService;
   @Autowired
   private UserRoleService userRoleService;
   
-  private static final Logger log = Logger.getLogger(AdminController.class);
+  private static final Logger log = Logger.getLogger(UserAdminController.class);
 
   /**
    * Create/Update the admin User
@@ -58,7 +62,7 @@ public class AdminController {
    *             The response object is added as model object. This object contains information
    *             about the exceptions/errors(if any errors found) 
    */
-  @RequestMapping(value="createAdminUser", method=RequestMethod.POST)
+  @RequestMapping(value="create", method=RequestMethod.POST)
   public ModelAndView createAdminUser(@Valid UserRequest userRequest, BindingResult result, HttpServletRequest req) {
     if (result.hasErrors()) {
       /* XXX: We need to populate the response with the actual errors. Need to check
