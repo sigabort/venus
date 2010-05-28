@@ -33,8 +33,10 @@ import com.venus.restapp.response.InstituteResponse;
 import com.venus.restapp.request.InstituteRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
+import com.venus.restapp.util.RestUtil;
 
 import com.venus.model.Institute;
+import com.venus.util.VenusSession;
 
 /**
  * unit tests for {@link InstituteController}
@@ -45,6 +47,7 @@ public class InstituteControllerTest extends AbstractControllerTest {
   private static MockHttpServletRequest request;
   private static MockHttpServletResponse response;
   private static InstituteController controller;
+  private static VenusSession vs;
 
   /**
    * Create the setup for each request.
@@ -64,6 +67,8 @@ public class InstituteControllerTest extends AbstractControllerTest {
       controller = appContext.getBean(InstituteController.class);
       Assert.assertTrue("Handler class is not supported for invoking methods", handlerAdapter.supports(controller));
     }
+    VenusSession vs = RestUtil.createVenusSession(null);
+    RestUtil.setVenusSession(request, vs);
   }
   
   /**
@@ -208,7 +213,7 @@ public class InstituteControllerTest extends AbstractControllerTest {
   /**
    * Create test institute
    */
-  public static Institute createTestInstitute(String name) {
+  public static Institute createTestInstitute(String name, VenusSession vs) {
     /* create mock requests, responses - different for each test */
     request = new MockHttpServletRequest();
     response = new MockHttpServletResponse();

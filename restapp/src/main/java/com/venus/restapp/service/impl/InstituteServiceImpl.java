@@ -182,4 +182,20 @@ public class InstituteServiceImpl implements InstituteService {
     }
     return count;
   }
+  
+  
+  /**
+   * Special API for the Admin Layer to create the parent institute. This shouldn't be used by others
+   * Only APIs in 'InstituteAdminController' should use this operation
+   * 
+   * @param request      The {@link InstituteRequest request} containing the 
+   *                     details of institute and other parameters
+   * @return             The corresponding {@link Institute} object if 
+   *                     created/updated with out any errors, null otherwise
+   * @throws ResponseException thrown when there is any error
+   */
+  public Institute createUpdateParentInstitute(InstituteRequest request) throws ResponseException {
+    return this.createUpdateInstitute(request);
+  }
+
 }

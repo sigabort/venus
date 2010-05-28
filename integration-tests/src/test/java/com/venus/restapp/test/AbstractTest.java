@@ -63,17 +63,11 @@ public class AbstractTest {
    * Create an institute
    * @param client      The {@link VenusRestJSONClient} used for sending requests
    */
-  public static void createAdminUserAndLogin(String name, VenusRestJSONClient client) {
-    String name = getRandomString() + "-" + getRandomNumber();
-    /* login as admin before creating department */
+  public static void createParentInstitute(String name, VenusRestJSONClient client) {
     Map<String, Object> params = new HashMap<String, Object>();
-    params.put("password", name);
-    JSONObject resp = client.createAdminUser(name, params);
+    params.put("code", name);
+    JSONObject resp = client.createParentInstitute(name, params);
     Assert.assertNotNull("Didn't get the response", resp);
-    Assert.assertFalse("Response code", resp.getBoolean("error"));
-
-    /* login using admin user/passwd */
-    resp = client.login(name, name, null);
     Assert.assertFalse("Response code", resp.getBoolean("error"));
   }
 

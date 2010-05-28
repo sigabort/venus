@@ -56,5 +56,19 @@ public interface InstituteService {
    *                     (with filtering, if any filters provided in request)
    * @throws ResponseException
    */
-  public abstract Integer getInstitutesCount(BaseRequest request)  throws ResponseException;
+  public abstract Integer getInstitutesCount(BaseRequest request) throws ResponseException;
+  
+  /**
+   * Special API for the Admin Layer to create the parent institute. This shouldn't be used by others
+   * Only APIs in 'InstituteAdminController' should use this operation
+   * 
+   * @param request      The {@link InstituteRequest request} containing the 
+   *                     details of institute and other parameters
+   * @return             The corresponding {@link Institute} object if 
+   *                     created/updated with out any errors, null otherwise
+   * @throws ResponseException thrown when there is any error
+   */
+  //@PreAuthorize("hasIpAddress('127.0.0.1/24')")
+  public abstract Institute createUpdateParentInstitute(InstituteRequest request) throws ResponseException;
+
 }

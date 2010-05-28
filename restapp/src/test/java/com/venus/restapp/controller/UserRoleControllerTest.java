@@ -71,7 +71,7 @@ public class UserRoleControllerTest extends AbstractControllerTest {
       // Get the controller from the context
       userController = appContext.getBean(UserController.class);
     }
-    Institute inst = InstituteControllerTest.createTestInstitute("userRoleCTest-" + getRandomString());
+    Institute inst = InstituteControllerTest.createTestInstitute("userRoleCTest-" + getRandomString(), null);
     vs = RestUtil.createVenusSession(inst);
     RestUtil.setVenusSession(request, vs);
   }

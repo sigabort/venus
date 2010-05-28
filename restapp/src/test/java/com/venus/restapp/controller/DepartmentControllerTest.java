@@ -69,7 +69,7 @@ public class DepartmentControllerTest extends AbstractControllerTest {
       controller = appContext.getBean(DepartmentController.class);
       Assert.assertTrue("Handler class is not supported for invoking methods", handlerAdapter.supports(controller));
     }
-    Institute inst = InstituteControllerTest.createTestInstitute("userRoleCTest-" + getRandomString());
+    Institute inst = InstituteControllerTest.createTestInstitute("userRoleCTest-" + getRandomString(), null);
     vs = RestUtil.createVenusSession(inst);
     RestUtil.setVenusSession(request, vs);
 

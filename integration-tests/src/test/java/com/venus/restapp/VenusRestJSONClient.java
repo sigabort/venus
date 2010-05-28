@@ -31,7 +31,24 @@ public class VenusRestJSONClient extends VenusRestClient {
     VenusRestResponse resp = postRequest("/restricted/users/create" + JSON_EXT, params);
     return getJSONObject(resp);
   }
-  
+
+  /**
+   * Create a parent institute
+   * @param name       The institute name
+   * @param params     Optional parameters to include
+   * @return           The JSON Object containing the result
+   */
+  public JSONObject createParentInstitute(String name, Map<String, Object> params) {
+    if (params == null) {
+      params = new HashMap<String, Object>(1);
+    }
+    if (name != null) {
+      params.put("name", name);
+    }
+    VenusRestResponse resp = postRequest("/restricted/institutes/create" + JSON_EXT, params);
+    return getJSONObject(resp);
+  }
+
   /**
    * Create Department
    * @param name        The department's name

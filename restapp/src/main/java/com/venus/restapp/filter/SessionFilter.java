@@ -13,6 +13,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.FilterChain;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
@@ -21,11 +23,11 @@ import com.venus.restapp.service.InstituteService;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.error.ResponseException;
 import com.venus.restapp.auth.RestUserDetails;
+import com.venus.restapp.util.RestUtil;
 import com.venus.restapp.util.RestParams;
 
 import com.venus.model.Institute;
 import com.venus.util.VenusSession;
-import com.venus.util.VenusSessionFactory;
 
 import java.util.List;
 
@@ -38,13 +40,16 @@ public class SessionFilter extends GenericFilterBean {
   private static ThreadLocal requestStore = new ThreadLocal();
 
   public void doFilter(ServletRequest request, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
+    /* Create VenusSession so that we can use it through out this request */
+    VenusSession vs = RestUtil.createVenusSession(null);
+
     System.out.println("------In Session Filter-----"); 
     Institute institute = null;
     try {
       /* do the work this filter intends to do 
        * Get the institute depends on the request
        */
-      institute = getInstitute(request, resp);
+      institute = getInstitute(request, resp, vs);
     }
     catch (ResponseException re) {
       throw new ServletException(re.getMessage());
@@ -54,9 +59,12 @@ public class SessionFilter extends GenericFilterBean {
       log.error("Didnt get any institute for this request, stopping the request processing...");
       return;
     }
-    VenusSession vs = VenusSessionFactory.getVenusSession(institute);
-    request.setAttribute(RestParams.REST_REQUEST_SESSION_ATTR, vs);
+
+    /* Set the venus session in the request with the specified institute */
+    vs.setInstitute(institute);
+    RestUtil.setVenusSession((HttpServletRequest)request, vs);
     
+    /* store the request in the thread local to make sure the request is obtained while authentication */
     requestStore.set(request);
     
     /* delegate to next filter */
@@ -99,7 +107,7 @@ public class SessionFilter extends GenericFilterBean {
    * @param req
    * @param resp
    */
-  private Institute getInstitute(ServletRequest req, ServletResponse resp) throws ResponseException {
+  private Institute getInstitute(ServletRequest req, ServletResponse resp, VenusSession vs) throws ResponseException {
     SecurityContext sc = SecurityContextHolder.getContext();
     Authentication auth = sc.getAuthentication();
     String instName = null;
@@ -156,10 +164,10 @@ public class SessionFilter extends GenericFilterBean {
     log.info("No institutes with code: " + url + " --------------");      
     
     /* No institutes found with the given code. Now, get the default institute for this server */
-    return getDefaultInstitute();
+    return getDefaultInstitute(vs);
   }
   
-  private Institute getDefaultInstitute() throws ResponseException {
+  private Institute getDefaultInstitute(VenusSession vs) throws ResponseException {
     /* get only institutes which dont have parents, and sort by id in ascending order */
     BaseRequest br = new BaseRequest();
     br.setFilterBy("parent");

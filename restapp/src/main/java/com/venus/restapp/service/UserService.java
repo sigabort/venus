@@ -69,6 +69,7 @@ public interface UserService {
    *                     created/updated with out any errors, null otherwise
    * @throws ResponseException thrown when there is any error
    */
+  //@PreAuthorize("hasIpAddress('127.0.0.1/24')")
   public abstract User createUpdateAdminUser(UserRequest request, VenusSession vs) throws ResponseException;
   
 }
