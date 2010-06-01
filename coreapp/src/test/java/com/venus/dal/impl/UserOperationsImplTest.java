@@ -35,6 +35,7 @@ public class UserOperationsImplTest extends BaseImplTest {
     String name = "UsrOpsImplTest-" + getRandomString();
     Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.beginTransaction();
     sess.save(institute);
     vs.setInstitute(institute);
   }

@@ -177,7 +177,9 @@ public class ProgramOperationsImpl implements ProgramOperations {
     }
 
     try {
-      Criteria criteria = vs.getHibernateSession().createCriteria(ProgramImpl.class);
+      Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
+      Criteria criteria = sess.createCriteria(ProgramImpl.class);
       NaturalIdentifier naturalId = Restrictions.naturalId().set("name", name);
       naturalId.set("department", dept);
       
@@ -221,6 +223,7 @@ public class ProgramOperationsImpl implements ProgramOperations {
     try {
       /* get hibernate session */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       /* find now */
       Query query = sess.getNamedQuery(FIND_PROGRAM_BY_CODE_STR);
       query.setString(0, code);
@@ -276,6 +279,7 @@ public class ProgramOperationsImpl implements ProgramOperations {
   public List<Program> getPrograms(Department dept, int offset, int maxRet, VenusSession vs)  throws DataAccessException {
     try {
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       Query query = sess.createQuery("FROM ProgramImpl program WHERE program.department=:dept AND program.status=:status");
       query.setInteger("status", Status.Active.ordinal());
       query.setEntity("dept", dept);

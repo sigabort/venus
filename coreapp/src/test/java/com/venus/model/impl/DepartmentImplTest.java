@@ -26,6 +26,7 @@ public class DepartmentImplTest extends BaseImplTest {
     String name = "deptImplTest-" + getRandomString();
     Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.beginTransaction();
     sess.save(institute);
     vs.setInstitute(institute);
   }

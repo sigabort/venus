@@ -45,6 +45,7 @@ public class UserRoleOperationsImplTest extends BaseImplTest {
     String name = "UsrRolesOpImplTest-" + getRandomString();
     Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.beginTransaction();
     sess.save(institute);
     vs.setInstitute(institute);
     testUser = UserOperationsImplTest.createTestUser(getRandomString(), vs);

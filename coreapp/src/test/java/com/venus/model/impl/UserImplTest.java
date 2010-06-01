@@ -26,6 +26,7 @@ public class UserImplTest extends BaseImplTest {
     String name = "UserImplTest-" + getRandomString();
     Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.beginTransaction();
     sess.save(institute);
     vs.setInstitute(institute);
   }

@@ -3,6 +3,18 @@
 	<display-name>Venus REST App</display-name>
 	<description>Venus REST Application</description>
 
+  <resource-ref>
+      <description>Venus REST Application</description>
+      <res-ref-name>hibernate/SessionFactory</res-ref-name>
+      <res-type>org.hibernate.SessionFactory</res-type>
+      <res-auth>Container</res-auth>
+  </resource-ref>
+  <resource-env-ref>
+    <description>Rest App Hibernate SessionFactory</description>
+    <resource-env-ref-name>hibernate/SessionFactory</resource-env-ref-name>
+    <resource-env-ref-type>org.hibernate.SessionFactory</resource-env-ref-type>
+   </resource-env-ref>
+
 	<context-param>
 		<param-name>webAppRootKey</param-name>		
 		<param-value>restapp.root</param-value>

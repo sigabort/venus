@@ -342,7 +342,9 @@ public class InstituteOperationsImpl implements InstituteOperations {
 
     /* use naturalid restrictions to find the institute here */
     try {
-      Criteria criteria = vs.getHibernateSession().createCriteria(InstituteImpl.class);
+      Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
+      Criteria criteria = sess.createCriteria(InstituteImpl.class);
       NaturalIdentifier naturalId = Restrictions.naturalId().set("name", name);
       
       criteria.add(naturalId);
@@ -391,6 +393,7 @@ public class InstituteOperationsImpl implements InstituteOperations {
     try {
       /* get hibernate session */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       /* create query */
       Query query = sess.createQuery("from InstituteImpl institute where institute.code=:code ");
       query.setString("code", code);
@@ -492,6 +495,7 @@ public class InstituteOperationsImpl implements InstituteOperations {
     try {
       /* use criteria for efficiency */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       Criteria c = sess.createCriteria(InstituteImpl.class);
 
       /* set the condition on status, if we need only active institutes */
@@ -566,6 +570,7 @@ public class InstituteOperationsImpl implements InstituteOperations {
     try {
       /* use criteria for efficiency */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       Criteria c = sess.createCriteria(InstituteImpl.class);
       
       /* set the condition on status, if we need only active institutes */

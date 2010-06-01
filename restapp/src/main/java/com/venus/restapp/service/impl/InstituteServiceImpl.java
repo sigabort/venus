@@ -27,10 +27,10 @@ import org.apache.commons.lang.StringUtils;
 @Service
 public class InstituteServiceImpl implements InstituteService {
   private InstituteOperations iol = new InstituteOperationsImpl();
-  private VenusSession vs = VenusSessionFactory.getVenusSession(null);
   private static final Logger log = Logger.getLogger(InstituteService.class);
 
   public Institute createUpdateInstitute(InstituteRequest req) throws ResponseException {
+    VenusSession vs = VenusSessionFactory.getVenusSession(null);
     String name = req.getName();
     Institute institute = null;
     Map<String, Object> params = new HashMap<String, Object>();
@@ -74,6 +74,7 @@ public class InstituteServiceImpl implements InstituteService {
 
 
   public Institute getInstitute(String name, BaseRequest request) throws ResponseException {
+    VenusSession vs = VenusSessionFactory.getVenusSession(null);
     Institute institute = null;
     try {
       institute = iol.findInstituteByName(name, null, vs);
@@ -93,6 +94,7 @@ public class InstituteServiceImpl implements InstituteService {
    * @throws ResponseException if there is any error
    */
   public List<Institute> getInstitutes(BaseRequest request) throws ResponseException {
+    VenusSession vs = VenusSessionFactory.getVenusSession(null);
     int offset = request.getStartIndex();
     int maxRet = request.getItemsPerPage();
     String sortBy = request.getSortBy();
@@ -151,6 +153,7 @@ public class InstituteServiceImpl implements InstituteService {
    * @throws ResponseException if there is any error
    */
   public Integer getInstitutesCount(BaseRequest request) throws ResponseException {
+    VenusSession vs = VenusSessionFactory.getVenusSession(null);
    /* Time to parse the query parameters */
     Boolean onlyActive = request.getOnlyActive();
     String filterBy = request.getFilterBy();

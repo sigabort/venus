@@ -34,12 +34,11 @@ public class ProgramOperationsImplTest extends BaseImplTest {
     String name = "PgmOpsImplTest-" + getRandomString();
     Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.beginTransaction();
     sess.save(institute);
     vs.setInstitute(institute);
-    Transaction txn = sess.beginTransaction();
     testDept = DepartmentImplTest.createTestDepartment("ProgramOpsImplTest-" + getRandomString(), vs);
     sess.save(testDept);
-    txn.commit();
   }
 
   /* create and test program */

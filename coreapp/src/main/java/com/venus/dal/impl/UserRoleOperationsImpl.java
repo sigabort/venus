@@ -230,7 +230,9 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
 
     /* use naturalid restrictions to find the user role here */
     try {
-      Criteria criteria = session.getHibernateSession().createCriteria(UserRoleImpl.class);
+      Session sess = session.getHibernateSession();
+      sess.beginTransaction();
+      Criteria criteria = sess.createCriteria(UserRoleImpl.class);
       /* create naturalId restrictions */
       NaturalIdentifier naturalId = Restrictions.naturalId().set("user", user);
       naturalId.set("role", role.ordinal());
@@ -284,7 +286,9 @@ public class UserRoleOperationsImpl implements UserRoleOperations {
 
     /* use naturalid restrictions to find the user roles here */
     try {
-      Criteria criteria = session.getHibernateSession().createCriteria(UserRoleImpl.class);
+      Session sess = session.getHibernateSession();
+      sess.beginTransaction();
+      Criteria criteria = sess.createCriteria(UserRoleImpl.class);
       /* create naturalId restrictions */
       NaturalIdentifier naturalId = Restrictions.naturalId().set("user", user);
       /* only set if department specific roles is asked for */

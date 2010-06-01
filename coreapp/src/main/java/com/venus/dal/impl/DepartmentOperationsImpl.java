@@ -282,7 +282,10 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
 
     /* use naturalid restrictions to find the department here */
     try {
-      Criteria criteria = vs.getHibernateSession().createCriteria(DepartmentImpl.class);
+      Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
+
+      Criteria criteria = sess.createCriteria(DepartmentImpl.class);
       NaturalIdentifier naturalId = Restrictions.naturalId().set("name", name);
       naturalId.set("institute", vs.getInstitute());
       
@@ -332,6 +335,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     try {
       /* get hibernate session */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       /* create query */
       Query query = sess.createQuery("from DepartmentImpl dept where dept.code=:code and dept.institute=:institute ");
       query.setString("code", code);
@@ -430,6 +434,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     try {
       /* use criteria for efficiency */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       Criteria c = sess.createCriteria(DepartmentImpl.class);
 
       /* set the institute id */
@@ -486,6 +491,7 @@ public class DepartmentOperationsImpl implements DepartmentOperations {
     try {
       /* use criteria for efficiency */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       Criteria c = sess.createCriteria(DepartmentImpl.class);
 
       /* set the institute id */

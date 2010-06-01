@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 public class MyAccountServiceImpl implements MyAccountService {
 
   private DepartmentOperations dol = new DepartmentOperationsImpl();
-  private VenusSession vs = VenusSessionFactory.getVenusSession(null);
   private static final Logger log = Logger.getLogger(MyAccountServiceImpl.class);
 
   public List<MyAccount> findAll() {
@@ -33,6 +32,7 @@ public class MyAccountServiceImpl implements MyAccountService {
     
   }
   public void createAccount(MyAccount acc) {
+    VenusSession vs = VenusSessionFactory.getVenusSession(null);
     try {
       List<Department> depts = dol.getDepartments(0, 100, null, vs);
       System.out.println("\n\n------------------------------------------\n\n");

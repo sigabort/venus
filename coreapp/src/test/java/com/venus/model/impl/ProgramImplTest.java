@@ -27,6 +27,7 @@ public class ProgramImplTest extends BaseImplTest {
     String name = "PgmImplTest-" + getRandomString();
     Institute institute = InstituteImplTest.createTestInstitute(name, vs);
     sess = vs.getHibernateSession();
+    sess.beginTransaction();
     sess.save(institute);
     vs.setInstitute(institute);
   }
@@ -34,14 +35,10 @@ public class ProgramImplTest extends BaseImplTest {
   @Test
   public void testCreateProgram() throws Exception {
    String name = "testCreateProgram-" + getRandomString();
-   Transaction trans = sess.beginTransaction();
    Department dept = DepartmentImplTest.createTestDepartment(name, vs);
    sess.save(dept);
-   trans.commit();
-   trans = sess.beginTransaction();
    Program program = createTestProgram(name, dept, vs);
    sess.save(program);
-   trans.commit();
   }
 
   /** 

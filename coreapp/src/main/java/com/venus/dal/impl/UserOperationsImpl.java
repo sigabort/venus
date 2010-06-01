@@ -527,7 +527,10 @@ public class UserOperationsImpl implements UserOperations {
 
     /* use naturalid restrictions to find the user here */
     try {
-      Criteria criteria = vs.getHibernateSession().createCriteria(UserImpl.class);
+      Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
+
+      Criteria criteria = sess.createCriteria(UserImpl.class);
       NaturalIdentifier naturalId = Restrictions.naturalId().set("username", username);
       naturalId.set("institute", vs.getInstitute());
       
@@ -578,6 +581,7 @@ public class UserOperationsImpl implements UserOperations {
     try {
       /* get hibernate session */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       /* find now using named query */
       Query query = sess.getNamedQuery(FIND_USER_BY_USERID_STR);
       query.setString(0, userId);
@@ -629,6 +633,7 @@ public class UserOperationsImpl implements UserOperations {
     try {
       /* get hibernate session */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       /* find now using named query */
       Query query = sess.getNamedQuery(FIND_USER_BY_EMAIL_STR);
       query.setString(0, email);
@@ -682,6 +687,7 @@ public class UserOperationsImpl implements UserOperations {
     try {
       /* use criteria for efficiency */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       Criteria c = sess.createCriteria(UserImpl.class);
 
       /* set the institute id */
@@ -788,6 +794,7 @@ public class UserOperationsImpl implements UserOperations {
     try {
       /* use criteria for efficiency */
       Session sess = vs.getHibernateSession();
+      sess.beginTransaction();
       Criteria c = sess.createCriteria(UserImpl.class);
 
       /* set the institute id */
