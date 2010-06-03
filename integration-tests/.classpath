@@ -50,9 +50,12 @@
       <attribute value="jar:file:/Users/ravi/.m2/repository/org/sonatype/gshell/gshell-io/2.0/gshell-io-2.0-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar" sourcepath="M2_REPO/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-library/1.1/hamcrest-library-1.1.jar" sourcepath="M2_REPO/org/hamcrest/hamcrest-library/1.1/hamcrest-library-1.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpclient/4.0.1/httpclient-4.0.1.jar" sourcepath="M2_REPO/org/apache/httpcomponents/httpclient/4.0.1/httpclient-4.0.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1.jar" sourcepath="M2_REPO/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/jline/jline/0.9.94/jline-0.9.94.jar" sourcepath="M2_REPO/jline/jline/0.9.94/jline-0.9.94-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jmock/jmock/2.4.0/jmock-2.4.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/net/sf/json-lib/json-lib/2.2.3/json-lib-2.2.3-jdk15.jar" sourcepath="M2_REPO/net/sf/json-lib/json-lib/2.2.3/json-lib-2.2.3-jdk15-sources.jar">
     <attributes>
       <attribute value="jar:file:/Users/ravi/.m2/repository/net/sf/json-lib/json-lib/2.2.3/json-lib-2.2.3-jdk15-javadoc.jar!/" name="javadoc_location"/>
@@ -70,6 +73,18 @@
       <attribute value="jar:file:/Users/ravi/.m2/repository/com/thoughtworks/qdox/qdox/1.8/qdox-1.8-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/scala-lang/scala-library/2.7.7/scala-library-2.7.7.jar" sourcepath="M2_REPO/org/scala-lang/scala-library/2.7.7/scala-library-2.7.7-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/Users/ravi/.m2/repository/org/scala-lang/scala-library/2.7.7/scala-library-2.7.7-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/scalacheck/scalacheck/1.2/scalacheck-1.2.jar" sourcepath="M2_REPO/org/scalacheck/scalacheck/1.2/scalacheck-1.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/scalatest/scalatest/1.0/scalatest-1.0.jar" sourcepath="M2_REPO/org/scalatest/scalatest/1.0/scalatest-1.0-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/Users/ravi/.m2/repository/org/scalatest/scalatest/1.0/scalatest-1.0-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
   <classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-api/1.5.10/slf4j-api-1.5.10.jar" sourcepath="M2_REPO/org/slf4j/slf4j-api/1.5.10/slf4j-api-1.5.10-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/specs/specs/1.2.5/specs-1.2.5.jar" sourcepath="M2_REPO/org/specs/specs/1.2.5/specs-1.2.5-sources.jar"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 </classpath>
