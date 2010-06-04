@@ -284,7 +284,7 @@ public class VenusRestClient {
 	queryString = buildQueryString(names, values);
 	url += queryString;
       } // if params != null
-      log.info("The url: " + url);
+      //log.info("The url: " + url);
       return url;
     }
     return null;

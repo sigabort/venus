@@ -88,11 +88,6 @@
 
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>com.springsource.javax.servlet.jsp.jstl</artifactId>
-      <version>1.1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
       <artifactId>com.springsource.javax.servlet</artifactId>
       <version>2.4.0</version>
       <scope>provided</scope>
@@ -267,19 +262,21 @@
       <artifactId>com.springsource.org.codehaus.jackson</artifactId>
       <version>1.4.2</version>
     </dependency>
-    <!--  Joda Time -->
+    <!--  Joda Time -->		
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
       <version>1.6</version>
       <scope>runtime</scope>
     </dependency>
+
+    <!-- freemarker config -->
     <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time-jsptags</artifactId>
-      <version>1.0.2</version>
-      <scope>runtime</scope>
-    </dependency>		
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>${freemarker.version}</version>
+    </dependency>  
+
   </dependencies>
   <build>
     <plugins>
@@ -398,5 +395,6 @@
     <webflow.version>2.0.8.RELEASE</webflow.version>
     <aspectj.version>1.6.5.RELEASE</aspectj.version>
     <spring.security.version>3.0.0.RELEASE</spring.security.version>
+    <freemarker.version>2.3.16</freemarker.version>
   </properties>
 </project>

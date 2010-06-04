@@ -29,7 +29,7 @@
   <context:annotation-config />
   <mvc:annotation-driven />
   
-  <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver" p:order="1">
+  <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver" p:order="2">
     <property name="mediaTypes">
       <map>
 	<entry key="xml" value="application/xml"/>
@@ -50,8 +50,26 @@
     </property>
   </bean>
 
-  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" p:order="2"/>
+  <!-- freemarker config -->
+  <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+    <property name="templateLoaderPath" value="/WEB-INF/freemarker/"/>
+  </bean>
+
+  <!-- 
+    View resolvers can also be configured with ResourceBundles or XML files. If you need
+    different view resolving based on Locale, you have to use the resource bundle resolver.
+  -->
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver" p:order="1"><!--
+    <property name="cache" value="true"/>
+    --><property name="prefix" value=""/>
+    <property name="suffix" value=".ftl"/>
   
+    <!-- if you want to use the Spring FreeMarker macros, set this property to true -->
+    <property name="exposeSpringMacroHelpers" value="true"/>
+
+  </bean>
+  
+    
   <!-- Maps request paths to @Controller classes; e.g. a path of /person looks for a controller named PersonController -->
   <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
     <property name="order" value="1" />

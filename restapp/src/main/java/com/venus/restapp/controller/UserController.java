@@ -80,6 +80,9 @@ public class UserController {
        * how 'create' is populating the errors properly in case of invalid request.
        * We need to do same here too.
        */
+      for (ObjectError err: result.getAllErrors()) {
+        log.error("Adding/Updating user " + userRequest.getUsername() + ", err : " + err.toString());         
+      }
       ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
       return new ModelAndView("users/createUser", "response", re.getResponse());
     }
