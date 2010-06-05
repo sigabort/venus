@@ -141,6 +141,11 @@ public class VenusRestClient {
     return executeRequest(url, HttpPost.METHOD_NAME);
   }
 
+  public String getRequestUrl(String path, Map params) {
+    String url = buildUrl(this.basePath, path, params);
+    return host.toURI() + url;
+  }
+  
   /**
    * Execute the request
    * @param url      The url for sending the request

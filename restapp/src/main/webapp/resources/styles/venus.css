@@ -1,9 +1,49 @@
-#header
+/*** container CSS ***/
+#container {
+	width: 900px;
+}
+
+/*** header CSS ***/
+#header {
+  width: 900px;
+  height: 70px; 
+  position: relative;
+	background-image: url(/restapp/resources/images/header-bg.jpg);
+	border-bottom: 1px solid #000000;
+}
+
+/*** navigation CSS ***/
+
+.horiz-nav {
+	position: absolute;
+	top: 77px;
+	left: 140px;
+}
+
+.horiz-nav ul {
+	margin: 0px;
+}
+
+.horiz-nav li {
+	margin: 0px 8px 0px 0px;
+	list-style-type: none;
+	display: inline;
+}
+
+/*** subcontainer CSS ***/
+#sub-container {
+	width: 900px;
+	height: 500px;
+}
+
+/*** footer CSS ***/
+
+#footer {
+	clear: both;
+	background-color: #D1C0A7;
+}
 
 
-#nav
-
-#body
+/*** login CSS ***/
 
 
-#footer
