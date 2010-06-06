@@ -8,7 +8,7 @@
   width: 900px;
   height: 70px; 
   position: relative;
-	background-image: url(/restapp/resources/images/header-bg.jpg);
+	background-image: url(../images/header-bg.jpg);
 	border-bottom: 1px solid #000000;
 }
 

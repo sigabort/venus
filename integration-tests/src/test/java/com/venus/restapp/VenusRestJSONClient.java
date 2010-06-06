@@ -41,6 +41,18 @@ public class VenusRestJSONClient extends VenusRestClient {
   }
   
   /**
+   * Get the Request URL for the current request.
+   * @param path   The path to append to the base path
+   * @param params The optional parameters to include in the URL
+   * @return The URL with hostname, port, base&appended path, params included
+   */
+  @Override
+  public String getRequestUrl(String path, Map params) {
+    params = initParams(params);
+    return super.getRequestUrl(path, params);
+  }
+  
+  /**
    * Create an Admin User with specified user name
    *
    * @param username   The username for the admin

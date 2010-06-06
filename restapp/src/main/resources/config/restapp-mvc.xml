@@ -63,7 +63,7 @@
     <property name="cache" value="true"/>
     --><property name="prefix" value=""/>
     <property name="suffix" value=".ftl"/>
-  
+    <property name="requestContextAttribute" value="rc"/>   <!-- For accessing the request context path in the templates -->
     <!-- if you want to use the Spring FreeMarker macros, set this property to true -->
     <property name="exposeSpringMacroHelpers" value="true"/>
 

@@ -8,6 +8,7 @@ import org.scalatest.matchers.ShouldMatchers;
 import com.gargoylesoftware.htmlunit.html;
 
 import com.venus.restapp.VenusRestClient;
+import com.venus.restapp.test.AbstractTest;
 
 import com.venus.restapp.ui.WebToolKit;
 
@@ -20,19 +21,28 @@ class HomePageTest extends FlatSpec  with ShouldMatchers {
   val DEFAULT_HEADER_DIV_ID = "header";
   val DEFAULT_NAVIGATION_DIV_ID = "horiz-nav";
   val DEFAULT_FOOTER_DIV_ID = "footer";
-
+  
   /* Div elements for the home page */
   val divs = List(DEFAULT_CONTAINER_DIV_ID, DEFAULT_SUBCONTAINER_DIV_ID, 
                   DEFAULT_HEADER_DIV_ID, DEFAULT_NAVIGATION_DIV_ID,
                   DEFAULT_FOOTER_DIV_ID);
+
+
+  val DEFAULT_NAVIGATION_UL_ID = "horiz-nav-links";
+  /* Total unordered lists in the home page */
+  val uls = List(DEFAULT_NAVIGATION_UL_ID);
   
+  val lis = List("Home", "Departments", "Programs", "Staff");
+  
+  /* Create one separate institute for these tests */
+  val name = "HPUIT-" + AbstractTest.getRandomString();
   /* get home page */
-  val url: String = new VenusRestClient().getRequestUrl(null, null);
+  val url: String = new VenusRestJSONClient(name).getRequestUrl(null, null);
   
   "Home Page" should "contain title - 'Home Page'" in {
     /* Get the home page title */
     val wtk:WebToolKit = new WebToolKit(url);
-    println("The title: " + wtk.getTitle);
+    println("The url: " + url);
     assert(DEFAULT_HOME_PAGE_TITLE === wtk.getTitle);
   }
 
@@ -44,11 +54,30 @@ class HomePageTest extends FlatSpec  with ShouldMatchers {
     /* check each and every div now */
     divs.map(divId => assert(wtk.getDivElement(divId) != null));
   }
+
+  "Home page" should "contain all UL elements" in {
+    val wtk = new WebToolKit(url);
+    val list = wtk.getDescendentULElements(DEFAULT_CONTAINER_DIV_ID, "div");
+    assert (list != null);
+    assert (list.length >= uls.length, "Expected at least: " + uls.length + " elements. Got: " + list.length);
+    /* check each and every div now */
+    uls.map(ulId => assert(wtk.getULElement(ulId) != null));
+  }
+
+  "Home page" should "contain all LI elements" in {
+    val wtk = new WebToolKit(url);
+    val list = wtk.getDescendentElements(DEFAULT_NAVIGATION_UL_ID, "ul", null, "li");
+    assert (list != null);
+    assert (list.length >= lis.length, "Expected at least: " + lis.length + " elements. Got: " + list.length);
+  }
+
   
   "Home page" should "contain proper horizontal navigation bar" in {
     val wtk:WebToolKit = new WebToolKit(url);
     val navDiv = wtk.getDivElement(DEFAULT_NAVIGATION_DIV_ID);
     assert(navDiv != null);
+    val ul = wtk.getULElement(DEFAULT_NAVIGATION_UL_ID);
+    assert(ul != null);
   }
   
   "Home page" should "contain proper header div" in {

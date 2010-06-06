@@ -2,7 +2,7 @@
 <#include "includes/header.ftl">
 
 <div>
-  <h1> Welcome Home</h1>
+  <h1> Welcome to ${institute.name}!</h1>
 </div>
 
 <#include "includes/footer.ftl">
