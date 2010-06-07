@@ -13,8 +13,8 @@
 	<http use-expressions="true">
 		<intercept-url pattern="/**" access="permitAll" />
 		<intercept-url pattern="/restricted/**" access="hasIpAddress('127.0.0.1')"/>
-		<form-login login-page="/login" default-target-url="/home" always-use-default-target="false" />
-		<logout logout-success-url="/home"/>
+		<form-login login-page="/login" default-target-url="/index" always-use-default-target="false" />
+		<logout logout-success-url="/index"/>
 		<custom-filter ref="sessionFilter" after="SECURITY_CONTEXT_FILTER"/>
 	</http>
 

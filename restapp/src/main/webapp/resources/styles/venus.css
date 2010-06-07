@@ -8,8 +8,23 @@
   width: 900px;
   height: 70px; 
   position: relative;
-	background-image: url(../images/header-bg.jpg);
 	border-bottom: 1px solid #000000;
+}
+
+.title {
+	width: 30%;
+}
+
+.logo {
+  background-image: url(../images/header-bg.jpg);
+  width: 50%;
+  height: 100%;
+  margin: auto;
+}
+
+.user-status-panel {
+  width: 20%;
+  margin-left: auto;
 }
 
 /*** navigation CSS ***/

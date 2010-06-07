@@ -1,5 +1,6 @@
-<#assign pageTitle="Home Page"/>
+<#assign pageTitle="Home Page">
 <#include "includes/header.ftl">
+<#assign institute=getResponseEntry(venusResp)>
 
 <div>
   <h1> Welcome to ${institute.name}!</h1>

@@ -221,7 +221,7 @@ public class VenusRestJSONClient extends VenusRestClient {
   }
 
   /**
-   * Logout. Right now, our application redirects to /home when the logout
+   * Logout. Right now, our application redirects to /index when the logout
    * is successful.
    * @return
    */
@@ -240,7 +240,7 @@ public class VenusRestJSONClient extends VenusRestClient {
   /**
    * Login using given username and password. This is hack...
    * Once we use VenusRestClient to login, the restapp sends a redirect to
-   * the /home right now. In case of login failure, it redirects to 
+   * the /index right now. In case of login failure, it redirects to 
    * \/restapp\/login again. So, checking the header 'Location' and find
    * if the login succeeded or not. If it succeeded, send JSON reponse with
    * error as false. If not, send JSON response with error as true.
