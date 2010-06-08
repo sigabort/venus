@@ -13,11 +13,29 @@
   <version>1.0</version>
   <name>venus core app</name>
   
+  <repositories>
+    <repository>
+      <id>scala-tools.org</id>
+      <name>Scala-Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-releases</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>scala-tools.org</id>
+      <name>Scala-Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-releases</url>
+    </pluginRepository>
+  </pluginRepositories>
+  
+  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -65,7 +83,25 @@
 	  <groupId>javax.mail</groupId>
 	  <artifactId>mail</artifactId>
 	</exclusion>
-      </exclusions>
+    </exclusions>
+  </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.specs</groupId>
+      <artifactId>specs</artifactId>
+      <version>1.2.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest</artifactId>
+      <version>${scalatest.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -121,6 +157,52 @@
           </filesets>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <scalaVersion>${scala.version}</scalaVersion>
+          <args>
+            <arg>-target:jvm-1.5</arg>
+          </args>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>hibernate3-maven-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <components>
+            <component>
+              <name>hbm2ddl</name>
+              <implementation>jdbcconfiguration</implementation>
+            </component>
+            <component>
+              <name>hbm2java</name>
+              <outputDirectory>out</outputDirectory>
+            </component>
+          </components>
+          <componentProperties>
+            <drop>true</drop>
+            <configurationfile>/src/main/resources/hibernate.cfg.xml</configurationfile>
+          </componentProperties>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+           <version>${mysql-connector.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
     <resources>
       <resource>
@@ -153,6 +235,8 @@
     <commons-lang.version>2.3</commons-lang.version>
     <mysql-connector.version>5.0.4</mysql-connector.version>
     <log4j.version>1.2.15</log4j.version>
+    <scala.version>2.7.7</scala.version>
+    <scalatest.version>1.0</scalatest.version>
   </properties>
 
 </project>

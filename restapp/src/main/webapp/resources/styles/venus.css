@@ -1,47 +1,48 @@
 /*** container CSS ***/
-#container {
+div.container {
 	width: 900px;
+	margin: 0em;
+	border: 1px solid blue;
+	line-height: 100%;
 }
 
-/*** header CSS ***/
-#header {
+/*** header/footer CSS ***/
+div.header {
   width: 900px;
-  height: 70px; 
-  position: relative;
-	border-bottom: 1px solid #000000;
+  background-color: gray;
+  clear: left;
 }
 
-.title {
-	width: 30%;
+/***  CSS for header contents ***/
+.header .logo {
+  float: left;
 }
 
-.logo {
-  background-image: url(../images/header-bg.jpg);
-  width: 50%;
-  height: 100%;
-  margin: auto;
+.header .user-status-panel {
+  float: right;
 }
 
-.user-status-panel {
-  width: 20%;
-  margin-left: auto;
+.header img {
+	z-index: -1;
+	width: 60px;
+	height: 40px;
 }
+
 
 /*** navigation CSS ***/
 
 .horiz-nav {
-	position: absolute;
-	top: 77px;
-	left: 140px;
+	clear: both;
+	margin: 0px;
 }
 
 .horiz-nav ul {
 	margin: 0px;
+  list-style-type: none;
 }
 
 .horiz-nav li {
-	margin: 0px 8px 0px 0px;
-	list-style-type: none;
+	margin: 1px;
 	display: inline;
 }
 
@@ -49,13 +50,6 @@
 #sub-container {
 	width: 900px;
 	height: 500px;
-}
-
-/*** footer CSS ***/
-
-#footer {
-	clear: both;
-	background-color: #D1C0A7;
 }
 
 

@@ -2,7 +2,7 @@
 
   <head>
     <#-- Include all Libs  -->
-    <#include "security-libs.ftl">
+    <#include "security-lib.ftl">
     <#include "request-lib.ftl">
 
     <#-- set the context path and venus response (used by other FTL files) -->    
@@ -27,20 +27,22 @@
         <#-- Header panel-->
         <div  id="header" class="header">
 
-          <#-- Title of the institute -->
-          <div id="title" class="title">
-            I am title of institute
-          </div>
-
           <#-- logo goes here -->
           <div id="logo" class="logo">
+            <img src="${ctxPath}/resources/images/header-bg.jpg"/>
+            <p>I am title of institute</p>
           </div>
-          
+
           <#-- User Status panel -->
           <div id="user-status-panel" class="user-status-panel">
-            User status here
+            <#if isAuthorised()>
+              <span>Signed in as <a href="${ctxPath}/users/<@username/>"><@username/></a></span>
+              <span><a href="${ctxPath}/j_spring_security_logout">Logout</a></span>
+            <#else>
+              <a href="${ctxPath}/login">Login</a>
+            </#if>      
           </div>
-            
+
         </div> <#-- End of Header -->
         
         <#-- The following div is panel for navigation  -->

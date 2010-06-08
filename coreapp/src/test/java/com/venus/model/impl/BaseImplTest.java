@@ -16,21 +16,21 @@ public class BaseImplTest {
   /**
    * Generate 20-char random string
    */
-  public String getRandomString() {
+  public static String getRandomString() {
     return RandomStringUtils.random(20, true, true); 
   }
 
   /**
    * Generate random number
    */
-  public int getRandomNumber() {
+  public static int getRandomNumber() {
     return RandomUtils.nextInt(); 
   }
 
   /**
    * Get the venus session
    */
-  protected final VenusSession getVenusSession() {
+  public final VenusSession getVenusSession() {
     return VenusSessionFactory.getVenusSession();
   }
   

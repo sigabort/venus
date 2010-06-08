@@ -15,3 +15,8 @@
   </@security.authorize>
   <#return false>
 </#function>
+
+<#-- Macro for getting the logged in username -->
+<#macro username>
+  <@security.authentication property="principal.username"/>
+</#macro>
