@@ -33,20 +33,22 @@ public class UserImplTest extends BaseImplTest {
 
   @Test
   public void testCreateUser() throws Exception {
-   Transaction trans = sess.beginTransaction();
-
+    Transaction trans = sess.beginTransaction();
+    User user = createTestUser(getRandomString(), vs);
+    sess.save(user);
+    trans.commit();
+  }
+  
+  public static User createTestUser(String name, VenusSession vs) throws Exception {
    User user = new UserImpl();
-   user.setUsername("ravi-" + getRandomString());
+   user.setUsername(name + "-name");
    user.setInstitute(vs.getInstitute());
-   user.setFirstName("ravi");
-   user.setLastName("ravi");
+   user.setFirstName(name + "-fName");
+   user.setLastName(name + "-lName");
    user.setStatus(Status.Active.ordinal());
    user.setCreated(new Date());
    user.setLastModified(new Date());
-
-   sess.save(user);
-   trans.commit();
-   
+   return user;
   }
 
 }

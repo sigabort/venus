@@ -20,7 +20,7 @@ import com.venus.model.Status;
 import com.venus.util.VenusSession;
 import com.venus.dal.DataAccessException;
 
-import com.venus.model.impl.BaseImplTest;
+import com.venus.model.impl.AbstractImplTest;
 import com.venus.model.impl.InstituteImplTest;
 import scala.collection.jcl.HashMap;
 
@@ -28,16 +28,16 @@ import scala.collection.mutable.Map;
 
 import java.util.{Date};
 
-class AbstractOperationsImplTest extends JUnitSuite with ShouldMatchersForJUnit {
+class AbstractOperationsImplTest extends AbstractImplTest {
   val aol: AbstractOperationsImpl = new AbstractOperationsImpl();
   var sess: Session = _;
   var vs: VenusSession = _;
   val columns = Array[String]("code", "displayName", "description" , "photoUrl", "email", "name", "status", "created", "lastModified");
   
   @Before def setUp() {
-    vs = new BaseImplTest().getVenusSession();
+    vs = getVenusSession();
     sess = vs.getHibernateSession();
-    val name = "AbstractOpsImplTest-" + BaseImplTest.getRandomString();
+    val name = "AbstractOpsImplTest-" + getRandomString();
     val institute: Institute = InstituteImplTest.createTestInstitute(name, vs);
     sess.beginTransaction();
     sess.save(institute);
@@ -45,7 +45,7 @@ class AbstractOperationsImplTest extends JUnitSuite with ShouldMatchersForJUnit 
   }
 
   @Test def testCreateInstitute() {
-    val name = "AOIT_CreateInst-" + BaseImplTest.getRandomString();
+    val name = "AOIT_CreateInst-" + getRandomString();
     val map:HashMap[String, Object] = buildOptionalParams(name);
     val niMap = new HashMap[String, Object];
     niMap += "name" -> name;

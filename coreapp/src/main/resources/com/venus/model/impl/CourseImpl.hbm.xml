@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.venus.model.impl.CourseImpl" table="courses">
+
+		<!-- auto generated id -->
+		<id name="ID" type="int" column="id">
+			<generator class="native" />
+		</id>
+
+		<natural-id>
+			<!-- The institute to which this course belongs to -->
+			<many-to-one name="institute" cascade="none" outer-join="false"
+				foreign-key="FK1_COURSEIMPL_INSTITUTE" class="com.venus.model.impl.InstituteImpl">
+				<column name="institute" not-null="true" />
+			</many-to-one>
+
+			<!-- Unique course code in the Institute -->
+			<property name="code" type="string" length="128" update="true"
+				insert="true">
+				<column name="code" not-null="true" sql-type="varchar(128)"
+					unique="false" />
+			</property>
+		</natural-id>
+
+
+		<!-- The department to which this course belongs to -->
+		<many-to-one name="department" cascade="none" outer-join="false"
+			foreign-key="FK1_COURSEIMPL_DEPT" class="com.venus.model.impl.DepartmentImpl">
+			<column name="department" not-null="true"/>
+		</many-to-one>
+
+		<!-- The program to which this course belongs to -->
+		<many-to-one name="program" cascade="none" outer-join="false"
+			foreign-key="FK1_COURSEIMPL_PROGRAM" class="com.venus.model.impl.ProgramImpl">
+			<column name="program" not-null="false" />
+		</many-to-one>
+
+		<!-- the name of the course -->
+		<property name="name" type="string" length="128" update="true"
+			insert="true">
+			<column name="name" not-null="true" sql-type="varchar(128)" />
+		</property>
+
+		<!-- course description -->
+		<property name="description" type="string" update="true"
+			insert="true">
+			<column name="description" not-null="false" unique="false" />
+		</property>
+
+		<!-- course content -->
+		<property name="content" type="string" update="true" insert="true">
+			<column name="content" not-null="false" sql-type="varchar(8192)"
+				unique="false" />
+		</property>
+
+		<!-- The admin of the course -->
+		<many-to-one name="admin" cascade="none" outer-join="false"
+			foreign-key="FK1_COURSEIMPL_ADMIN" class="com.venus.model.impl.UserImpl">
+			<column name="admin" not-null="true" />
+		</many-to-one>
+
+		<!-- The instructor of the course -->
+		<many-to-one name="instructor" cascade="none" outer-join="false"
+			foreign-key="FK1_COURSEIMPL_INSTRUCTOR" class="com.venus.model.impl.UserImpl">
+			<column name="instructor" not-null="true" />
+		</many-to-one>
+
+
+		<!-- prerequisites for the course -->
+		<property name="prerequisites" type="string" update="true"
+			insert="true">
+			<column name="prerequisites" not-null="false" unique="false" />
+		</property>
+
+		<!-- duration for the course -->
+		<property name="duration" type="int" update="true" insert="true">
+			<column name="duration" not-null="false" unique="false" />
+		</property>
+
+		<!-- the status of course -->
+		<property name="status" type="int" update="true" insert="true"
+			column="status" not-null="true" unique="false" />
+
+		<!-- created time of the object  -->
+		<property name="created" type="java.util.Date" update="true"
+			insert="true" column="created" unique="false" not-null="true" />
+
+		<!-- last modified time of the object  -->
+		<property name="lastModified" type="java.util.Date" update="true"
+			insert="true" column="lastmodified" unique="false" not-null="true" />
+
+	</class>
+
+</hibernate-mapping>
