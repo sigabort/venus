@@ -28,8 +28,8 @@ import scala.collection.mutable.Map;
 
 import java.util.{Date};
 
-class AbstractOperationsImplTest extends AbstractImplTest {
-  val aol: AbstractOperationsImpl = new AbstractOperationsImpl();
+class AbstractDalImplTest extends AbstractImplTest {
+  val aol = new AbstractDalImpl();
   var sess: Session = _;
   var vs: VenusSession = _;
   val columns = Array[String]("code", "displayName", "description" , "photoUrl", "email", "name", "status", "created", "lastModified");
@@ -52,37 +52,18 @@ class AbstractOperationsImplTest extends AbstractImplTest {
     
     val inst = aol.createUpdate("com.venus.model.impl.InstituteImpl", niMap.underlying, null, map.underlying, sess);
     Assert.assertNotNull("Institute", inst);
+
+    /* verify the NI params */
+    verifyParamsMap(inst, niMap);
+    /* verify other params */
+    verifyParamsMap(inst, map);
+  }
     
-    verifyParams(inst, niMap);
-    verifyParams(inst, map);
-  }
-  
-  def verifyParams(inst: Object, map: HashMap[String, Object]) = {
-    map.foreach(s => {
-      for (method <- inst.getClass.getMethods) {
-        val name = getParamName(method.getName);
-        if (name != null) {
-          if (StringUtils.equalsIgnoreCase(s._1, name)) {
-            Assert.assertEquals(name + " is not proper", s._2, method.invoke(inst, null));
-          }
-        }
-      }
-    });
-  }
-  
-  def getParamName(name: String): String = {
-    var param: String = null;
-    if (name.startsWith("get")) {
-      param = StringUtils.substring(name, 3);
-    }
-    param;
-  }
-  
   def buildOptionalParams(name: String) = {
     val list = List("code", "displayName", "description" , "photoUrl", "email");
     val map = new HashMap[String, Object];
     list.foreach(s => map += s -> (name + "-" + s));
-    map += "status" -> Status.Active.ordinal().asInstanceOf[Object];
+    map += "status" -> Status.Active.asInstanceOf[Object];
     map += "created" -> new Date();
     map += "lastModified" -> new Date();
     map

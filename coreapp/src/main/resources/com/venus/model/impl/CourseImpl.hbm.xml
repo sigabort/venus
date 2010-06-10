@@ -50,6 +50,11 @@
 			<column name="description" not-null="false" unique="false" />
 		</property>
 
+    <!-- course's photo url -->
+    <property name="photoUrl" type="string" update="true" insert="true">
+      <column name="photourl" not-null="false" unique="false"/>
+    </property>
+
 		<!-- course content -->
 		<property name="content" type="string" update="true" insert="true">
 			<column name="content" not-null="false" sql-type="varchar(8192)"

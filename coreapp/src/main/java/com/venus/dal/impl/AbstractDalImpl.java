@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -14,18 +15,22 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.NaturalIdentifier;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import com.venus.model.BaseModel;
 import com.venus.util.VenusSession;
 import com.venus.dal.DataAccessException;
 import com.venus.model.Status;
+import com.venus.model.impl.VenusFilterImpl;
+import com.venus.model.impl.VenusSortImpl;
 
 
-public class AbstractOperationsImpl {
+public class AbstractDalImpl {
   /* logger for logging */
-  private final Logger log = Logger.getLogger(AbstractOperationsImpl.class);
+  private final Logger log = Logger.getLogger(AbstractDalImpl.class);
   
   public Object createUpdate(String clName, Map<String, Object> niParams,
         Map<String, Object> mandatoryParams, Map<String, Object> optionalParams, Session session) throws NoSuchMethodException,
@@ -36,25 +41,20 @@ public class AbstractOperationsImpl {
     Map<String, Object> opts = new HashMap<String, Object>(1);
     opts.put("onlyActive", Boolean.FALSE);
 
+    /* check if the object exists or not */
     Object obj = find(clName, niParams, opts, session);
-
+    
     if (obj != null) {
-      Integer status = (Integer)OperationsUtilImpl.getObject("status", optionalParams, Status.Active.ordinal());
-      if (optionalParams == null) {
-        optionalParams = new HashMap<String, Object>(1);
-      }
-      optionalParams.put("status", (Object)status);
-
       obj = update(obj, mandatoryParams, optionalParams, session);
     }
     else {
       obj = create(clName, niParams, mandatoryParams, optionalParams, session);
     }
     return obj;
-    
   }
-  
-  private Map<String, Object> getMergedParams(Map<String, Object>[] list) {
+
+  /* merge maps to one */
+  private Map<String, Object> combineMaps(Map<String, Object>[] list) {
     Map<String, Object> params = new HashMap<String, Object>();
     for (Map<String, Object> map: list) {
       if (map != null) {
@@ -64,16 +64,28 @@ public class AbstractOperationsImpl {
     return params;
   }
   
-  private Object create(String clName, Map<String, Object> niParams,
+  public Object create(String clName, Map<String, Object> niParams,
       Map<String, Object> mandatoryParams, Map<String, Object> optionalParams, Session session) throws NoSuchMethodException,
       IllegalAccessException, InvocationTargetException, DataAccessException, ClassNotFoundException, InstantiationException {
 
+    /* set the status object to Active if not provided */
+    Status status = (Status) OperationsUtilImpl.getObject("status", optionalParams, Status.Active);
+    if (optionalParams == null) {
+      optionalParams = new HashMap<String, Object>();
+    }
+    optionalParams.put("status", status.ordinal());
+
+    /* set created and lastModified dates if not provided */
+    optionalParams = OperationsUtilImpl.setIfNotExists("created", optionalParams, new Date());
+    optionalParams = OperationsUtilImpl.setIfNotExists("lastModified", optionalParams, new Date());
+
+    
     /* Merge all the maps to one map */
     Map<String, Object>[] array = (Map<String, Object>[]) Array.newInstance(Map.class, 3);
     array[0] = niParams;
     array[1] = mandatoryParams;
     array[2] = optionalParams;
-    Map<String, Object> params = getMergedParams(array);
+    Map<String, Object> params = combineMaps(array);
 
     /* Get the class's constructor object */
     Class classType = Class.forName(clName);
@@ -115,17 +127,25 @@ public class AbstractOperationsImpl {
     return clObj;
   }
   
-  private Object update(Object clObj, Map<String, Object> mandatoryParams, Map<String, Object> optionalParams, Session session) throws NoSuchMethodException,
+  public Object update(Object clObj, Map<String, Object> mandatoryParams, Map<String, Object> optionalParams, Session session) throws NoSuchMethodException,
     IllegalAccessException, InvocationTargetException, DataAccessException {
     if (clObj == null) {
       throw new IllegalArgumentException("The class object should be provided");
     }
+    
+    /* set the status object to Active if not provided */
+    Status status = (Status) OperationsUtilImpl.getObject("status", optionalParams, Status.Active);
+    if (optionalParams == null) {
+      optionalParams = new HashMap<String, Object>();
+    }
+    optionalParams.put("status", status.ordinal());
+    
     boolean update = false;
     
     Map<String, Object>[] array = (Map<String, Object>[]) Array.newInstance(Map.class, 2);
     array[0] = mandatoryParams;
     array[1] = optionalParams;
-    Map<String, Object> params = getMergedParams(array);
+    Map<String, Object> params = combineMaps(array);
     
     if(params != null) {
       
@@ -190,7 +210,6 @@ public class AbstractOperationsImpl {
       NaturalIdentifier naturalId = null;
       if (niParams != null) {
         for (Map.Entry entry: niParams.entrySet()) {
-          System.out.println("[find]-----------The name: " + entry.getKey() + ", val: " + entry.getValue());
           if (naturalId != null) {
             naturalId = naturalId.set((String)entry.getKey(), entry.getValue());
           }
@@ -218,6 +237,81 @@ public class AbstractOperationsImpl {
       throw new DataAccessException(errStr, he);
     }
   }
+  
+  
+  public List<Object> get(String clName, int offset, int maxReturn, Map<String, Object> options, Session session)  throws DataAccessException, ClassNotFoundException {
+    /* do we need to return only active institute? */
+    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+    List<VenusSortImpl> sortList = (List<VenusSortImpl>) OperationsUtilImpl.getObject("sortList", options, null);
+    List<VenusFilterImpl> filterList = (List<VenusFilterImpl>) OperationsUtilImpl.getObject("filterList", options, null);
+    
+    Class classType = Class.forName(clName);
+
+    /* use naturalid restrictions to find the institute here */
+    try {
+      session.beginTransaction();
+      Criteria c = session.createCriteria(classType);
+      
+      /* set the condition on status, if we need only active institutes */
+      if (onlyActive) {
+        c.add(Expression.eq("status", Status.Active.ordinal()));
+      }
+
+      /* add Sort Orders */
+      if (sortList != null) {
+        for (VenusSortImpl sort: sortList) {
+          if (sort != null) {
+            String sortBy = sort.getSortBy();
+            if (StringUtils.isNotBlank(sortBy)) {
+              c.addOrder(sort.getIsAscending()? Order.asc(sortBy) : Order.desc(sortBy));
+            }
+          }
+        }
+      }
+      
+      /* add filters */
+      if (filterList != null) {
+        for (VenusFilterImpl filter: filterList) {
+          if (filter != null) {
+            String filterBy = filter.getFilterBy();
+            if (StringUtils.isNotBlank(filterBy)) {
+              String filterOp = filter.getFilterOp();
+              Object filterValue = filter.getFilterValue();
+              if (StringUtils.equals("equals", filterOp)) {
+                /* see if the filter value is null. If yes,return only items with filterby as null */
+                if (filterValue == null) {
+                  c.add(Restrictions.isNull(filterBy));
+                }
+                else {
+                  c.add(Restrictions.eq(filterBy, filterValue));
+                }
+              }
+              else if (filterValue != null) {
+                c.add(Restrictions.like(filterBy, "%" + filterValue + "%"));
+              }
+            }
+          } 
+        }
+      }
+      /* set cachable to false for now */
+      c.setCacheable(false);
+      
+      /* set pagination */
+      c.setFirstResult(offset);
+      c.setMaxResults(maxReturn);
+
+      /* return the list */
+      return c.list();
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to find object";
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
+  }
+  
+  
+  
   
   private String getSetMethodName(String param) {
     return "set" + StringUtils.capitalize(param);

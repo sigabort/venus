@@ -1,5 +1,6 @@
 package com.venus.dal.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Date;
 import java.util.List;
@@ -137,5 +138,17 @@ public class OperationsUtilImpl {
     return def;    
   }
   
+  public static Map<String, Object> setIfNotExists(String name, Map<String, Object> params, Object val) {
+    Object current = getObject(name, params, null);
+    /* the value is not set in the params or params is null */
+    if (current == null) {
+      /* if params is null and we need to use the default value, create one map */
+      if (params == null && val != null) {
+        params = new HashMap<String, Object>(1);
+      }
+      params.put(name, val);
+    }
+    return params;
+  }
   
 }

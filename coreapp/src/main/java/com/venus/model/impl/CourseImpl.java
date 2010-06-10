@@ -13,6 +13,7 @@ public class CourseImpl extends BaseModelImpl implements java.io.Serializable {
   private ProgramImpl    program;
   private String         name;
   private String         description;
+  private String         photoUrl;
   private String         content;
   private UserImpl       admin;
   private UserImpl       instructor;
@@ -66,6 +67,14 @@ public class CourseImpl extends BaseModelImpl implements java.io.Serializable {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getPhotoUrl() {
+    return this.photoUrl;
+  }
+
+  public void setPhotoUrl(String photoUrl) {
+    this.photoUrl = photoUrl;
   }
 
   public String getContent() {
