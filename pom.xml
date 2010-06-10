@@ -6,14 +6,19 @@
   <name>Venus App Parent</name>
   <packaging>pom</packaging>
   <version>1.0</version>
+
   <modules>
     <module>coreapp</module>
     <module>restapp</module>
     <module>integration-tests</module>
   </modules>
+
   <properties>
     <junit.version>4.8.1</junit.version>
-    <commons-lang.version>2.3</commons-lang.version>
+    <commons-lang.version>2.5</commons-lang.version>
+    <log4j.version>1.2.16</log4j.version>
+    <scala.version>2.7.7</scala.version>
+    <scalatest.version>1.0.1</scalatest.version>
   </properties>
 
   <dependencies>
@@ -31,6 +36,50 @@
       <artifactId>commons-lang</artifactId>
       <version>${commons-lang.version}</version>
     </dependency>    
-  </dependencies>
 
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4j.version}</version>
+      <exclusions>
+	<exclusion>
+	  <groupId>javax.jms</groupId>
+	  <artifactId>jms</artifactId>
+	</exclusion>
+	<exclusion>
+	  <groupId>com.sun.jdmk</groupId>
+	  <artifactId>jmxtools</artifactId>
+	</exclusion>
+	<exclusion>
+	  <groupId>com.sun.jmx</groupId>
+	  <artifactId>jmxri</artifactId>
+	</exclusion>
+	<exclusion>
+	  <groupId>javax.mail</groupId>
+	  <artifactId>mail</artifactId>
+	</exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.specs</groupId>
+      <artifactId>specs</artifactId>
+      <version>1.4.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest</artifactId>
+      <version>${scalatest.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+  
 </project>

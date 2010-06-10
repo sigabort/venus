@@ -15,7 +15,6 @@
 
   <properties>
     <scala.version>2.7.7</scala.version>
-    <scalatest.version>1.0</scalatest.version>
     <htmlunit.version>2.7</htmlunit.version>
   </properties>
 
@@ -44,25 +43,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.15</version>
-      <exclusions>
-	<exclusion>
-	  <groupId>javax.jms</groupId>
-	  <artifactId>jms</artifactId>
-	</exclusion>
-	<exclusion>
-	  <groupId>com.sun.jdmk</groupId>
-	  <artifactId>jmxtools</artifactId>
-	</exclusion>
-	<exclusion>
-	  <groupId>com.sun.jmx</groupId>
-	  <artifactId>jmxri</artifactId>
-	</exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
@@ -76,26 +56,8 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.7.0</version>
+      <version>1.7.2</version>
   </dependency>
-    <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.specs</groupId>
-      <artifactId>specs</artifactId>
-      <version>1.2.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.scalatest</groupId>
-      <artifactId>scalatest</artifactId>
-      <version>${scalatest.version}</version>
-      <scope>test</scope>
-    </dependency>
     
     <dependency>
       <groupId>net.sourceforge.htmlunit</groupId>
