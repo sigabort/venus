@@ -6,12 +6,12 @@ public class VenusFilterImpl {
   private Object filterValue;
   private String filterOp;
 
-  public VenusFilterImpl(Object filterValue, String filterBy) {
+  public VenusFilterImpl(String filterBy, Object filterValue) {
     this.filterValue = filterValue;
     this.filterBy = filterBy;
     this.filterOp = "contains";
   }
-  public VenusFilterImpl(String filterOp, Object filterValue, String filterBy) {
+  public VenusFilterImpl(String filterBy, Object filterValue, String filterOp) {
     this.filterOp = filterOp;
     this.filterValue = filterValue;
     this.filterBy = filterBy;

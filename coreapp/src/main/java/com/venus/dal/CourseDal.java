@@ -10,6 +10,7 @@ import com.venus.model.impl.InstituteImpl;
 import com.venus.model.impl.CourseImpl;
 import com.venus.model.impl.UserImpl;
 import com.venus.util.VenusSession;
+import com.venus.model.Status;
 
 public interface CourseDal {
 
@@ -73,9 +74,6 @@ public interface CourseDal {
   public abstract CourseImpl findCourse(String code,
       Map<String, Object> options, VenusSession vs) throws DataAccessException;
 
-  // public abstract void setStatus(CourseImpl course, Status status,
-  // VenusSession session) throws DataAccessException;
-  //
 
   /**
    * Get all the courses
@@ -87,8 +85,6 @@ public interface CourseDal {
    * @param options
    *          The oprional parameters, including:
    *          <ul>
-   *          <li>onlyActive(Boolean): return only active courses, defaults to
-   *          true</li>
    *          <li>sortList(List<{@link VenusSortImpl}>): List of objects to be
    *          sorted on
    *          <li>filterList(List<{@link VenusFilterImpl}>): List of objects to
@@ -96,11 +92,39 @@ public interface CourseDal {
    *          </ul>
    * @param vs
    *          The venus session object
-   * @return the list of courses in an course
+   * @return the list of courses in an institute
    * @throws DataAccessException
    *           thrown when there is any error
    */
-//  public abstract List<CourseImpl> getCourses(int offset, int maxRet,
-//      Map<String, Object> options, VenusSession vs) throws DataAccessException;
+  public abstract List<CourseImpl> getCourses(int offset, int maxRet,
+      Map<String, Object> options, VenusSession vs) throws DataAccessException;
 
+  
+  
+  /**
+   * Get the number of courses in an institute
+   * 
+   * @param options
+   *          The oprional parameters, including:
+   *          <ul>
+   *          <li>filterList(List<{@link VenusFilterImpl}>): List of objects to
+   *          filter
+   *          </ul>
+   * @param vs
+   *          The venus session object
+   * @return the count courses in an institute
+   * @throws DataAccessException
+   *           thrown when there is any error
+   */
+  public abstract Integer getCoursesCount(Map<String, Object> options, VenusSession vs) throws DataAccessException;
+
+  /**
+   * Set status of the course. This can be used to delete the course
+   * @param course        The course object for which the status needs to be changed
+   * @param status        The status to be set
+   * @param vs            The session object
+   * @throws DataAccessException thrown when there is any error
+   */
+   public abstract void setStatus(CourseImpl course, Status status, VenusSession vs) throws DataAccessException;
+  
 }

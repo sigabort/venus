@@ -18,14 +18,16 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import com.venus.model.BaseModel;
+import com.venus.model.impl.BaseModelImpl;
 import com.venus.util.VenusSession;
 import com.venus.dal.DataAccessException;
 import com.venus.model.Status;
 import com.venus.model.impl.VenusFilterImpl;
 import com.venus.model.impl.VenusSortImpl;
+import com.venus.model.Institute;
 
 
 public class AbstractDalImpl {
@@ -222,7 +224,7 @@ public class AbstractDalImpl {
         criteria.add(naturalId);
       }
       criteria.setCacheable(false);
-      BaseModel obj = (BaseModel) criteria.uniqueResult();
+      BaseModelImpl obj = (BaseModelImpl) criteria.uniqueResult();
       /* check if only active obj is needed */
       if (obj != null && onlyActive) {
         if (obj.getStatus() != Status.Active.ordinal()) {
@@ -238,11 +240,71 @@ public class AbstractDalImpl {
     }
   }
   
+  private void addSortOrderToCriteria(Criteria c, List<VenusSortImpl> sortList) {
+    if (sortList != null && c != null) {
+      for (VenusSortImpl sort: sortList) {
+        if (sort != null) {
+          String sortBy = sort.getSortBy();
+          if (StringUtils.isNotBlank(sortBy)) {
+            System.out.println("Sorting on : " + sortBy + ", order: " + sort.getIsAscending());
+            c.addOrder(sort.getIsAscending()? Order.asc(sortBy) : Order.desc(sortBy));
+          }
+        }
+      }
+    }
+  }
   
-  public List<Object> get(String clName, int offset, int maxReturn, Map<String, Object> options, Session session)  throws DataAccessException, ClassNotFoundException {
-    /* do we need to return only active institute? */
-    Boolean onlyActive = OperationsUtilImpl.getBoolean("onlyActive", options, Boolean.TRUE);
+  private boolean addFiltersToCriteria(Criteria c, List<VenusFilterImpl> filterList) {
+    /* to check if the status is provided in the filter list or not */
+    boolean statusSet = false;
+
+    /* add filters */
+    if (filterList != null && c != null) {
+      for (VenusFilterImpl filter: filterList) {
+        if (filter != null) {
+          String filterBy = filter.getFilterBy();
+          if (StringUtils.isNotBlank(filterBy)) {
+            String filterOp = filter.getFilterOp();
+            Object filterValue = filter.getFilterValue();
+            /* status needs special treatment, as we dont have backing object
+             * for that in the DB */
+            if (StringUtils.equals("status", filterBy)) {
+              statusSet = true;
+              filterValue = ((Status)filterValue).ordinal();
+            }
+            System.out.println("Got the op: " + filterOp + ", value: " + filterValue + ", by: " + filterBy);
+            if (StringUtils.equals("equals", filterOp)) {
+              /* see if the filter value is null. If yes,return only items with filterby as null */
+              if (filterValue == null) {
+                c.add(Restrictions.isNull(filterBy));
+              }
+              else {
+                c.add(Restrictions.eq(filterBy, filterValue));
+              }
+            }
+            else if (StringUtils.equals("notEquals", filterOp)) {
+              /* see if the filter value is null. If yes,return only items with filterby as null */
+              if (filterValue == null) {
+                c.add(Restrictions.isNotNull(filterBy));
+              }
+              else {
+                c.add(Restrictions.not(Expression.eq(filterBy, filterValue)));
+              }                
+            }
+            else if (filterValue != null) {
+              c.add(Restrictions.like(filterBy, "%" + filterValue + "%"));
+            }
+          }
+        } 
+      }
+    }
+    return statusSet;
+  }
+   
+  public List get(String clName, int offset, int maxReturn, Map<String, Object> options, Session session)  throws DataAccessException, ClassNotFoundException {
+    /* get the sort order list */
     List<VenusSortImpl> sortList = (List<VenusSortImpl>) OperationsUtilImpl.getObject("sortList", options, null);
+    /* get the filters list */
     List<VenusFilterImpl> filterList = (List<VenusFilterImpl>) OperationsUtilImpl.getObject("filterList", options, null);
     
     Class classType = Class.forName(clName);
@@ -252,47 +314,17 @@ public class AbstractDalImpl {
       session.beginTransaction();
       Criteria c = session.createCriteria(classType);
       
-      /* set the condition on status, if we need only active institutes */
-      if (onlyActive) {
+      /* add Sort Orders */
+      addSortOrderToCriteria(c, sortList);
+      /* add filters to the criteria (if provided) and check if the status is added too or not */
+      boolean statusSet = addFiltersToCriteria(c, filterList);
+      
+ 
+      /* if objects not requested with particular status, return only active objects */
+      if (!statusSet) {
         c.add(Expression.eq("status", Status.Active.ordinal()));
       }
-
-      /* add Sort Orders */
-      if (sortList != null) {
-        for (VenusSortImpl sort: sortList) {
-          if (sort != null) {
-            String sortBy = sort.getSortBy();
-            if (StringUtils.isNotBlank(sortBy)) {
-              c.addOrder(sort.getIsAscending()? Order.asc(sortBy) : Order.desc(sortBy));
-            }
-          }
-        }
-      }
       
-      /* add filters */
-      if (filterList != null) {
-        for (VenusFilterImpl filter: filterList) {
-          if (filter != null) {
-            String filterBy = filter.getFilterBy();
-            if (StringUtils.isNotBlank(filterBy)) {
-              String filterOp = filter.getFilterOp();
-              Object filterValue = filter.getFilterValue();
-              if (StringUtils.equals("equals", filterOp)) {
-                /* see if the filter value is null. If yes,return only items with filterby as null */
-                if (filterValue == null) {
-                  c.add(Restrictions.isNull(filterBy));
-                }
-                else {
-                  c.add(Restrictions.eq(filterBy, filterValue));
-                }
-              }
-              else if (filterValue != null) {
-                c.add(Restrictions.like(filterBy, "%" + filterValue + "%"));
-              }
-            }
-          } 
-        }
-      }
       /* set cachable to false for now */
       c.setCacheable(false);
       
@@ -300,6 +332,8 @@ public class AbstractDalImpl {
       c.setFirstResult(offset);
       c.setMaxResults(maxReturn);
 
+      System.out.println("QUERY: " + c.toString());
+      
       /* return the list */
       return c.list();
     }
@@ -310,8 +344,85 @@ public class AbstractDalImpl {
     }
   }
   
+  public Integer count(String clName, Map<String, Object> options, Session session)  throws DataAccessException, ClassNotFoundException {
+    /* get the sort order list */
+    List<VenusSortImpl> sortList = (List<VenusSortImpl>) OperationsUtilImpl.getObject("sortList", options, null);
+    /* get the filters list */
+    List<VenusFilterImpl> filterList = (List<VenusFilterImpl>) OperationsUtilImpl.getObject("filterList", options, null);
+    
+    Class classType = Class.forName(clName);
+
+    /* use naturalid restrictions to find the institute here */
+    try {
+      session.beginTransaction();
+      Criteria c = session.createCriteria(classType);
+      
+      /* add Sort Orders */
+      addSortOrderToCriteria(c, sortList);
+      /* add filters to the criteria (if provided) and check if the status is added too or not */
+      boolean statusSet = addFiltersToCriteria(c, filterList);
+      
+ 
+      /* if objects not requested with particular status, return only active objects */
+      if (!statusSet) {
+        c.add(Expression.eq("status", Status.Active.ordinal()));
+      }
+      
+      /* set cachable to false for now */
+      c.setCacheable(false);
+      /* set the projection for the row count */
+      c.setProjection(Projections.rowCount());
+      
+      System.out.println("COUNT QUERY: " + c.toString());
+      
+      /* return the list */
+      return ((Number)c.uniqueResult()).intValue();
+    }
+    catch (HibernateException he) {
+      String errStr = "Unable to count the number of objects for : " + clName;
+      log.error(errStr, he);
+      throw new DataAccessException(errStr, he);
+    }
+  }
   
-  
+  public void setStatus(BaseModelImpl obj, Status status, Session sess) throws DataAccessException  {
+    if (obj == null || status == null) {
+      throw new IllegalArgumentException("obj and Status must be supplied");
+    }
+    
+    boolean update = false;
+    if (status.ordinal() != obj.getStatus()) {
+      obj.setStatus(status.ordinal());
+      update = true;
+    }
+
+    /* delete if the status is different */
+    Transaction txn = null;
+    if (update) {
+      if (log.isDebugEnabled()) {
+        log.debug("Changing the status for obj: " + obj.getClass().getName());
+      }
+      try {
+        obj.setLastModified(new Date());
+        txn = sess.beginTransaction();
+        sess.update(obj);
+      }
+      catch (HibernateException he) {
+        String errStr = "Unable to change the status for obj: " + obj.getClass().getName();
+        log.error(errStr, he);
+        if (txn != null && txn.isActive()) {
+          txn.rollback();
+        }
+        throw new DataAccessException(errStr, he);
+      }
+      finally {
+        if (txn != null && txn.isActive()) {
+          txn.commit();
+        }
+      }
+    }
+  }
+
   
   private String getSetMethodName(String param) {
     return "set" + StringUtils.capitalize(param);

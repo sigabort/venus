@@ -3,6 +3,7 @@ package com.venus.dal.impl;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -12,6 +13,7 @@ import com.venus.model.impl.ProgramImpl;
 import com.venus.model.impl.UserImpl;
 import com.venus.model.impl.DepartmentImpl;
 import com.venus.model.impl.InstituteImpl;
+import com.venus.model.impl.VenusFilterImpl;
 import com.venus.util.VenusSession;
 import com.venus.dal.CourseDal;
 import com.venus.dal.OperationsUtil;
@@ -131,5 +133,97 @@ public class CourseDalImpl implements CourseDal {
     return course;
   }
   
+  /**
+   * Get all the courses
+   * 
+   * @param offset
+   *          The paging offset in the list
+   * @param maxRet
+   *          Maximum number of objects to be returned
+   * @param options
+   *          The oprional parameters, including:
+   *          <ul>
+   *          <li>sortList(List<{@link VenusSortImpl}>): List of objects to be
+   *          sorted on
+   *          <li>filterList(List<{@link VenusFilterImpl}>): List of objects to
+   *          filter
+   *          </ul>
+   * @param vs
+   *          The venus session object
+   * @return the list of courses in an course
+   * @throws DataAccessException
+   *           thrown when there is any error
+   */
+  public List<CourseImpl> getCourses(int offset, int maxRet,
+      Map<String, Object> options, VenusSession vs) throws DataAccessException {
+    /* Set the institute */
+    if (options == null) {
+      options = new HashMap<String, Object>(1);
+    }
+    /* Add institute to the filter list */
+    List<VenusFilterImpl> filterList = (List<VenusFilterImpl>)options.get("filterList");
+    if (filterList == null) {
+      filterList = new ArrayList<VenusFilterImpl>(1);
+    }
+    VenusFilterImpl vfi = new VenusFilterImpl("institute", vs.getInstitute(), "equals");
+    filterList.add(vfi);
+    options.put("filterList", filterList);
+    
+    try {
+     return (List<CourseImpl>) adi.get(COURSE_IMPL_CLASS, offset, maxRet, options, vs.getHibernateSession());
+    }
+    catch (ClassNotFoundException cne) {
+      throw new DataAccessException(cne);
+    }
+  }
+
+  /**
+   * Get the number of courses in an institute
+   * 
+   * @param options
+   *          The oprional parameters, including:
+   *          <ul>
+   *          <li>filterList(List<{@link VenusFilterImpl}>): List of objects to
+   *          filter
+   *          </ul>
+   * @param vs
+   *          The venus session object
+   * @return the count courses in an institute
+   * @throws DataAccessException
+   *           thrown when there is any error
+   */
+  public Integer getCoursesCount(Map<String, Object> options, VenusSession vs) throws DataAccessException {
+    /* Set the institute */
+    if (options == null) {
+      options = new HashMap<String, Object>(1);
+    }
+    /* Add institute to the filter list */
+    List<VenusFilterImpl> filterList = (List<VenusFilterImpl>)options.get("filterList");
+    if (filterList == null) {
+      filterList = new ArrayList<VenusFilterImpl>(1);
+    }
+    VenusFilterImpl vfi = new VenusFilterImpl("institute", vs.getInstitute(), "equals");
+    filterList.add(vfi);
+    options.put("filterList", filterList);
+    
+    try {
+     return adi.count(COURSE_IMPL_CLASS, options, vs.getHibernateSession());
+    }
+    catch (ClassNotFoundException cne) {
+      throw new DataAccessException(cne);
+    }
+  }
+
+  /**
+   * Set status of the course. This can be used to delete the course
+   * @param course        The course object for which the status needs to be changed
+   * @param status        The status to be set
+   * @param vs            The session object
+   * @throws DataAccessException thrown when there is any error
+   */
+   public void setStatus(CourseImpl course, Status status, VenusSession vs) throws DataAccessException {
+     adi.setStatus(course, status, vs.getHibernateSession());
+   }
+
   
 }
