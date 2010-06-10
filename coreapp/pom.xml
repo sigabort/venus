@@ -32,12 +32,6 @@
   
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
       <version>${org.hibernate.version}</version>
@@ -52,11 +46,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>${commons-lang.version}</version>
-    </dependency>    
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
@@ -231,8 +220,6 @@
   </reporting>
   <properties>
     <org.hibernate.version>3.2.6.ga</org.hibernate.version>
-    <junit.version>4.7</junit.version>
-    <commons-lang.version>2.3</commons-lang.version>
     <mysql-connector.version>5.0.4</mysql-connector.version>
     <log4j.version>1.2.15</log4j.version>
     <scala.version>2.7.7</scala.version>

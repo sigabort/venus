@@ -11,4 +11,26 @@
     <module>restapp</module>
     <module>integration-tests</module>
   </modules>
+  <properties>
+    <junit.version>4.8.1</junit.version>
+    <commons-lang.version>2.3</commons-lang.version>
+  </properties>
+
+  <dependencies>
+    <!-- JUnit Dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- commons -->
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>${commons-lang.version}</version>
+    </dependency>    
+  </dependencies>
+
 </project>

@@ -34,7 +34,7 @@
     </attributes>
   </classpathentry>
   <classpathentry kind="var" path="M2_REPO/org/jmock/jmock/2.4.0/jmock-2.4.0.jar"/>
-  <classpathentry kind="var" path="M2_REPO/junit/junit/4.7/junit-4.7.jar" sourcepath="M2_REPO/junit/junit/4.7/junit-4.7-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.8.1/junit-4.8.1.jar" sourcepath="M2_REPO/junit/junit/4.8.1/junit-4.8.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.15/log4j-1.2.15.jar" sourcepath="M2_REPO/log4j/log4j/1.2.15/log4j-1.2.15-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/mysql/mysql-connector-java/5.0.4/mysql-connector-java-5.0.4.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/scala-lang/scala-library/2.7.7/scala-library-2.7.7.jar" sourcepath="M2_REPO/org/scala-lang/scala-library/2.7.7/scala-library-2.7.7-sources.jar">
