@@ -7,6 +7,12 @@ import java.util.Map;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -26,14 +32,14 @@ public class AbstractControllerTest {
   /**
    * Generate 20-char random string
    */
-  public String getRandomString() {
+  public static String getRandomString() {
     return RandomStringUtils.random(20, true, true);
   }
   
   /**
    * Generate random number
    */
-  public int getRandomNumber() {
+  public static int getRandomNumber() {
     return RandomUtils.nextInt();
   }
   
@@ -65,6 +71,12 @@ public class AbstractControllerTest {
       /* get the handler adapter bean from the map */
       handlerAdapter = (HandlerAdapter) map.get(beanName);
     }
+  }
+  
+  public static void fakeAdmin() {
+    Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
+        "ignored", AuthorityUtils.createAuthorityList("ROLE_ADMIN"));
+    SecurityContextHolder.getContext().setAuthentication(authRequest);
   }
   
   @Test

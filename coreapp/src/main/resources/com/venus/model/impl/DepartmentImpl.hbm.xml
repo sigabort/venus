@@ -20,8 +20,8 @@
     </many-to-one>
 
       <!-- Unique department name in the institute -->
-      <property name="name" type="string" length="128" update="true" insert="true">
-	<column name="name" not-null="true" sql-type="varchar(128)" unique="false"/>
+      <property name="name" type="string" length="255" update="true" insert="true">
+	<column name="name" not-null="true" sql-type="varchar(255)" unique="false"/>
       </property>
     </natural-id>
 

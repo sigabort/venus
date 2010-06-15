@@ -99,6 +99,10 @@ public class AbstractDalImpl {
         //System.out.println("The name: " + entry.getKey() + ", val: " + entry.getValue());
         String name = (String)entry.getKey();
         Object value = entry.getValue();
+        /* if the value is null, we can just ignore for creation!!! */
+        if (value == null) {
+          continue;
+        }
         Method m = classType.getMethod(getSetMethodName(name), new Class[] {value.getClass()});
         m.invoke(clObj, new Object[] {entry.getValue()});
         m = classType.getMethod(getGetMethodName(name), null);

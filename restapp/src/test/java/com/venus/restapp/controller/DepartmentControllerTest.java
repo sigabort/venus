@@ -46,8 +46,8 @@ import com.venus.model.Institute;
  */
 public class DepartmentControllerTest extends AbstractControllerTest {
 
-  private MockHttpServletRequest request;
-  private MockHttpServletResponse response;
+  private static MockHttpServletRequest request;
+  private static MockHttpServletResponse response;
   private static DepartmentController controller;
   private static VenusSession vs;
 
@@ -212,5 +212,38 @@ public class DepartmentControllerTest extends AbstractControllerTest {
     }
     Assert.fail();
   }
+ 
+  
+  public static void createTestDepartment(String name, VenusSession vs) throws Exception {
+    /* create mock requests, responses - different for each test */
+    request = new MockHttpServletRequest();
+    response = new MockHttpServletResponse();
+    RestUtil.setVenusSession(request, vs);
+
+    if (controller == null) {
+      // Get the controller from the context
+      controller = appContext.getBean(DepartmentController.class);
+    }
+    /* Login in as user who has role 'ROLE_ADMIN' */
+    fakeAdmin();
+    
+    /* should be POST method, with uri : /create */
+    request.setMethod(HttpMethod.POST.toString());
+    request.setRequestURI("/create");
+
+    String code = name + "-code";
+    /* create new request object */
+    request.setParameter("name", name);
+    request.setParameter("code", code);
+   
+    /* create/update the department now*/
+    final ModelAndView mav = handlerAdapter.handle(request, response, controller);
+    assertViewName(mav, "departments/department");
+    final DepartmentResponse dr = assertAndReturnModelAttributeOfType(mav, "response", DepartmentResponse.class);
+    SecurityContextHolder.clearContext();
+    Assert.assertNotNull("Didn't get the response", dr);
+    Assert.assertFalse("The error", dr.getError());
+  }
+  
   
 }

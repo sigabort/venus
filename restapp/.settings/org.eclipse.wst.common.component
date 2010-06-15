@@ -126,6 +126,9 @@
     <dependent-module archiveName="org.springframework.web.servlet-3.0.2.RELEASE.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/var/M2_REPO/org/springframework/org.springframework.web.servlet/3.0.2.RELEASE/org.springframework.web.servlet-3.0.2.RELEASE.jar">
       <dependency-type>uses</dependency-type>
     </dependent-module>
+    <dependent-module archiveName="oval-1.30.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/var/M2_REPO/net/sf/oval/oval/1.30/oval-1.30.jar">
+      <dependency-type>uses</dependency-type>
+    </dependent-module>
     <dependent-module archiveName="spring-aop-3.0.1.RELEASE.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/var/M2_REPO/org/springframework/spring-aop/3.0.1.RELEASE/spring-aop-3.0.1.RELEASE.jar">
       <dependency-type>uses</dependency-type>
     </dependent-module>

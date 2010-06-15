@@ -18,9 +18,9 @@
 			</many-to-one>
 
 			<!-- Unique course code in the Institute -->
-			<property name="code" type="string" length="128" update="true"
+			<property name="code" type="string" length="255" update="true"
 				insert="true">
-				<column name="code" not-null="true" sql-type="varchar(128)"
+				<column name="code" not-null="true" sql-type="varchar(255)"
 					unique="false" />
 			</property>
 		</natural-id>
@@ -39,20 +39,20 @@
 		</many-to-one>
 
 		<!-- the name of the course -->
-		<property name="name" type="string" length="128" update="true"
+		<property name="name" type="string" length="255" update="true"
 			insert="true">
-			<column name="name" not-null="true" sql-type="varchar(128)" />
+			<column name="name" not-null="true" sql-type="varchar(255)" />
 		</property>
 
 		<!-- course description -->
-		<property name="description" type="string" update="true"
+		<property name="description" type="string" length="4096" update="true"
 			insert="true">
-			<column name="description" not-null="false" unique="false" />
+			<column name="description" not-null="false" sql-type="varchar(4096)" unique="false" />
 		</property>
 
     <!-- course's photo url -->
-    <property name="photoUrl" type="string" update="true" insert="true">
-      <column name="photourl" not-null="false" unique="false"/>
+    <property name="photoUrl" type="string" length="2048" update="true" insert="true">
+      <column name="photourl" not-null="false" unique="false" sql-type="varchar(2048)"/>
     </property>
 
 		<!-- course content -->
@@ -75,9 +75,9 @@
 
 
 		<!-- prerequisites for the course -->
-		<property name="prerequisites" type="string" update="true"
+		<property name="prerequisites" type="string" length="2048" update="true"
 			insert="true">
-			<column name="prerequisites" not-null="false" unique="false" />
+			<column name="prerequisites" not-null="false" unique="false" sql-type="varchar(2048)"/>
 		</property>
 
 		<!-- duration for the course -->

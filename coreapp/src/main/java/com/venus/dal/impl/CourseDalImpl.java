@@ -72,7 +72,7 @@ public class CourseDalImpl implements CourseDal {
       }
       else {
         /* check if the mandatory params set or not */
-        if (ArrayUtils.isEmpty(new Object[] {code, vs.getInstitute(), name, dept, instructor})) {
+        if (ArrayUtils.contains(new Object[] {name, dept, instructor}, null)) {
           throw new IllegalArgumentException("Mandatory parameter(s) missing");
         }
         /* if admin is not set, use instructor as admin */
