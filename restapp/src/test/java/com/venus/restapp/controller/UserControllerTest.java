@@ -29,7 +29,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 
-import com.venus.restapp.response.UserResponse;
+import com.venus.restapp.response.RestResponse;
 import com.venus.restapp.request.UserRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
@@ -89,7 +89,7 @@ public class UserControllerTest extends AbstractControllerTest {
     request.setMethod(HttpMethod.GET.toString());
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "users/home");
-    final UserResponse ur = assertAndReturnModelAttributeOfType(mav, "response", UserResponse.class);
+    final RestResponse ur = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", ur);
     Assert.assertFalse("The error", ur.getError());
   }
@@ -151,7 +151,7 @@ public class UserControllerTest extends AbstractControllerTest {
     /* create/update the user now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "users/user");
-    final UserResponse ur = assertAndReturnModelAttributeOfType(mav, "response", UserResponse.class);
+    final RestResponse ur = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", ur);
     Assert.assertFalse("The error", ur.getError());
 
@@ -173,7 +173,7 @@ public class UserControllerTest extends AbstractControllerTest {
     //final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav1, "users/user");
     
-    final UserResponse resp = assertAndReturnModelAttributeOfType(mav1, "response", UserResponse.class);
+    final RestResponse resp = assertAndReturnModelAttributeOfType(mav1, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", resp);
     Assert.assertFalse("The error", resp.getError());
     Assert.assertEquals("The error code", new Integer(200), (Integer)resp.getHttpErrorCode());
@@ -226,7 +226,7 @@ public class UserControllerTest extends AbstractControllerTest {
     /* create/update the user now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "users/user");
-    final UserResponse ur = assertAndReturnModelAttributeOfType(mav, "response", UserResponse.class);
+    final RestResponse ur = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", ur);
     Assert.assertFalse("The error", ur.getError());
   }
@@ -254,7 +254,7 @@ public class UserControllerTest extends AbstractControllerTest {
     /* create/update the user now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "users/user");
-    final UserResponse ur = assertAndReturnModelAttributeOfType(mav, "response", UserResponse.class);
+    final RestResponse ur = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", ur);
     Assert.assertFalse("The error", ur.getError());
     Assert.assertEquals("The error code", (int)200, (int)ur.getHttpErrorCode());
@@ -283,7 +283,7 @@ public class UserControllerTest extends AbstractControllerTest {
    
     /* create/update the user now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
-    assertViewName(mav, "users/createUser");
+    assertViewName(mav, "users/create");
     final BaseResponse br = assertAndReturnModelAttributeOfType(mav, "response", BaseResponse.class);
     Assert.assertNotNull("Didn't get the response", br);
     Assert.assertTrue("The error", br.getError());
@@ -353,7 +353,7 @@ public class UserControllerTest extends AbstractControllerTest {
     /* create/update the user now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "users/user");
-    final UserResponse ur = assertAndReturnModelAttributeOfType(mav, "response", UserResponse.class);
+    final RestResponse ur = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     SecurityContextHolder.clearContext();
     Assert.assertNotNull("Didn't get the response", ur);
     Assert.assertFalse("The error", ur.getError());

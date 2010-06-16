@@ -19,7 +19,6 @@ import com.venus.util.VenusSession;
 import com.venus.restapp.request.CourseRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.error.RestResponseException;
-import com.venus.restapp.response.error.ResponseException;
 import com.venus.restapp.service.CourseService;
 import com.venus.restapp.service.UserService;
 //import com.venus.restapp.service.ProgramService;
@@ -63,15 +62,10 @@ public class CourseServiceImpl implements CourseService {
     }
 
     UserImpl instructor = null;
-    try {
-      /* check if the instructor exists */
-      instructor = (UserImpl) userService.getUser(instructorName, null, vs);
-      if (instructor == null) {
-        throw new RestResponseException("instructor", HttpStatus.NOT_FOUND, "Instructor " + instructorName + " doesn't exist");
-      }
-    }
-    catch (ResponseException re) {
-      throw new RestResponseException("instructor", HttpStatus.INTERNAL_SERVER_ERROR, re.getMessage());
+    /* check if the instructor exists */
+    instructor = (UserImpl) userService.getUser(instructorName, null, vs);
+    if (instructor == null) {
+      throw new RestResponseException("instructor", HttpStatus.NOT_FOUND, "Instructor " + instructorName + " doesn't exist");
     }
 
     /* check if the admin is same as instructor or not. If not, see if it exists */
@@ -81,12 +75,7 @@ public class CourseServiceImpl implements CourseService {
         admin = instructor;
       }
       else {
-        try {
-          admin = (UserImpl) userService.getUser(adminName, null, vs);
-        }
-        catch (ResponseException re) {
-          throw new RestResponseException("admin", HttpStatus.INTERNAL_SERVER_ERROR, re.getMessage());
-        }
+        admin = (UserImpl) userService.getUser(adminName, null, vs);
       }
       if (admin == null) {
         throw new RestResponseException("admin", HttpStatus.NOT_FOUND, "Admin: " + adminName + ", doesn't exist");

@@ -2,10 +2,9 @@ package com.venus.restapp.request;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import net.sf.oval.constraint.Email;
+import net.sf.oval.constraint.Size;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.annotation.NumberFormat.Style;
@@ -19,44 +18,59 @@ import org.springframework.format.annotation.NumberFormat.Style;
  *
  */
 public class BaseUserRequest extends BaseUserRoleRequest {
-  private String email = null;
-  private String userId = null;
-  private String password = null;
-  private String firstName = null;
-  private String lastName = null;
-  private String gender = null;
-  private String url = null;
-  private String phone = null;
-  private String address1 = null;
-  private String address2 = null;
-  private String city = null;
-  private String country = null;
-  private String postalCode = null;
-  private String photoUrl = null;
+  @Email
+  @Size(max=2048, message="email size should not exceed 2048")
+  private String email;
+  @Size(max=255, message="userId size should not exceed 255")
+  private String userId;
+  @Size(max=255, message="password size should not exceed 255")
+  private String password;
+  @Size(max=255, message="firstName size should not exceed 255")
+  private String firstName;
+  @Size(max=255, message="lastName size should not exceed 255")
+  private String lastName;
+  @Size(max=10, message="gender size should not exceed 10")
+  private String gender;
+  @Size(max=2048, message="url size should not exceed 2048")
+  private String url;
+  @Size(max=20, message="phone size should not exceed 20")
+  private String phone;
+  @Size(max=255, message="address1 size should not exceed 255")
+  private String address1;
+  @Size(max=255, message="address2 size should not exceed 255")
+  private String address2;
+  @Size(max=50, message="city size should not exceed 20")
+  private String city;
+  @Size(max=50, message="country size should not exceed 50")
+  private String country;
+  @Size(max=10, message="postalCode size should not exceed 10")
+  private String postalCode;
+  @Size(max=2048, message="photoUrl size should not exceed 2048")
+  private String photoUrl;
 
   @DateTimeFormat(style="S-")
-  private Date birthDate = null;
+  private Date birthDate;
   
   @DateTimeFormat(style="S-")
-  private Date joinDate = null;
+  private Date joinDate;
   
   @DateTimeFormat(style="S-")
-  private Date created = null;
+  private Date created;
   
   @DateTimeFormat(style="S-")
-  private Date lastModified = null;
+  private Date lastModified;
   
   public String getEmail() {
     return email;
   }
   public void setEmail(String email) {
-    this.email = StringUtils.stripToNull(email);
+    this.email = email;
   }
   public String getUserId() {
     return userId;
   }
   public void setUserId(String userId) {
-    this.userId = StringUtils.stripToNull(userId);
+    this.userId = userId;
   }
   public String getPassword() {
     return password;
@@ -68,67 +82,67 @@ public class BaseUserRequest extends BaseUserRoleRequest {
     return firstName;
   }
   public void setFirstName(String firstName) {
-    this.firstName = StringUtils.stripToNull(firstName);
+    this.firstName = firstName;
   }
   public String getLastName() {
     return lastName;
   }
   public void setLastName(String lastName) {
-    this.lastName = StringUtils.stripToNull(lastName);
+    this.lastName = lastName;
   }
   public String getGender() {
     return gender;
   }
   public void setGender(String gender) {
-    this.gender = StringUtils.stripToNull(gender);
+    this.gender = gender;
   }
   public String getUrl() {
     return url;
   }
   public void setUrl(String url) {
-    this.url = StringUtils.stripToNull(url);
+    this.url = url;
   }
   public String getPhone() {
     return phone;
   }
   public void setPhone(String phone) {
-    this.phone = StringUtils.stripToNull(phone);
+    this.phone = phone;
   }
   public String getAddress1() {
     return address1;
   }
   public void setAddress1(String address1) {
-    this.address1 = StringUtils.stripToNull(address1);
+    this.address1 = address1;
   }
   public String getAddress2() {
     return address2;
   }
   public void setAddress2(String address2) {
-    this.address2 = StringUtils.stripToNull(address2);
+    this.address2 = address2;
   }
   public String getCity() {
     return city;
   }
   public void setCity(String city) {
-    this.city = StringUtils.stripToNull(city);
+    this.city = city;
   }
   public String getCountry() {
     return country;
   }
   public void setCountry(String country) {
-    this.country = StringUtils.stripToNull(country);
+    this.country = country;
   }
   public String getPostalCode() {
     return postalCode;
   }
   public void setPostalCode(String postalCode) {
-    this.postalCode = StringUtils.stripToNull(postalCode);
+    this.postalCode = postalCode;
   }
   public String getPhotoUrl() {
     return photoUrl;
   }
   public void setPhotoUrl(String photoUrl) {
-    this.photoUrl = StringUtils.stripToNull(photoUrl);
+    this.photoUrl = photoUrl;
   }
   public Date getBirthDate() {
     return birthDate;

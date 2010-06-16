@@ -1,7 +1,7 @@
 package com.venus.restapp.request;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Max;
+import net.sf.oval.constraint.Max;
+import net.sf.oval.constraint.Min;
 
 /**
  * This class represents the base request for all requests.

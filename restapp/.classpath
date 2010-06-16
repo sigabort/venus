@@ -72,7 +72,7 @@
   <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.test/3.0.2.RELEASE/org.springframework.test-3.0.2.RELEASE.jar" sourcepath="M2_REPO/org/springframework/org.springframework.test/3.0.2.RELEASE/org.springframework.test-3.0.2.RELEASE-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.web/3.0.2.RELEASE/org.springframework.web-3.0.2.RELEASE.jar" sourcepath="M2_REPO/org/springframework/org.springframework.web/3.0.2.RELEASE/org.springframework.web-3.0.2.RELEASE-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.web.servlet/3.0.2.RELEASE/org.springframework.web.servlet-3.0.2.RELEASE.jar" sourcepath="M2_REPO/org/springframework/org.springframework.web.servlet/3.0.2.RELEASE/org.springframework.web.servlet-3.0.2.RELEASE-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/net/sf/oval/oval/1.30/oval-1.30.jar" sourcepath="M2_REPO/net/sf/oval/oval/1.30/oval-1.30-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/net/sf/oval/oval/1.50/oval-1.50.jar" sourcepath="M2_REPO/net/sf/oval/oval/1.50/oval-1.50-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/scala-lang/scala-library/2.7.7/scala-library-2.7.7.jar" sourcepath="M2_REPO/org/scala-lang/scala-library/2.7.7/scala-library-2.7.7-sources.jar">
     <attributes>
       <attribute value="jar:file:/Users/ravi/.m2/repository/org/scala-lang/scala-library/2.7.7/scala-library-2.7.7-javadoc.jar!/" name="javadoc_location"/>

@@ -121,7 +121,7 @@ class ScalaHelperTest extends JUnitSuite with ShouldMatchersForJUnit {
     Assert.assertTrue("The error", resp.getError.toString.toBoolean);
     val errors = resp.getErrors();
     Assert.assertNotNull("errors", errors);
-    errors.length should (be > 0);
+    errors.size should (be > 0);
     resp.getHttpErrorCode should be (errorCode);
   }
   

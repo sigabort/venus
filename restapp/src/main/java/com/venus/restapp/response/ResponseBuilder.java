@@ -70,19 +70,18 @@ public class ResponseBuilder {
       response.setError(true);
       response.setHttpErrorCode(status.value());
       /* create an array of total error count */
-      ErrorDTO[] errors = new ErrorDTO[result.getErrorCount()];
-      int idx = 0;
+      ArrayList<ErrorDTO> errors = new ArrayList<ErrorDTO>(result.getErrorCount());
       /* append all field errors */
       for (FieldError err: result.getFieldErrors()) {
-        //System.out.println("I got field error for: " + err.getField() + ", message: " + err.getDefaultMessage() + ", code: " + err.getCode());
+        System.out.println("I got field error for: " + err.getField() + ", message: " + err.getDefaultMessage() + ", code: " + err.getCode());
         ErrorDTO dto = new ErrorDTO(err.getField(), err.getCode(), err.getDefaultMessage());
-        errors[idx++] = dto;
+        errors.add(dto);
       }
       /* append global errors now */
       for (ObjectError err: result.getGlobalErrors()) {
-        //System.out.println("I got global error for: " + err.getObjectName() + ", message: " + err.getDefaultMessage() + ", code: " + err.getCode());
+        System.out.println("I got global error for: " + err.getObjectName() + ", message: " + err.getDefaultMessage() + ", code: " + err.getCode());
         ErrorDTO dto = new ErrorDTO(err.getObjectName(), err.getCode(), err.getDefaultMessage());
-        errors[idx++] = dto;
+        errors.add(dto);
       }
       response.setErrors(errors);
     }

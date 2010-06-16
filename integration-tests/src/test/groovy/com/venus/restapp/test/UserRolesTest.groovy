@@ -59,7 +59,7 @@ public class UserRolesTest extends AbstractTest {
   public void testCreateUserAndAddRoles() {
     /* create an admin user and login as admin */
     createAdminUserAndLogin(client);
-    def name = "testCreateUserAAddRole-" + getRandomString();
+    def name = "testCrtUsrAAddRole-" + getRandomString();
 
     def user = UsersTest.createTestUser(client, name);
     

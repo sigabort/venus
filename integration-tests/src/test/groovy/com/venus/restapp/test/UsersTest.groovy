@@ -226,7 +226,7 @@ public class UsersTest extends AbstractTest {
     
     /* try to create a different user with same userId */
     def name1 = name + "-1";
-    params['email'] = name1;
+    params['email'] = name1+"@gmail.com";
     resp = client.createUser(name1, params);
     testError(resp, HttpStatus.SC_BAD_REQUEST); // expected: bad request (400)    
   }
@@ -287,14 +287,15 @@ public class UsersTest extends AbstractTest {
   public static Map buildUserOptionalParams(name) {
     def password = name + "-passwd";
     def userId = name + "-userId";
-    def email = name + "-email";
+    def email = "sigabort@email.com";
     def firstName = name + "-firstName";
     def lastName = name + "-lastName";
     def gender = 'male';
     def address1 = name + "-address1";
     def address2 = name + "-address2";
     def city = name + "-city";
-    def country = name + "-country";
+    def phone = '88789889988';
+    def country = name + "-cntry";
     def postalCode = '121121';
     def url = 'http://www.linked.in/sigabort';
     def photoUrl = 'http://www.linked.in/sigabort/pic';
@@ -302,7 +303,7 @@ public class UsersTest extends AbstractTest {
     def birthDate = '06/06/1990';
     
     return [password:password, userId:userId, email:email, firstName:firstName, lastName:lastName, 
-            gender:gender, address1:address1, address2:address2, city:city, country:country,
+            gender:gender, address1:address1, address2:address2, city:city, country:country, phone:phone,
             postalCode:postalCode, url:url, photoUrl:photoUrl, joinDate:joinDate, birthDate:birthDate];
   }
 

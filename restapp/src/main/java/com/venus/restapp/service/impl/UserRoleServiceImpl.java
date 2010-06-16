@@ -16,7 +16,6 @@ import com.venus.dal.impl.UserRoleOperationsImpl;
 import com.venus.util.VenusSession;
 import com.venus.util.VenusSessionFactory;
 
-import com.venus.restapp.response.error.ResponseException;
 import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.service.UserRoleService;
 import com.venus.restapp.service.DepartmentService;
@@ -57,9 +56,9 @@ public class UserRoleServiceImpl implements UserRoleService {
    *                     details of user, role(s) and other parameters
    * @return             The corresponding list of {@link UserRole} objects if 
    *                     created/updated with out any errors, null otherwise
-   * @throws ResponseException thrown when there is any error
+   * @throws RestResponseException thrown when there is any error
    */
-  public List<UserRole> createUpdateUserRole(UserRoleRequest request, VenusSession vs) throws ResponseException {
+  public List<UserRole> createUpdateUserRole(UserRoleRequest request, VenusSession vs) throws RestResponseException {
     String username = request.getUsername();
     String[] roles = request.getRole();
     String deptName = request.getDepartmentName();
@@ -68,13 +67,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     /* see the department */
     if (!StringUtils.isEmpty(deptName)) {
-      Department  department = null;
-      try {
-        department = deptService.getDepartment(deptName, new BaseRequest(), vs);
-      }
-      catch (RestResponseException rre) {
-        throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, rre.getMessage(), null, null);
-      }
+      Department  department = deptService.getDepartment(deptName, new BaseRequest(), vs);
       if (department != null) {
         params = new HashMap<String, Object>();
         params.put("department", department);
@@ -82,15 +75,16 @@ public class UserRoleServiceImpl implements UserRoleService {
       else {
         String errStr = "Department with name: " + deptName + ", doesn't exist";
         log.error(errStr);
-        throw new ResponseException(HttpStatus.NOT_FOUND, errStr, null, null);        
+        throw new RestResponseException("departmentName", HttpStatus.NOT_FOUND, errStr);        
       }
     }
+    
     /* see if the user is existing or not */
     User user = userService.getUser(username, new BaseRequest(), vs);
     if (user == null) {
       String errStr = "User with username: " + username + ", doesn't exist";
       log.error(errStr);
-      throw new ResponseException(HttpStatus.NOT_FOUND, errStr, null, null);
+      throw new RestResponseException("username", HttpStatus.NOT_FOUND, errStr);
     }
     if (roles != null) {
       log.info("i am going to create the user role now.....");
@@ -100,23 +94,21 @@ public class UserRoleServiceImpl implements UserRoleService {
       UserRole userRole = null;
       String role = StringUtils.stripToNull(roles[idx]);
       if (StringUtils.isEmpty(role)) {
-        log.info("i am going to skip the user role: " + role.toUpperCase());
         continue;
       }
       try {
-        log.info("i am going to create the user role: " + role.toUpperCase());
         userRole  = uro.createUpdateUserRole(user, Role.valueOf(role.toUpperCase()), params, vs);
       }
       catch (DataAccessException dae) {
         String errStr = "Error while creating/updating userRole with for user: " + username + ", role: " + role;
         log.error(errStr, dae);
-        throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+        throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
       }
       /* arguments are not proper */
       catch (IllegalArgumentException iae) {
-        log.error(iae.getMessage());        
-        throw new ResponseException(HttpStatus.BAD_REQUEST, iae.getMessage(), iae, null);
+        throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
       }
+      
       if (userRole != null) {
         log.info("Created user role, with id: " + userRole.getID() + ", for user: " + username + ", role: " + role);
         /* if userRoles object is not created, create it */
@@ -136,18 +128,23 @@ public class UserRoleServiceImpl implements UserRoleService {
    * @param user         The {@link User user} object for whom we need to fetch the roles
    * @param request      The base {@link BaseRequest request} containing all optional parameters
    * @return             The list of {@link UserRole}s if found, null otherwise
-   * @throws ResponseException thrown when there is any error
+   * @throws RestResponseException thrown when there is any error
    */
-  public List<UserRole> getUserRoles(User user, BaseRequest request, VenusSession vs) throws ResponseException {
+  public List<UserRole> getUserRoles(User user, BaseRequest request, VenusSession vs) throws RestResponseException {
     List<UserRole> userRoles = null;
     try{
       userRoles = uro.getUserRoles(user, null, vs);
     }
     catch (DataAccessException dae) {
-      String errStr = "Error while getting user roles for user: " + user.getUsername() + ", in institute: " + 1;
+      String errStr = "Error while getting user roles for user: " + user.getUsername();
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
     }
+    /* arguments are not proper */
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
+    }
+
     return userRoles;
   }
 
@@ -159,9 +156,9 @@ public class UserRoleServiceImpl implements UserRoleService {
    *                     details of user, role(s) and other parameters
    * @return             The corresponding list of {@link UserRole} objects if 
    *                     created/updated with out any errors, null otherwise
-   * @throws ResponseException thrown when there is any error
+   * @throws RestResponseException thrown when there is any error
    */
-  public List<UserRole> createUpdateAdminUserRole(UserRoleRequest request, VenusSession vs) throws ResponseException {
+  public List<UserRole> createUpdateAdminUserRole(UserRoleRequest request, VenusSession vs) throws RestResponseException {
     return createUpdateUserRole(request, vs);
   }
 

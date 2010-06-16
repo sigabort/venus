@@ -15,7 +15,7 @@ import com.venus.util.VenusSessionFactory;
 
 import com.venus.restapp.request.UserRequest;
 import com.venus.restapp.request.BaseRequest;
-import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.service.UserService;
 
 import org.springframework.stereotype.Service;
@@ -45,9 +45,9 @@ public class UserServiceImpl implements UserService {
    *                     details of user and other parameters
    * @return             The corresponding {@link User} object if 
    *                     created/updated with out any errors, null otherwise
-   * @throws ResponseException thrown when there is any error
+   * @throws RestResponseException thrown when there is any error
    */
-  public User createUpdateUser(UserRequest req, VenusSession vs) throws ResponseException {
+  public User createUpdateUser(UserRequest req, VenusSession vs) throws RestResponseException {
     String username = req.getUsername();
     User user = null;
     Map<String, Object> params = new HashMap<String, Object>();
@@ -77,11 +77,11 @@ public class UserServiceImpl implements UserService {
     catch (DataAccessException dae) {
       String errStr = "Error while creating/updating user with username: " + username;
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
     }
     /* arguments are not proper */
     catch (IllegalArgumentException iae) {
-      throw new ResponseException(HttpStatus.BAD_REQUEST, iae.getMessage(), iae, null);
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
     }
     return user;
   }
@@ -91,9 +91,9 @@ public class UserServiceImpl implements UserService {
    * @param username         The user name
    * @param request      The base {@link BaseRequest request} containing all optional parameters
    * @return             The corresponding {@link User} object if found, null otherwise
-   * @throws ResponseException thrown when there is any error
+   * @throws RestResponseException thrown when there is any error
    */
-  public User getUser(String username, BaseRequest request, VenusSession vs) throws ResponseException {
+  public User getUser(String username, BaseRequest request, VenusSession vs) throws RestResponseException {
     User user = null;
     try {
       user = uo.findUserByUsername(username, null, vs);
@@ -101,8 +101,13 @@ public class UserServiceImpl implements UserService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting user with username: " + username;
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
     }
+    /* arguments are not proper */
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
+    }
+    
     return user;
   }
 
@@ -110,9 +115,9 @@ public class UserServiceImpl implements UserService {
    * Get the users
    * @param request        The request parameter containing the optional parameters
    * @return               The list of users
-   * @throws ResponseException if there is any error
+   * @throws RestResponseException if there is any error
    */
-  public List<User> getUsers(BaseRequest request, VenusSession vs) throws ResponseException {
+  public List<User> getUsers(BaseRequest request, VenusSession vs) throws RestResponseException {
     int offset = request.getStartIndex();
     int maxRet = request.getItemsPerPage();
     String sortBy = request.getSortBy();
@@ -159,8 +164,13 @@ public class UserServiceImpl implements UserService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting users";
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
     }
+    /* arguments are not proper */
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
+    }
+
     return users;
   }
 
@@ -168,9 +178,9 @@ public class UserServiceImpl implements UserService {
    * Get the users count in the institute
    * @param request        The request parameter containing the optional parameters
    * @return               The count of total users in the institute
-   * @throws ResponseException if there is any error
+   * @throws RestResponseException if there is any error
    */
-  public Integer getUsersCount(BaseRequest request, VenusSession vs) throws ResponseException {
+  public Integer getUsersCount(BaseRequest request, VenusSession vs) throws RestResponseException {
    /* Time to parse the query parameters */
     Boolean onlyActive = request.getOnlyActive();
     String filterBy = request.getFilterBy();
@@ -198,8 +208,13 @@ public class UserServiceImpl implements UserService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting users count";
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
     }
+    /* arguments are not proper */
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
+    }
+
     return count;
   }
   
@@ -211,9 +226,9 @@ public class UserServiceImpl implements UserService {
    *                     details of user and other parameters
    * @return             The corresponding {@link User} object if 
    *                     created/updated with out any errors, null otherwise
-   * @throws ResponseException thrown when there is any error
+   * @throws RestResponseException thrown when there is any error
    */
-  public User createUpdateAdminUser(UserRequest request, VenusSession vs) throws ResponseException {
+  public User createUpdateAdminUser(UserRequest request, VenusSession vs) throws RestResponseException {
     return createUpdateUser(request, vs);
   }
 

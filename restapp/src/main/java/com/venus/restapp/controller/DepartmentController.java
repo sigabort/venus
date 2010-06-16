@@ -108,7 +108,7 @@ public class DepartmentController {
     /* if there is any error, build the response and send over */
     if (result.hasErrors()) {
       BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
-      return RestUtil.buildVenusResponse("departments/department", resp);
+      return RestUtil.buildVenusResponse("departments/home", resp);
     }
 
     VenusSession vs = RestUtil.getVenusSession(req);

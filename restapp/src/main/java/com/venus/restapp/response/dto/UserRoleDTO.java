@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.venus.model.UserRole;
 import com.venus.model.Role;
+import com.venus.model.BaseModel;
 
 import org.codehaus.jackson.annotate.JsonWriteNullProperties;
 
@@ -17,7 +18,7 @@ import org.codehaus.jackson.annotate.JsonWriteNullProperties;
  */
 /* make sure we don't send the null values */
 @JsonWriteNullProperties(false)
-public class UserRoleDTO {
+public class UserRoleDTO implements BaseDTO {
   private String username = null;
   private String role = null;
   private String department = null;
@@ -76,7 +77,8 @@ public class UserRoleDTO {
    * @param userRole      The model object 
    * @return The DTO {@link UserRoleDTO object} built using the model object
    */
-  public static UserRoleDTO getUserRoleDTO(UserRole userRole) {
+  public UserRoleDTO getDTO(BaseModel ur) {
+    UserRole userRole = (UserRole) ur;
     if (userRole != null) {
       String role = Role.values()[userRole.getRole()].toString();
       String username = userRole.getUser().getUsername();

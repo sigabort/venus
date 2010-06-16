@@ -1,5 +1,7 @@
 package com.venus.restapp.response;
 
+import java.util.ArrayList;
+
 import org.springframework.http.HttpStatus;
 import com.venus.restapp.response.dto.ErrorDTO;
 
@@ -20,7 +22,7 @@ import org.codehaus.jackson.annotate.JsonWriteNullProperties;
 public class BaseResponse {
   private Boolean error;
   private Integer httpErrorCode;
-  private ErrorDTO[] errors;
+  private ArrayList<ErrorDTO> errors;
   private Integer startIndex;
   private Integer itemsPerPage;
   private Integer totalResults;
@@ -72,11 +74,11 @@ public class BaseResponse {
     this.totalResults = totalResults;
   }
   
-  public ErrorDTO[] getErrors() {
+  public ArrayList<ErrorDTO> getErrors() {
     return errors;
   }
 
-  public void setErrors(ErrorDTO[] errors) {
+  public void setErrors(ArrayList<ErrorDTO> errors) {
     this.errors = errors;
   }
 

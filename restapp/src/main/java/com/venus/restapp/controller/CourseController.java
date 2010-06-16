@@ -74,9 +74,7 @@ public class CourseController {
       course = courseService.createUpdateCourse(courseRequest, vs);
     }
     catch (RestResponseException re) {
-      result.rejectValue(re.getField(), re.getErrorCode().toString(), re.getMessage());
-      BaseResponse resp = ResponseBuilder.createResponse(re.getErrorCode(), result);
-      return RestUtil.buildVenusResponse("courses/create", resp);
+      return RestUtil.buildErrorResponse("courses/create", re, result);
     }
     RestResponse resp = ResponseBuilder.createResponse(course, new CourseDTO());
     return RestUtil.buildVenusResponse("courses/course", resp);

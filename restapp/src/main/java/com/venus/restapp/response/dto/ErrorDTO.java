@@ -27,5 +27,17 @@ public class ErrorDTO implements BaseDTO {
     return null;
   }
   
+  public String getField() {
+    return this.field;
+  }
+  
+  public String getErrorCode() {
+    return this.errorCode;
+  }
+  
+  public String getMessage() {
+    return this.message;
+  }   
+  
 }
  

@@ -29,7 +29,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 
-import com.venus.restapp.response.UserResponse;
+import com.venus.restapp.response.RestResponse;
 import com.venus.restapp.request.UserRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
@@ -113,7 +113,7 @@ public class UserAdminControllerTest extends AbstractControllerTest {
 
     //final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "users/user");
-    final UserResponse resp = assertAndReturnModelAttributeOfType(mav, "response", UserResponse.class);
+    final RestResponse resp = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", resp);
     Assert.assertFalse("The error", resp.getError());
   }

@@ -3,7 +3,6 @@ package com.venus.restapp.controller.restricted;
 import java.util.Map;
 import java.util.List;
 
-import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
@@ -12,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,13 +26,19 @@ import com.venus.restapp.request.UserRoleRequest;
 import com.venus.restapp.request.validator.UserRoleValidator;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
-import com.venus.restapp.response.UserResponse;
-import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.RestResponse;
+import com.venus.restapp.response.ResponseBuilder;
+import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.util.RestUtil;
+import com.venus.restapp.response.dto.UserDTO;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
+
+import com.venus.model.User;
+import com.venus.model.UserRole;
+import com.venus.util.VenusSession;
 
 /**
  * Controller class for handling all admin users related requests.
@@ -53,51 +59,39 @@ public class UserAdminController {
   
   private static final Logger log = Logger.getLogger(UserAdminController.class);
 
-  /**
-   * Create/Update the admin User
-   * @param userRequest        The {@link UserRequest} object containing all parameters
-   * @param result             The {@link BindingResult} object containing the errors if there
-   *                           are any errors found while validating the request object
-   * @return the {@link ModelAndView} object containing response of creation/updation of user.
-   *             The response object is added as model object. This object contains information
-   *             about the exceptions/errors(if any errors found) 
-   */
   @RequestMapping(value="create", method=RequestMethod.POST)
-  public ModelAndView createAdminUser(@Valid UserRequest userRequest, BindingResult result, HttpServletRequest req) {
+  public ModelAndView createAdminUser(@ModelAttribute("user") UserRequest userRequest, BindingResult result, HttpServletRequest request) {
+    RestUtil.validateRequest(userRequest, request, result);
+
+    /* if there is any error, build the response and send over */
     if (result.hasErrors()) {
-      /* XXX: We need to populate the response with the actual errors. Need to check
-       * how 'create' is populating the errors properly in case of invalid request.
-       * We need to do same here too.
-       */
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
-      return new ModelAndView("users/createUser", "response", re.getResponse());
+      BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
+      return RestUtil.buildVenusResponse("users/create", resp);
     }
-    
-    log.info("Adding/Updating user" + userRequest.getUsername());
-    Object user = null;
+
+    VenusSession vs = RestUtil.getVenusSession(request);
+    User user = null;
     try {
-      user = userService.createUpdateAdminUser(userRequest, RestUtil.getVenusSession(req));
+      user = userService.createUpdateAdminUser(userRequest, vs);
     }
-    catch (ResponseException re) {
-      log.error("Can't create/update user : " + userRequest.getUsername() + ", reason: " + re.getMessage());
-      return new ModelAndView("users/createUser", "response", re.getResponse());
+    catch (RestResponseException re) {
+      return RestUtil.buildErrorResponse("users/create", re, result);
     }
-    
+
     /* create user role request for admin user */
     UserRoleRequest urr = getAdminUserRoleRequest(userRequest);
-    
     /* if roles are also provided, try to create the roles */
     if (urr != null) {
       try {
-        Object ur = userRoleService.createUpdateAdminUserRole(urr, RestUtil.getVenusSession(req));
+        List urList = userRoleService.createUpdateAdminUserRole(urr, vs);
       }
-      catch (ResponseException re) {
-        log.error("Can't create/update admin role for user: " + userRequest.getUsername());
-        return new ModelAndView("users/createUser", "response", re.getResponse());
+      catch (RestResponseException re) {
+        return RestUtil.buildErrorResponse("users/create", re, result);
       }
     }
-    UserResponse resp = UserResponse.populateUser(user);
-    return new ModelAndView("users/user", "response", resp);
+    
+    RestResponse resp = ResponseBuilder.createResponse(user, new UserDTO());
+    return RestUtil.buildVenusResponse("users/user", resp);
   }
   
 

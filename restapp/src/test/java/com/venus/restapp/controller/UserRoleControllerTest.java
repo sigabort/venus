@@ -27,9 +27,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 
-import com.venus.restapp.response.UserRoleResponse;
+import com.venus.restapp.response.RestResponse;
 import com.venus.restapp.request.UserRoleRequest;
-import com.venus.restapp.response.UserResponse;
 import com.venus.restapp.request.UserRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
@@ -109,8 +108,8 @@ public class UserRoleControllerTest extends AbstractControllerTest {
    
     /* create/update the user now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
-    assertViewName(mav, "userroles/userRole");
-    final UserRoleResponse resp = assertAndReturnModelAttributeOfType(mav, "response", UserRoleResponse.class);
+    assertViewName(mav, "userRoles/home");
+    final RestResponse resp = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", resp);
     Assert.assertFalse("The error", resp.getError());
     Assert.assertEquals("The error code", (int)200, (int)resp.getHttpErrorCode());
@@ -141,7 +140,7 @@ public class UserRoleControllerTest extends AbstractControllerTest {
    
     /* create/update the user now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
-    assertViewName(mav, "userroles/createUserRole");
+    assertViewName(mav, "userRoles/create");
     final BaseResponse br = assertAndReturnModelAttributeOfType(mav, "response", BaseResponse.class);
     Assert.assertNotNull("Didn't get the response", br);
     Assert.assertTrue("The error", br.getError());
@@ -174,7 +173,7 @@ public class UserRoleControllerTest extends AbstractControllerTest {
    
     /* create/update the user now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
-    assertViewName(mav, "userroles/createUserRole");
+    assertViewName(mav, "userRoles/create");
     final BaseResponse br = assertAndReturnModelAttributeOfType(mav, "response", BaseResponse.class);
     Assert.assertNotNull("Didn't get the response", br);
     Assert.assertTrue("The error", br.getError());
@@ -236,8 +235,8 @@ public class UserRoleControllerTest extends AbstractControllerTest {
    
     /* create/update the user now*/
     ModelAndView mav = handlerAdapter.handle(request, response, controller);
-    assertViewName(mav, "userroles/userRole");
-    UserRoleResponse resp = assertAndReturnModelAttributeOfType(mav, "response", UserRoleResponse.class);
+    assertViewName(mav, "userRoles/home");
+    RestResponse resp = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", resp);
     Assert.assertFalse("The error", resp.getError());
     Assert.assertEquals("The error code", (int)200, (int)resp.getHttpErrorCode());
@@ -260,7 +259,7 @@ public class UserRoleControllerTest extends AbstractControllerTest {
     binder.bind(new MutablePropertyValues(request.getParameterMap()));
 
     mav = controller.getUserRoles(name, br, binder.getBindingResult(), request);
-    resp = assertAndReturnModelAttributeOfType(mav, "response", UserRoleResponse.class);
+    resp = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", resp);
     Assert.assertFalse("The error", resp.getError());
     Assert.assertEquals("The error code", (int)200, (int)resp.getHttpErrorCode());

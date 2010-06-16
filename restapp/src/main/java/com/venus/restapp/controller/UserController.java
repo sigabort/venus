@@ -3,7 +3,6 @@ package com.venus.restapp.controller;
 import java.util.Map;
 import java.util.List;
 
-import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
@@ -12,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,13 +26,19 @@ import com.venus.restapp.request.UserRoleRequest;
 import com.venus.restapp.request.validator.UserRoleValidator;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
-import com.venus.restapp.response.UserResponse;
-import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.RestResponse;
+import com.venus.restapp.response.ResponseBuilder;
+import com.venus.restapp.response.dto.UserDTO;
+import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.util.RestUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
+
+import com.venus.model.User;
+import com.venus.model.UserRole;
+import com.venus.util.VenusSession;
 
 /**
  * Controller class for handling all users related requests.
@@ -58,158 +64,113 @@ public class UserController {
    */
   @RequestMapping(value="create", method=RequestMethod.GET)
   public String getCreateForm(Model model) {
-    model.addAttribute("userRequest", new UserRequest());
-    return "users/createUser";
+    model.addAttribute("user", new UserRequest());
+    return "users/create";
   }
 
 
-  /**
-   * Create/Update the User
-   * @param userRequest        The {@link UserRequest} object containing all parameters
-   * @param result             The {@link BindingResult} object containing the errors if there
-   *                           are any errors found while validating the request object
-   * @param request            The {@link HttpServletRequest} object corresponding to this request
-   * @return the {@link ModelAndView} object containing response of creation/updation of user.
-   *             The response object is added as model object. This object contains information
-   *             about the exceptions/errors(if any errors found) 
-   */
   @RequestMapping(method=RequestMethod.POST)
-  public ModelAndView create(@Valid UserRequest userRequest, BindingResult result, HttpServletRequest request) {
+  public ModelAndView create(@ModelAttribute("user") UserRequest userRequest, BindingResult result, HttpServletRequest request) {
+    RestUtil.validateRequest(userRequest, request, result);
+
+    /* if there is any error, build the response and send over */
     if (result.hasErrors()) {
-      /* XXX: We need to populate the response with the actual errors. Need to check
-       * how 'create' is populating the errors properly in case of invalid request.
-       * We need to do same here too.
-       */
-      for (ObjectError err: result.getAllErrors()) {
-        log.error("Adding/Updating user " + userRequest.getUsername() + ", err : " + err.toString());         
-      }
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
-      return new ModelAndView("users/createUser", "response", re.getResponse());
+      BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
+      return RestUtil.buildVenusResponse("users/create", resp);
     }
 
     /* see if role(s) provided */
     String[] role = userRequest.getRole();
     UserRoleRequest urr = null;
     if (!ArrayUtils.isEmpty(role)) {
-      validateUserRoleRequest(request, result, "userRequest");
+      validateUserRoleRequest(request, result, "user");
+      /* if there is any error, build the response and send over */
       if (result.hasErrors()) {
-        log.error("--------Role has some error--------");
-        ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
-        return new ModelAndView("users/createUser", "response", re.getResponse());
+        BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
+        return RestUtil.buildVenusResponse("users/create", resp);
       }
       /* build UserRoleRequest for creating roles after creating user */
       urr = getUserRoleRequest(userRequest);
     }
     
-    log.info("Adding/Updating user" + userRequest.getUsername());
-    Object user = null;
+    VenusSession vs = RestUtil.getVenusSession(request);
+    User user = null;
     try {
-      user = userService.createUpdateUser(userRequest, RestUtil.getVenusSession(request));
+      user = userService.createUpdateUser(userRequest, vs);
     }
-    catch (ResponseException re) {
-      log.error("Can't create/update user : " + userRequest.getUsername() + ", reason: " + re.getMessage());
-      return new ModelAndView("users/createUser", "response", re.getResponse());
+    catch (RestResponseException re) {
+      return RestUtil.buildErrorResponse("users/create", re, result);
     }
     
     /* if roles are also provided, try to create the roles */
     if (urr != null) {
       try {
-        Object ur = userRoleService.createUpdateUserRole(urr, RestUtil.getVenusSession(request));
+        List urList = userRoleService.createUpdateUserRole(urr, vs);
       }
-      catch (ResponseException re) {
-        log.error("Can't create/update user role: " + role[0] + ", for user: " + userRequest.getUsername());
-        return new ModelAndView("users/createUser", "response", re.getResponse());
+      catch (RestResponseException re) {
+        return RestUtil.buildErrorResponse("users/create", re, result);
       }
     }
-    UserResponse resp = UserResponse.populateUser(user);
-    return new ModelAndView("users/user", "response", resp);
+    RestResponse resp = ResponseBuilder.createResponse(user, new UserDTO());
+    return RestUtil.buildVenusResponse("users/user", resp);
   }
   
-  /**
-   * Send a particualr user details with given name in the institute.
-   * @param username     The username of the user
-   * @param request  The base request object containing all of the optional parameters
-   * @param result   The binding result containing any errors if the request is bad
-   * @return the ModelAndView object containing response with result of getting user information.
-   *             The response object is added as model object. This object contains information
-   *             about the exceptions/errors(if any errors found) 
-   */
   @RequestMapping(value="{username}", method=RequestMethod.GET)
-  public ModelAndView getUser(@PathVariable String username, @Valid BaseRequest request, BindingResult result, HttpServletRequest req) {
+  public ModelAndView getUser(@PathVariable String username, BaseRequest request, BindingResult result, HttpServletRequest req) {
+    RestUtil.validateRequest(request, req, result);
+
+    /* if there is any error, build the response and send over */
     if (result.hasErrors()) {
-      /* XXX: We need to populate the response with the actual errors. Need to check
-       * how 'create' is populating the errors properly in case of invalid request.
-       * We need to do same here too.
-       */
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
-      return new ModelAndView("users/user", "response", re.getResponse());
+      BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
+      return RestUtil.buildVenusResponse("users/user", resp);
     }
 
-    log.info("Fetching user: " + username);
-    Object user = null;
+    VenusSession vs = RestUtil.getVenusSession(req);
+    User user = null;
+
     try {
-      user = userService.getUser(username, request, RestUtil.getVenusSession(req));
+      user = userService.getUser(username, request, vs);
     }
-    catch (ResponseException re) {
-      log.info("Error while finding User with name: " + username, re);
-      return new ModelAndView("users/user", "response", re.getResponse());
+    catch (RestResponseException re) {
+      return RestUtil.buildErrorResponse("users/user", re, result);
     }
     /* user not found? throw 404 */
     if (user == null) {
-      log.info("User with name: " + username + " is not found...");
-      ResponseException re = new ResponseException(HttpStatus.NOT_FOUND, "User with name: " + username + ", not found", null, null);
-      return new ModelAndView("users/user", "response", re.getResponse());
+      RestResponseException re = new RestResponseException(null, HttpStatus.NOT_FOUND, "User with name: " + username + ", not found");
+      return RestUtil.buildErrorResponse("users/user", re, result);
     }
-    log.info("Got user: " + username);
-    /* populate the object */
-    UserResponse resp = UserResponse.populateUser(user);
-    return new ModelAndView("users/user", "response", resp);
+
+    RestResponse resp = ResponseBuilder.createResponse(user, new UserDTO());
+    return RestUtil.buildVenusResponse("users/user", resp);
   }
 
-  /**
-   * Send all of the user results in the institute. This is the default request
-   * for users page.
-   * @param request  The base request object containing all of the optional parameters
-   * @param result   The binding result containing any errors if the request is bad
-   * @return the ModelAndView object containing response with result of getting users.
-   *             The response object is added as model object. This object contains information
-   *             about the exceptions/errors(if any errors found) 
-   */
   @RequestMapping(method=RequestMethod.GET)
-  public ModelAndView getUsers(@Valid BaseRequest request, BindingResult result, HttpServletRequest req) {
+  public ModelAndView getUsers(BaseRequest request, BindingResult result, HttpServletRequest req) {
+    RestUtil.validateRequest(request, req, result);
+
+    /* if there is any error, build the response and send over */
     if (result.hasErrors()) {
-      /* XXX: We need to populate the response with the actual errors. Need to check
-       * how 'create' is populating the errors properly in case of invalid request.
-       * We need to do same here too.
-       */
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
-      return new ModelAndView("users/home", "response", re.getResponse());
+      BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
+      return RestUtil.buildVenusResponse("users/home", resp);
     }
 
-    log.info("Fetching all users....");
-
+    VenusSession vs = RestUtil.getVenusSession(req);
+    
     List users = null;
     Integer totalCount = null;
 
     try {
-      users = userService.getUsers(request, RestUtil.getVenusSession(req));
+      users = userService.getUsers(request, vs);
       /* get the total users count */
-      totalCount = userService.getUsersCount(request, RestUtil.getVenusSession(req));
+      totalCount = userService.getUsersCount(request, vs);
     }
-    catch (ResponseException re) {
-      return new ModelAndView("users/home", "response", re.getResponse());
+    catch (RestResponseException re) {
+      return RestUtil.buildErrorResponse("users/home", re, result);
     }
-    /* users not found? send empty response. So, the client can take care of
-     * what to do next
-     */
-    if (users == null) {
-      return new ModelAndView("users/home", "response", new BaseResponse());
-    }
-    log.info("Got users: " + users.size());
-    
+
     /* populate the response object */
-    UserResponse resp = UserResponse.populateUsers(users, totalCount);
-    return new ModelAndView("users/home", "response", resp);
+    RestResponse resp = ResponseBuilder.createResponse(users, totalCount, new UserDTO());
+    return RestUtil.buildVenusResponse("users/home", resp);
   }
 
   /**

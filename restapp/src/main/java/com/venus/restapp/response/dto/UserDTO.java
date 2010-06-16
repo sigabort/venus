@@ -3,6 +3,7 @@ package com.venus.restapp.response.dto;
 import java.util.Date;
 
 import com.venus.model.User;
+import com.venus.model.BaseModel;
 
 import org.codehaus.jackson.annotate.JsonWriteNullProperties;
 
@@ -16,7 +17,7 @@ import org.codehaus.jackson.annotate.JsonWriteNullProperties;
  */
 /* make sure we don't send the null values */
 @JsonWriteNullProperties(false)
-public class UserDTO {
+public class UserDTO implements BaseDTO {
   private String username = null;
   private String email = null;
   private String userId = null;
@@ -165,7 +166,8 @@ public class UserDTO {
    * @param user      The model object 
    * @return The DTO {@link UserDTO object} built using the model object
    */
-  public static UserDTO getUserDTO(User user) {
+  public UserDTO getDTO(BaseModel u) {
+    User user = (User) u;
     if (user != null) {
       UserDTO dto = new UserDTO(user.getUsername());
       dto.setEmail(user.getEmail());
