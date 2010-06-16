@@ -18,6 +18,10 @@ public class RestUtil {
   public static void setVenusSession(HttpServletRequest request, VenusSession vs) {
     request.setAttribute(RestParams.REST_REQUEST_SESSION_ATTR, vs);
   }
+
+  public static void removeVenusSession(HttpServletRequest request) {
+    request.removeAttribute(RestParams.REST_REQUEST_SESSION_ATTR);
+  }
   
   public static VenusSession createVenusSession(Institute institute) {
     return VenusSessionFactory.getVenusSession(institute);

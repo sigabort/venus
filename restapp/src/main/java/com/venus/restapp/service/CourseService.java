@@ -7,7 +7,7 @@ import com.venus.util.VenusSession;
 
 import com.venus.restapp.request.CourseRequest;
 import com.venus.restapp.request.BaseRequest;
-import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.error.RestResponseException;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -27,10 +27,10 @@ public interface CourseService {
    * @param vs           The {@link VenusSession} object containing sessions, institute info, etc
    * @return             The corresponding {@link Course} object if 
    *                     created/updated with out any errors, null otherwise
-   * @throws ResponseException thrown when there is any error
+   * @throws RestResponseException thrown when there is any error
    */
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public abstract CourseImpl createUpdateCourse(CourseRequest request, VenusSession vs) throws ResponseException;
+  public abstract CourseImpl createUpdateCourse(CourseRequest request, VenusSession vs) throws RestResponseException;
 //
 //  /**
 //   * Get the course. This operation can be called by any

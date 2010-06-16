@@ -8,11 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.oval.ConstraintViolation;
 import net.sf.oval.Validator;
 import net.sf.oval.exception.ConstraintsViolatedException;
+import net.sf.oval.integration.spring.SpringValidator;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,8 +27,11 @@ import com.venus.restapp.request.CourseRequest;
 import com.venus.restapp.request.BaseCourseRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
-//import com.venus.restapp.response.CourseResponse;
+import com.venus.restapp.response.RestResponse;
+import com.venus.restapp.response.ResponseBuilder;
+import com.venus.restapp.response.dto.CourseDTO;
 import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.util.RestUtil;
 
 import org.apache.log4j.Logger;
@@ -47,35 +53,50 @@ public class CourseController {
 
   @RequestMapping(value="create", method=RequestMethod.GET)
   public String getCreateForm(Model model) {
-    model.addAttribute("courseRequest", new CourseRequest());
-    return "courses/createCourse";
+    model.addAttribute("course", new CourseRequest());
+    return "courses/create";
   }
 
   @RequestMapping(method=RequestMethod.POST)
-  public ModelAndView create(CourseRequest courseRequest, HttpServletRequest request) throws ResponseException {
-    validateRequest(courseRequest);
-    VenusSession vs = RestUtil.getVenusSession(request);
-    CourseImpl course = courseService.createUpdateCourse(courseRequest, vs);
-//    CourseResponse resp = null;
-//    if (course != null) {
-//      resp = CourseResponse.createCourseResponse(course);
-//    }
-    return RestUtil.buildVenusResponse("courses/course", null);
-  }
-  
-  private void validateRequest(Object request) {
-    Validator validator = new Validator();
-    List<ConstraintViolation> constraints = validator.validate(request);
-    if (constraints != null && constraints.size() > 0) {
-      throw new ConstraintsViolatedException(constraints);
+  public ModelAndView create(@ModelAttribute("course") CourseRequest courseRequest, BindingResult result, HttpServletRequest request) {
+    validateRequest(courseRequest, request, result);
+
+    /* if there is any error, build the response and send over */
+    if (result.hasErrors()) {
+      BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
+      return RestUtil.buildVenusResponse("courses/create", resp);
     }
+
+    VenusSession vs = RestUtil.getVenusSession(request);
+    CourseImpl course = null;
+    /* create the course now */
+    try {
+      course = courseService.createUpdateCourse(courseRequest, vs);
+    }
+    catch (RestResponseException re) {
+      result.rejectValue(re.getField(), re.getErrorCode().toString(), re.getMessage());
+      BaseResponse resp = ResponseBuilder.createResponse(re.getErrorCode(), result);
+      return RestUtil.buildVenusResponse("courses/create", resp);
+    }
+    RestResponse resp = ResponseBuilder.createResponse(course, new CourseDTO());
+    return RestUtil.buildVenusResponse("courses/course", resp);
   }
-  
-  @ExceptionHandler(ConstraintsViolatedException.class)
-  public ModelAndView handleException(ConstraintsViolatedException ex) {
-    System.out.println("*******I got constraint violated exception*******");
-    return null;
+
+  /**
+   * Validate the object using the oval's spring validator
+   * @param request
+   * @param httpReq
+   * @param result
+   */
+  private void validateRequest(Object request, HttpServletRequest httpReq, BindingResult result) {
+    VenusSession vs = RestUtil.getVenusSession(httpReq);
+    if (vs == null || vs.getInstitute() == null) {
+      result.rejectValue(null, HttpStatus.BAD_REQUEST.toString(), "No session has been set");
+      return;
+    }
+    /* get new spring validator using OVal's validator backing for validation */
+    SpringValidator validator = new SpringValidator(new Validator());
+    validator.validate(request, result);
   }
-  
-  
+    
 }

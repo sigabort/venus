@@ -35,7 +35,14 @@ public class AbstractControllerTest {
   public static String getRandomString() {
     return RandomStringUtils.random(20, true, true);
   }
-  
+
+  /**
+   * Generate 20-char random string
+   */
+  public static String getRandomString(Integer count) {
+    return RandomStringUtils.random(count, true, true);
+  }
+
   /**
    * Generate random number
    */

@@ -1,8 +1,11 @@
 package com.venus.restapp.request;
 
 import net.sf.oval.constraint.Length;
+import net.sf.oval.constraint.NotNegative;
 import net.sf.oval.constraint.NotNull;
 import net.sf.oval.constraint.exclusion.Nullable;
+
+import com.venus.restapp.request.validation.ValidStatus;
 
 /**
  * Basic request object for Course. This object contains all the optional
@@ -40,9 +43,11 @@ public class BaseCourseRequest extends BaseRequest {
   @Length(max=2048)
   private String  prerequisites;
   
+  @NotNegative
   private Integer duration;
-  
-  private Integer status;
+
+  @ValidStatus
+  private String status;
 
   public String getDepartment() {
     return this.department;
@@ -122,6 +127,14 @@ public class BaseCourseRequest extends BaseRequest {
 
   public void setDuration(Integer duration) {
     this.duration = duration;
+  }
+
+  public String getStatus() {
+    return this.status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
 }

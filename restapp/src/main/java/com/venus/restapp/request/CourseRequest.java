@@ -1,5 +1,6 @@
 package com.venus.restapp.request;
 
+
 import net.sf.oval.constraint.Length;
 import net.sf.oval.constraint.NotNull;
 
@@ -15,7 +16,6 @@ import net.sf.oval.constraint.NotNull;
  *
  */
 public class CourseRequest extends BaseCourseRequest {
-
   @NotNull
   @Length(min=1, max=255, message="Size of Code should be in between 1 and 255 characters")
   //Check for Special Characters
@@ -75,5 +75,4 @@ public class CourseRequest extends BaseCourseRequest {
   public void setInstructor(String instructor) {
     this.instructor = instructor;
   }
-
 }

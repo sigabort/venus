@@ -9,6 +9,8 @@ import java.util.HashMap;
 import com.venus.model.impl.CourseImpl;
 import com.venus.model.impl.UserImpl;
 import com.venus.model.impl.DepartmentImpl;
+import com.venus.model.impl.ProgramImpl;
+import com.venus.model.Status;
 import com.venus.dal.CourseDal;
 import com.venus.dal.DataAccessException;
 import com.venus.dal.impl.CourseDalImpl;
@@ -16,9 +18,11 @@ import com.venus.util.VenusSession;
 
 import com.venus.restapp.request.CourseRequest;
 import com.venus.restapp.request.BaseRequest;
+import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.response.error.ResponseException;
 import com.venus.restapp.service.CourseService;
 import com.venus.restapp.service.UserService;
+//import com.venus.restapp.service.ProgramService;
 import com.venus.restapp.service.DepartmentService;
 
 import org.springframework.stereotype.Service;
@@ -36,10 +40,13 @@ public class CourseServiceImpl implements CourseService {
   @Autowired
   UserService userService;
   
+//  @Autowired
+//  ProgramService programService;
+  
   private CourseDal iol = new CourseDalImpl();
   private static final Logger log = Logger.getLogger(CourseService.class);
 
-  public CourseImpl createUpdateCourse(CourseRequest request, VenusSession vs) throws ResponseException {
+  public CourseImpl createUpdateCourse(CourseRequest request, VenusSession vs) throws RestResponseException {
     CourseImpl course = null;
     String code = request.getCode();
     String name = request.getName();
@@ -47,31 +54,63 @@ public class CourseServiceImpl implements CourseService {
     String instructorName = request.getInstructor();
     String adminName = request.getAdmin();
     
-    /* check if the department exists */
-    DepartmentImpl department = (DepartmentImpl) deptService.getDepartment(departmentName, null, vs);
-    if (department == null) {
-      throw new IllegalArgumentException("Department " + departmentName + " doesn't exist");
-    }
+    DepartmentImpl department = null;
     
-    /* check if the instructor / admin exist */
-    UserImpl instructor = (UserImpl) userService.getUser(instructorName, null, vs);
-    if (instructor == null) {
-      throw new IllegalArgumentException("Instructor: " + instructorName  + " doesn't exist");
+    try {
+      /* check if the department exists */
+      department = (DepartmentImpl) deptService.getDepartment(departmentName, null, vs);
+      if (department == null) {
+        throw new RestResponseException("department", HttpStatus.NOT_FOUND, "Department " + departmentName + " doesn't exist");
+      }
+    }
+    catch (ResponseException re) {
+      throw new RestResponseException("department", HttpStatus.INTERNAL_SERVER_ERROR, re.getMessage());
     }
 
+    UserImpl instructor = null;
+    try {
+      /* check if the instructor exists */
+      instructor = (UserImpl) userService.getUser(instructorName, null, vs);
+      if (instructor == null) {
+        throw new RestResponseException("instructor", HttpStatus.NOT_FOUND, "Instructor " + instructorName + " doesn't exist");
+      }
+    }
+    catch (ResponseException re) {
+      throw new RestResponseException("instructor", HttpStatus.INTERNAL_SERVER_ERROR, re.getMessage());
+    }
+
+    /* check if the admin is same as instructor or not. If not, see if it exists */
     UserImpl admin = null;
     if (StringUtils.isNotEmpty(adminName)) {
       if(StringUtils.equals(adminName, instructorName)) {
         admin = instructor;
       }
       else {
-        admin = (UserImpl) userService.getUser(adminName, null, vs);
+        try {
+          admin = (UserImpl) userService.getUser(adminName, null, vs);
+        }
+        catch (ResponseException re) {
+          throw new RestResponseException("admin", HttpStatus.INTERNAL_SERVER_ERROR, re.getMessage());
+        }
       }
       if (admin == null) {
-        throw new IllegalArgumentException("Admin: " + adminName + ", doesn't exist");
+        throw new RestResponseException("admin", HttpStatus.NOT_FOUND, "Admin: " + adminName + ", doesn't exist");
       }
     }
+    
+    /* check if the program is set or not. If yes, check if it exists */
+//    String programName = request.getProgram();
+//    ProgramImpl pgm = null;
+//    if (StringUtils.isNotEmpty(programName)) {
+//      ProgramImpl pgm = programService.getProgram(programName, vs);
+//      if (pgm == null) {
+//        throw new IllegalArgumentException("Program: " + programName + ", doesn't exist");
+//      }
+//    }
+    
+    /* convert the request object parameters to map */
     Map<String, Object> params = courseReqToMap(request); 
+    /* set the admin object in optional parameters */
     params.put("admin", admin);
     
     /* create/update the course now */
@@ -81,7 +120,10 @@ public class CourseServiceImpl implements CourseService {
     catch (DataAccessException dae) {
       String errStr = "Error while creating/updating course with name: " + name;
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+    }
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());      
     }
     return course;
   }
@@ -205,6 +247,13 @@ public class CourseServiceImpl implements CourseService {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put("description", req.getDescription());
     params.put("photoUrl", req.getPhotoUrl());
+    params.put("content", req.getContent());
+    params.put("prerequisites", req.getPrerequisites());
+    params.put("duration", req.getDuration());
+    String status = req.getStatus();
+    if (StringUtils.isNotEmpty(status)) {
+      params.put("status", Status.valueOf(status));
+    }
     return params;
   }
   

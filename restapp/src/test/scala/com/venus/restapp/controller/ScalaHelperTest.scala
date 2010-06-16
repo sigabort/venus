@@ -2,6 +2,7 @@ package com.venus.restapp.controller;
 
 
 import org.scalatest.junit.JUnitSuite;
+
 import org.scalatest.junit.ShouldMatchersForJUnit;
 
 import scala.collection.jcl.HashMap;
@@ -21,6 +22,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.http.HttpMethod;
 
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.test.web.ModelAndViewAssert._;
+import com.venus.restapp.response.BaseResponse;
 
 /**
  * Helper class for Scala Controller tests.This mostly uses the base class
@@ -37,7 +41,8 @@ class ScalaHelperTest extends JUnitSuite with ShouldMatchersForJUnit {
   /**
    * Generate 20-char random string
    */
-  def getRandomString():String =  AbstractControllerTest.getRandomString; 
+  def getRandomString:String =  AbstractControllerTest.getRandomString; 
+  def getRandomString(count:Int):String =  AbstractControllerTest.getRandomString(count); 
 
   /**
    * Generate random number
@@ -102,6 +107,22 @@ class ScalaHelperTest extends JUnitSuite with ShouldMatchersForJUnit {
   
   def setReqParams(req: MockHttpServletRequest, params: (String, String)*) {
     params.foreach(s => req.setParameter(s._1, s._2));
+  }
+  
+
+  /**
+   * Check for the error in the ModelAndView object.
+   * @return
+   */
+  def checkForError(mav: ModelAndView, view: String, errorCode: Int) {
+    assertViewName(mav, view);
+    val resp: BaseResponse = assertAndReturnModelAttributeOfType(mav, "response", classOf[BaseResponse]);
+    Assert.assertNotNull("Didn't get the response", resp);
+    Assert.assertTrue("The error", resp.getError.toString.toBoolean);
+    val errors = resp.getErrors();
+    Assert.assertNotNull("errors", errors);
+    errors.length should (be > 0);
+    resp.getHttpErrorCode should be (errorCode);
   }
   
 }

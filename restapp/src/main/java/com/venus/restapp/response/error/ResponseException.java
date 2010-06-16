@@ -34,9 +34,6 @@ public class ResponseException extends Exception {
     response = new BaseResponse();
     response.setError(true);
     this.message = msg;
-    if (msg != null) {
-      response.setErrorDescription(msg);
-    }
     response.setHttpErrorCode(status.value());
   }
   
