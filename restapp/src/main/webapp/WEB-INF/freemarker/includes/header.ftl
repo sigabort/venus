@@ -7,12 +7,9 @@
 
     <#-- set the context path and venus response (used by other FTL files) -->    
     <#assign ctxPath=rc.contextPath>
-    <#assign venusResp=response>
     
-    <#-- If the response is not proper, Send error -->
-    <#if isProperResponse(venusResp)>
-    <#else>
-      <meta http-equiv="Refresh" content="5; url=${ctxPath}/error">
+    <#if response??>
+      <#assign venusResp=response>
     </#if>
     
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>

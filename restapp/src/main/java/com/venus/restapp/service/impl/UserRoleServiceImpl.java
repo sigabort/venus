@@ -17,6 +17,7 @@ import com.venus.util.VenusSession;
 import com.venus.util.VenusSessionFactory;
 
 import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.service.UserRoleService;
 import com.venus.restapp.service.DepartmentService;
 import com.venus.restapp.service.UserService;
@@ -67,7 +68,13 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     /* see the department */
     if (!StringUtils.isEmpty(deptName)) {
-      Department department = deptService.getDepartment(deptName, new BaseRequest(), vs);
+      Department  department = null;
+      try {
+        department = deptService.getDepartment(deptName, new BaseRequest(), vs);
+      }
+      catch (RestResponseException rre) {
+        throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, rre.getMessage(), null, null);
+      }
       if (department != null) {
         params = new HashMap<String, Object>();
         params.put("department", department);

@@ -16,7 +16,7 @@ import com.venus.util.VenusSessionFactory;
 
 import com.venus.restapp.request.DepartmentRequest;
 import com.venus.restapp.request.BaseRequest;
-import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.service.DepartmentService;
 
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class DepartmentServiceImpl implements DepartmentService {
   private DepartmentOperations dol = new DepartmentOperationsImpl();
   private static final Logger log = Logger.getLogger(DepartmentService.class);
 
-  public Department createUpdateDepartment(DepartmentRequest req, VenusSession vs) throws ResponseException {
+  public Department createUpdateDepartment(DepartmentRequest req, VenusSession vs) throws RestResponseException {
     String name = req.getName();
     Department dept = null;
     Map<String, Object> params = new HashMap<String, Object>();
@@ -45,13 +45,16 @@ public class DepartmentServiceImpl implements DepartmentService {
     catch (DataAccessException dae) {
       String errStr = "Error while creating/updating department with name: " + name;
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+    }
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());      
     }
     return dept;
   }
 
 
-  public Department getDepartment(String name, BaseRequest request, VenusSession vs) throws ResponseException {
+  public Department getDepartment(String name, BaseRequest request, VenusSession vs) throws RestResponseException {
     Department department = null;
     try {
       department = dol.findDepartmentByName(name, null, vs);
@@ -59,7 +62,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting department with name: " + name;
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+    }
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
     }
     return department;
   }
@@ -68,9 +74,9 @@ public class DepartmentServiceImpl implements DepartmentService {
    * Get the departments
    * @param request        The request parameter containing the optional parameters
    * @return               The list of departments
-   * @throws ResponseException if there is any error
+   * @throws RestResponseException if there is any error
    */
-  public List<Department> getDepartments(BaseRequest request, VenusSession vs) throws ResponseException {
+  public List<Department> getDepartments(BaseRequest request, VenusSession vs) throws RestResponseException {
     int offset = request.getStartIndex();
     int maxRet = request.getItemsPerPage();
     String sortBy = request.getSortBy();
@@ -117,8 +123,12 @@ public class DepartmentServiceImpl implements DepartmentService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting departments";
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+    }    
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
     }
+
     return departments;
   }
 
@@ -126,9 +136,9 @@ public class DepartmentServiceImpl implements DepartmentService {
    * Get the departments count in the institute
    * @param request        The request parameter containing the optional parameters
    * @return               The count of total departments in the institute
-   * @throws ResponseException if there is any error
+   * @throws RestResponseException if there is any error
    */
-  public Integer getDepartmentsCount(BaseRequest request, VenusSession vs) throws ResponseException {
+  public Integer getDepartmentsCount(BaseRequest request, VenusSession vs) throws RestResponseException {
    /* Time to parse the query parameters */
     Boolean onlyActive = request.getOnlyActive();
     String filterBy = request.getFilterBy();
@@ -156,8 +166,12 @@ public class DepartmentServiceImpl implements DepartmentService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting departments count";
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
     }
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
+    }
+
     return count;
   }
 }

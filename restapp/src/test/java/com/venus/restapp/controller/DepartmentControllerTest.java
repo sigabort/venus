@@ -29,7 +29,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 
-import com.venus.restapp.response.DepartmentResponse;
+import com.venus.restapp.response.RestResponse;
 import com.venus.restapp.request.DepartmentRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
@@ -92,7 +92,7 @@ public class DepartmentControllerTest extends AbstractControllerTest {
     request.setMethod(HttpMethod.GET.toString());
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "departments/home");
-    final DepartmentResponse dr = assertAndReturnModelAttributeOfType(mav, "response", DepartmentResponse.class);
+    final RestResponse dr = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", dr);
     Assert.assertFalse("The error", dr.getError());
   }
@@ -178,7 +178,7 @@ public class DepartmentControllerTest extends AbstractControllerTest {
     /* create/update the department now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "departments/department");
-    final DepartmentResponse dr = assertAndReturnModelAttributeOfType(mav, "response", DepartmentResponse.class);
+    final RestResponse dr = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", dr);
     Assert.assertFalse("The error", dr.getError());
   }
@@ -239,7 +239,7 @@ public class DepartmentControllerTest extends AbstractControllerTest {
     /* create/update the department now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "departments/department");
-    final DepartmentResponse dr = assertAndReturnModelAttributeOfType(mav, "response", DepartmentResponse.class);
+    final RestResponse dr = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     SecurityContextHolder.clearContext();
     Assert.assertNotNull("Didn't get the response", dr);
     Assert.assertFalse("The error", dr.getError());

@@ -59,7 +59,7 @@ public class CourseController {
 
   @RequestMapping(method=RequestMethod.POST)
   public ModelAndView create(@ModelAttribute("course") CourseRequest courseRequest, BindingResult result, HttpServletRequest request) {
-    validateRequest(courseRequest, request, result);
+    RestUtil.validateRequest(courseRequest, request, result);
 
     /* if there is any error, build the response and send over */
     if (result.hasErrors()) {
@@ -82,21 +82,4 @@ public class CourseController {
     return RestUtil.buildVenusResponse("courses/course", resp);
   }
 
-  /**
-   * Validate the object using the oval's spring validator
-   * @param request
-   * @param httpReq
-   * @param result
-   */
-  private void validateRequest(Object request, HttpServletRequest httpReq, BindingResult result) {
-    VenusSession vs = RestUtil.getVenusSession(httpReq);
-    if (vs == null || vs.getInstitute() == null) {
-      result.rejectValue(null, HttpStatus.BAD_REQUEST.toString(), "No session has been set");
-      return;
-    }
-    /* get new spring validator using OVal's validator backing for validation */
-    SpringValidator validator = new SpringValidator(new Validator());
-    validator.validate(request, result);
-  }
-    
 }

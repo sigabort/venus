@@ -56,15 +56,10 @@ public class CourseServiceImpl implements CourseService {
     
     DepartmentImpl department = null;
     
-    try {
-      /* check if the department exists */
-      department = (DepartmentImpl) deptService.getDepartment(departmentName, null, vs);
-      if (department == null) {
-        throw new RestResponseException("department", HttpStatus.NOT_FOUND, "Department " + departmentName + " doesn't exist");
-      }
-    }
-    catch (ResponseException re) {
-      throw new RestResponseException("department", HttpStatus.INTERNAL_SERVER_ERROR, re.getMessage());
+    /* check if the department exists */
+    department = (DepartmentImpl) deptService.getDepartment(departmentName, null, vs);
+    if (department == null) {
+      throw new RestResponseException("department", HttpStatus.NOT_FOUND, "Department " + departmentName + " doesn't exist");
     }
 
     UserImpl instructor = null;

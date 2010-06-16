@@ -74,13 +74,13 @@ public class ResponseBuilder {
       int idx = 0;
       /* append all field errors */
       for (FieldError err: result.getFieldErrors()) {
-        System.out.println("I got field error for: " + err.getField() + ", message: " + err.getDefaultMessage() + ", code: " + err.getCode());
+        //System.out.println("I got field error for: " + err.getField() + ", message: " + err.getDefaultMessage() + ", code: " + err.getCode());
         ErrorDTO dto = new ErrorDTO(err.getField(), err.getCode(), err.getDefaultMessage());
         errors[idx++] = dto;
       }
       /* append global errors now */
       for (ObjectError err: result.getGlobalErrors()) {
-        System.out.println("I got global error for: " + err.getObjectName() + ", message: " + err.getDefaultMessage() + ", code: " + err.getCode());
+        //System.out.println("I got global error for: " + err.getObjectName() + ", message: " + err.getDefaultMessage() + ", code: " + err.getCode());
         ErrorDTO dto = new ErrorDTO(err.getObjectName(), err.getCode(), err.getDefaultMessage());
         errors[idx++] = dto;
       }
