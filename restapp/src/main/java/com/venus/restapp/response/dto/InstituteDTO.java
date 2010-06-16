@@ -1,6 +1,7 @@
 package com.venus.restapp.response.dto;
 
 import com.venus.model.Institute;
+import com.venus.model.BaseModel;
 
 import org.codehaus.jackson.annotate.JsonWriteNullProperties;
 
@@ -14,7 +15,7 @@ import org.codehaus.jackson.annotate.JsonWriteNullProperties;
  */
 /* make sure we don't send the null values */
 @JsonWriteNullProperties(false)
-public class InstituteDTO {
+public class InstituteDTO implements BaseDTO {
   private String name;
   private String displayName;
   private String parent;
@@ -85,7 +86,8 @@ public class InstituteDTO {
    * @param institute      The model object 
    * @return The reponse {@link InstituteDTO object} built using the model object
    */
-  public static InstituteDTO getInstituteDTO(Institute institute) {
+  public InstituteDTO getDTO(BaseModel inst) {
+    Institute institute = (Institute) inst;
     if (institute != null) {
       InstituteDTO dto = new InstituteDTO(institute.getName(), institute.getCode());
       dto.setDisplayName(institute.getDisplayName());

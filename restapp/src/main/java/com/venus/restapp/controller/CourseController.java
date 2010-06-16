@@ -30,7 +30,6 @@ import com.venus.restapp.response.BaseResponse;
 import com.venus.restapp.response.RestResponse;
 import com.venus.restapp.response.ResponseBuilder;
 import com.venus.restapp.response.dto.CourseDTO;
-import com.venus.restapp.response.error.ResponseException;
 import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.util.RestUtil;
 

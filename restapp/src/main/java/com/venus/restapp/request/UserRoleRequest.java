@@ -1,7 +1,7 @@
 package com.venus.restapp.request;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import net.sf.oval.constraint.NotNull;
+import net.sf.oval.constraint.Size;
 
 import org.apache.commons.lang.StringUtils;
 

@@ -3,12 +3,13 @@ package com.venus.restapp.controller;
 import java.util.Map;
 import java.util.List;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,10 +21,16 @@ import com.venus.restapp.request.InstituteRequest;
 import com.venus.restapp.request.BaseInstituteRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
-import com.venus.restapp.response.InstituteResponse;
-import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.RestResponse;
+import com.venus.restapp.response.ResponseBuilder;
+import com.venus.restapp.response.dto.InstituteDTO;
+import com.venus.restapp.response.error.RestResponseException;
+import com.venus.restapp.util.RestUtil;
 
 import org.apache.log4j.Logger;
+
+import com.venus.util.VenusSession;
+import com.venus.model.Institute;
 
 /**
  * Controller class for handling all institutes related requests.
@@ -50,103 +57,75 @@ public class InstituteController {
    */
   @RequestMapping(value="create", method=RequestMethod.GET)
   public String getCreateForm(Model model) {
-    model.addAttribute("instituteRequest", new InstituteRequest());
-    return "institutes/createInstitute";
+    model.addAttribute("institute", new InstituteRequest());
+    return "institutes/create";
   }
 
-  /**
-   * Create/Update the Institute
-   * @param instituteRequest   The InstituteRequest object containing all parameters
-   * @param result             The BindingResult object containing the errors if there
-   *                            are any errors found while validating the request object
-   * @return the ModelAndView object containing response of creation/updation of institute.
-   *             The response object is added as model object. This object contains information
-   *             about the exceptions/errors(if any errors found) 
-   */
   @RequestMapping(method=RequestMethod.POST)
-  public ModelAndView create(@Valid InstituteRequest instituteRequest, BindingResult result) {
+  public ModelAndView create(@ModelAttribute("institute") InstituteRequest instituteRequest, BindingResult result, HttpServletRequest req) {
+    RestUtil.validateRequest(instituteRequest, req, result);
+
+    /* if there is any error, build the response and send over */
     if (result.hasErrors()) {
-      /* XXX: We need to populate the response with the actual errors. Need to check
-       * how 'create' is populating the errors properly in case of invalid request.
-       * We need to do same here too.
-       */
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
-      return new ModelAndView("institutes/createInstitute", "response", re.getResponse());
+      BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
+      return RestUtil.buildVenusResponse("institutes/create", resp);
     }
-    log.info("Adding/Updating institute" + instituteRequest.getName());
-    Object institute = null;
+
+    VenusSession vs = RestUtil.getVenusSession(req);
+    
+    Institute institute = null;
     try {
       institute = instituteService.createUpdateInstitute(instituteRequest);
     }
-    catch (ResponseException re) {
-      return new ModelAndView("institutes/createInstitute", "response", re.getResponse());
+    catch (RestResponseException re) {
+      return RestUtil.buildErrorResponse("institutes/create", re, result);
     }
-    InstituteResponse resp = InstituteResponse.populateInstitute(institute);
-    return new ModelAndView("institutes/institute", "response", resp);
+
+    RestResponse resp = ResponseBuilder.createResponse(institute, new InstituteDTO());
+    return RestUtil.buildVenusResponse("institutes/institute", resp);
   }
 
-  /**
-   * Send a particualr institute details with given name in the institute.
-   * @param name     The name of the institute
-   * @param request  The base request object containing all of the optional parameters
-   * @param result   The binding result containing any errors if the request is bad
-   * @return the ModelAndView object containing response with result of getting institute information.
-   *             The response object is added as model object. This object contains information
-   *             about the exceptions/errors(if any errors found) 
-   */
   @RequestMapping(value="{name}", method=RequestMethod.GET)
-  public ModelAndView getInstitute(@PathVariable String name, @Valid BaseRequest request, BindingResult result) {
+  public ModelAndView getInstitute(@PathVariable String name, BaseRequest request, BindingResult result, HttpServletRequest req) {
+    RestUtil.validateRequest(request, req, result);
+
+    /* if there is any error, build the response and send over */
     if (result.hasErrors()) {
-      /* XXX: We need to populate the response with the actual errors. Need to check
-       * how 'create' is populating the errors properly in case of invalid request.
-       * We need to do same here too.
-       */
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
-      return new ModelAndView("institutes/institute", "response", re.getResponse());
+      BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
+      return RestUtil.buildVenusResponse("institutes/institute", resp);
     }
-    log.info("Fetching institute: " + name);
-    Object institute = null;
+
+    VenusSession vs = RestUtil.getVenusSession(req);
+    Institute institute = null;
+
     try {
       institute = instituteService.getInstitute(name, request);
     }
-    catch (ResponseException re) {
-      log.info("Error while finding Institute with name: " + name, re);
-      return new ModelAndView("institutes/institute", "response", re.getResponse());
+    catch (RestResponseException re) {
+      return RestUtil.buildErrorResponse("institutes/institute", re, result);
     }
-    /* institute not found? throw 404 */
     if (institute == null) {
-      log.info("Institute with name: " + name + " is not found...");
-      ResponseException re = new ResponseException(HttpStatus.NOT_FOUND, "Institute with name: " + name + ", not found", null, null);
-      return new ModelAndView("institutes/institute", "response", re.getResponse());
+      RestResponseException re = new RestResponseException(null, HttpStatus.NOT_FOUND, "Institute with name: " + name + ", not found");
+      return RestUtil.buildErrorResponse("institutes/institute", re, result);
     }
-    log.info("Got institute: " + name);
-    /* populate the object */
-    InstituteResponse resp = InstituteResponse.populateInstitute(institute);
-    return new ModelAndView("institutes/institute", "response", resp);
+
+    RestResponse resp = ResponseBuilder.createResponse(institute, new InstituteDTO());
+    return RestUtil.buildVenusResponse("institutes/institute", resp);
+
   }
 
-  /**
-   * Send all of the institute results in the institute. This is the default request
-   * for institutes page.
-   * @param request  The base request object containing all of the optional parameters
-   * @param result   The binding result containing any errors if the request is bad
-   * @return the ModelAndView object containing response with result of getting institutes.
-   *             The response object is added as model object. This object contains information
-   *             about the exceptions/errors(if any errors found) 
-   */
   @RequestMapping(method=RequestMethod.GET)
-  public ModelAndView getInstitutes(@Valid BaseRequest request, BindingResult result) {
+  public ModelAndView getInstitutes(BaseRequest request, BindingResult result, HttpServletRequest req) {
+    RestUtil.validateRequest(request, req, result);
+
+    /* if there is any error, build the response and send over */
     if (result.hasErrors()) {
-      /* XXX: We need to populate the response with the actual errors. Need to check
-       * how 'create' is populating the errors properly in case of invalid request.
-       * We need to do same here too.
-       */
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
-      return new ModelAndView("institutes/home", "response", re.getResponse());
+      BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
+      return RestUtil.buildVenusResponse("institutes/home", resp);
     }
 
-    log.info("Fetching all institutes....");
-
+    VenusSession vs = RestUtil.getVenusSession(req);
+    
     List institutes = null;
     Integer totalCount = null;
 
@@ -155,20 +134,12 @@ public class InstituteController {
       /* get the total institutes count */
       totalCount = instituteService.getInstitutesCount(request);
     }
-    catch (ResponseException re) {
-      return new ModelAndView("institutes/home", "response", re.getResponse());
+    catch (RestResponseException re) {
+      return RestUtil.buildErrorResponse("institutes/home", re, result);
     }
-    /* institutes not found? send empty response. So, the client can take care of
-     * what to do next
-     */
-    if (institutes == null) {
-      return new ModelAndView("institutes/home", "response", new BaseResponse());
-    }
-    log.info("Got institutes: " + institutes.size());
-    
     /* populate the response object */
-    InstituteResponse resp = InstituteResponse.populateInstitutes(institutes, totalCount);
-    return new ModelAndView("institutes/home", "response", resp);
+    RestResponse resp = ResponseBuilder.createResponse(institutes, totalCount, new InstituteDTO());
+    return RestUtil.buildVenusResponse("institutes/home", resp);
   }
 
 }

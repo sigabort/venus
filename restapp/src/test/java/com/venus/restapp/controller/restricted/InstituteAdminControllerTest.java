@@ -1,15 +1,21 @@
 package com.venus.restapp.controller.restricted;
 
+import net.sf.oval.Validator;
+import net.sf.oval.integration.spring.SpringValidator;
+
 import org.junit.Assert;
 
 
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.Model;
 
@@ -29,7 +35,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 
-import com.venus.restapp.response.InstituteResponse;
+import com.venus.restapp.response.RestResponse;
 import com.venus.restapp.request.InstituteRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
@@ -46,8 +52,8 @@ import com.venus.restapp.controller.AbstractControllerTest;
  */
 public class InstituteAdminControllerTest extends AbstractControllerTest {
 
-  private MockHttpServletRequest request;
-  private MockHttpServletResponse response;
+  private static MockHttpServletRequest request;
+  private static MockHttpServletResponse response;
   private static InstituteAdminController controller;
   private static VenusSession vs;
 
@@ -111,9 +117,57 @@ public class InstituteAdminControllerTest extends AbstractControllerTest {
 
     //final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "institutes/institute");
-    final InstituteResponse resp = assertAndReturnModelAttributeOfType(mav, "response", InstituteResponse.class);
+    final RestResponse resp = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", resp);
     Assert.assertFalse("The error", resp.getError());
   }
+
+  
+  /**
+   * Create test institute
+   */
+  public static Institute createTestInstitute(String name, VenusSession vs) {
+    /* create mock requests, responses - different for each test */
+    request = new MockHttpServletRequest();
+    response = new MockHttpServletResponse();
+    if (controller == null) {
+      // Get the controller from the context
+      controller = appContext.getBean(InstituteAdminController.class);
+      Assert.assertTrue("Handler class is not supported for invoking methods", handlerAdapter.supports(controller));
+      
+    }
+    
+    /* should be POST method, with uri : /create */
+    request.setMethod(HttpMethod.POST.toString());
+    request.setRequestURI("/restricted/institutes/create");
+
+    String code = name + "-code";
+    request.setParameter("name", name);
+    request.setParameter("code", code);
+    request.setParameter("displayName", name + "-displayName");    
+    request.setParameter("description", name + "-description");
+   
+    final InstituteRequest ur = new InstituteRequest();
+    final WebDataBinder binder = new WebDataBinder(ur, "request");
+    binder.bind(new MutablePropertyValues(request.getParameterMap()));
+
+    final ModelAndView mav = controller.createParentInstitute(ur, binder.getBindingResult(), request);
+    
+    //final ModelAndView mav = handlerAdapter.handle(request, response, controller);
+    assertViewName(mav, "institutes/institute");
+    final RestResponse resp = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
+    Assert.assertNotNull("Didn't get the response", resp);
+    Assert.assertFalse("The error", resp.getError());
+
+    try {
+      return controller.getInstituteService().getInstitute(name, null);
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+    
+  }
+
  
 }

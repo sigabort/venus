@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 
 import com.venus.restapp.service.InstituteService;
 import com.venus.restapp.request.BaseRequest;
-import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.auth.RestUserDetails;
 import com.venus.restapp.util.RestUtil;
 import com.venus.restapp.util.RestParams;
@@ -51,7 +51,7 @@ public class SessionFilter extends GenericFilterBean {
        */
       institute = getInstitute(request, resp, vs);
     }
-    catch (ResponseException re) {
+    catch (RestResponseException re) {
       throw new ServletException(re.getMessage());
     }
     /* Didn't get any institute :( stop the filter chain here. */
@@ -107,7 +107,7 @@ public class SessionFilter extends GenericFilterBean {
    * @param req
    * @param resp
    */
-  private Institute getInstitute(ServletRequest req, ServletResponse resp, VenusSession vs) throws ResponseException {
+  private Institute getInstitute(ServletRequest req, ServletResponse resp, VenusSession vs) throws RestResponseException {
     SecurityContext sc = SecurityContextHolder.getContext();
     Authentication auth = sc.getAuthentication();
     String instName = null;
@@ -167,7 +167,7 @@ public class SessionFilter extends GenericFilterBean {
     return getDefaultInstitute(vs);
   }
   
-  private Institute getDefaultInstitute(VenusSession vs) throws ResponseException {
+  private Institute getDefaultInstitute(VenusSession vs) throws RestResponseException {
     /* get only institutes which dont have parents, and sort by id in ascending order */
     BaseRequest br = new BaseRequest();
     br.setFilterBy("parent");

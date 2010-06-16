@@ -3,8 +3,10 @@ package com.venus.restapp.controller.restricted;
 import java.util.Map;
 import java.util.List;
 
-import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
+
+import net.sf.oval.Validator;
+import net.sf.oval.integration.spring.SpringValidator;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,13 +26,16 @@ import com.venus.restapp.service.InstituteService;
 import com.venus.restapp.request.InstituteRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
-import com.venus.restapp.response.InstituteResponse;
-import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.RestResponse;
+import com.venus.restapp.response.ResponseBuilder;
+import com.venus.restapp.response.dto.InstituteDTO;
+import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.util.RestUtil;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
+
+import com.venus.util.VenusSession;
+import com.venus.model.Institute;
 
 /**
  * Controller class for handling all parent institutes related requests.
@@ -46,6 +52,10 @@ public class InstituteAdminController {
   @Autowired
   private InstituteService instituteService;
   
+  public InstituteService getInstituteService() {
+    return this.instituteService;
+  }
+  
   private static final Logger log = Logger.getLogger(InstituteAdminController.class);
 
   /**
@@ -58,28 +68,36 @@ public class InstituteAdminController {
    *             about the exceptions/errors(if any errors found) 
    */
   @RequestMapping(value="create", method=RequestMethod.POST)
-  public ModelAndView createParentInstitute(@Valid InstituteRequest instituteRequest, BindingResult result, HttpServletRequest req) {
+  public ModelAndView createParentInstitute(@ModelAttribute("institute") InstituteRequest instituteRequest, BindingResult result, HttpServletRequest req) {
+    validateRequest(instituteRequest, req, result);
+
+    /* if there is any error, build the response and send over */
     if (result.hasErrors()) {
-      /* XXX: We need to populate the response with the actual errors. Need to check
-       * how 'create' is populating the errors properly in case of invalid request.
-       * We need to do same here too.
-       */
-      ResponseException re = new ResponseException(HttpStatus.BAD_REQUEST, "Bad request", null, null);
-      return new ModelAndView("institutes/createInstitute", "response", re.getResponse());
+      BaseResponse resp = ResponseBuilder.createResponse(HttpStatus.BAD_REQUEST, result);
+      return RestUtil.buildVenusResponse("institutes/create", resp);
     }
+
+    VenusSession vs = RestUtil.getVenusSession(req);
     
-    log.info("Adding/Updating institute" + instituteRequest.getName());
-    Object institute = null;
+    Institute institute = null;
     try {
       institute = instituteService.createUpdateParentInstitute(instituteRequest);
     }
-    catch (ResponseException re) {
-      log.error("Can't create/update institute : " + instituteRequest.getName() + ", reason: " + re.getMessage());
-      return new ModelAndView("institutes/createInstitute", "response", re.getResponse());
+    catch (RestResponseException re) {
+      return RestUtil.buildErrorResponse("institutes/create", re, result);
     }
-    
-    InstituteResponse resp = InstituteResponse.populateInstitute(institute);
-    return new ModelAndView("institutes/institute", "response", resp);
+
+    RestResponse resp = ResponseBuilder.createResponse(institute, new InstituteDTO());
+    return RestUtil.buildVenusResponse("institutes/institute", resp);
   }
-      
+  
+  
+  
+  private void validateRequest(Object request, HttpServletRequest httpReq, BindingResult result) {
+    VenusSession vs = RestUtil.getVenusSession(httpReq);
+    /* get new spring validator using OVal's validator backing for validation */
+    SpringValidator validator = new SpringValidator(new Validator());
+    validator.validate(request, result);
+  }
+
 }

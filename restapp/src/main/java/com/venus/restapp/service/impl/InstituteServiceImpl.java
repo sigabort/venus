@@ -15,7 +15,7 @@ import com.venus.util.VenusSessionFactory;
 
 import com.venus.restapp.request.InstituteRequest;
 import com.venus.restapp.request.BaseRequest;
-import com.venus.restapp.response.error.ResponseException;
+import com.venus.restapp.response.error.RestResponseException;
 import com.venus.restapp.service.InstituteService;
 
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class InstituteServiceImpl implements InstituteService {
   private InstituteOperations iol = new InstituteOperationsImpl();
   private static final Logger log = Logger.getLogger(InstituteService.class);
 
-  public Institute createUpdateInstitute(InstituteRequest req) throws ResponseException {
+  public Institute createUpdateInstitute(InstituteRequest req) throws RestResponseException {
     VenusSession vs = VenusSessionFactory.getVenusSession(null);
     String name = req.getName();
     Institute institute = null;
@@ -49,13 +49,15 @@ public class InstituteServiceImpl implements InstituteService {
       }
       catch (DataAccessException dae) {
         String errStr = "Error while getting parent institute : " + parent;
-        log.error(errStr, dae);
-        throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+        throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
       }
+      catch (IllegalArgumentException iae) {
+        throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
+      }
+      
       if (parentInst == null) {
         String errStr = "Parent institute : " + parent + " doesn't exist";
-        log.error(errStr);
-        throw new ResponseException(HttpStatus.NOT_FOUND, errStr, null, null);        
+        throw new RestResponseException("parent", HttpStatus.NOT_FOUND, errStr);        
       } 
       params.put("parent", parentInst);
     }
@@ -66,14 +68,16 @@ public class InstituteServiceImpl implements InstituteService {
     }
     catch (DataAccessException dae) {
       String errStr = "Error while creating/updating institute with name: " + name;
-      log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
+    }
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
     }
     return institute;
   }
 
 
-  public Institute getInstitute(String name, BaseRequest request) throws ResponseException {
+  public Institute getInstitute(String name, BaseRequest request) throws RestResponseException {
     VenusSession vs = VenusSessionFactory.getVenusSession(null);
     Institute institute = null;
     try {
@@ -81,9 +85,12 @@ public class InstituteServiceImpl implements InstituteService {
     }
     catch (DataAccessException dae) {
       String errStr = "Error while getting institute with name: " + name;
-      log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
     }
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
+    }
+
     return institute;
   }
 
@@ -91,9 +98,9 @@ public class InstituteServiceImpl implements InstituteService {
    * Get the institutes
    * @param request        The request parameter containing the optional parameters
    * @return               The list of institutes
-   * @throws ResponseException if there is any error
+   * @throws RestResponseException if there is any error
    */
-  public List<Institute> getInstitutes(BaseRequest request) throws ResponseException {
+  public List<Institute> getInstitutes(BaseRequest request) throws RestResponseException {
     VenusSession vs = VenusSessionFactory.getVenusSession(null);
     int offset = request.getStartIndex();
     int maxRet = request.getItemsPerPage();
@@ -141,8 +148,12 @@ public class InstituteServiceImpl implements InstituteService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting institutes";
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
     }
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
+    }
+
     return institutes;
   }
 
@@ -150,9 +161,9 @@ public class InstituteServiceImpl implements InstituteService {
    * Get the institutes count
    * @param request        The request parameter containing the optional parameters
    * @return               The count of total institutes in the institute
-   * @throws ResponseException if there is any error
+   * @throws RestResponseException if there is any error
    */
-  public Integer getInstitutesCount(BaseRequest request) throws ResponseException {
+  public Integer getInstitutesCount(BaseRequest request) throws RestResponseException {
     VenusSession vs = VenusSessionFactory.getVenusSession(null);
    /* Time to parse the query parameters */
     Boolean onlyActive = request.getOnlyActive();
@@ -181,8 +192,12 @@ public class InstituteServiceImpl implements InstituteService {
     catch (DataAccessException dae) {
       String errStr = "Error while getting institutes count";
       log.error(errStr, dae);
-      throw new ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, errStr, dae, null);
+      throw new RestResponseException(null, HttpStatus.INTERNAL_SERVER_ERROR, errStr);
     }
+    catch (IllegalArgumentException iae) {
+      throw new RestResponseException(null, HttpStatus.BAD_REQUEST, iae.getMessage());
+    }
+
     return count;
   }
   
@@ -195,9 +210,9 @@ public class InstituteServiceImpl implements InstituteService {
    *                     details of institute and other parameters
    * @return             The corresponding {@link Institute} object if 
    *                     created/updated with out any errors, null otherwise
-   * @throws ResponseException thrown when there is any error
+   * @throws RestResponseException thrown when there is any error
    */
-  public Institute createUpdateParentInstitute(InstituteRequest request) throws ResponseException {
+  public Institute createUpdateParentInstitute(InstituteRequest request) throws RestResponseException {
     return this.createUpdateInstitute(request);
   }
 

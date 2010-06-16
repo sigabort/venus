@@ -29,7 +29,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.AccessDeniedException;
 
-import com.venus.restapp.response.InstituteResponse;
+import com.venus.restapp.response.RestResponse;
 import com.venus.restapp.request.InstituteRequest;
 import com.venus.restapp.request.BaseRequest;
 import com.venus.restapp.response.BaseResponse;
@@ -37,6 +37,8 @@ import com.venus.restapp.util.RestUtil;
 
 import com.venus.model.Institute;
 import com.venus.util.VenusSession;
+
+import com.venus.restapp.controller.restricted.InstituteAdminControllerTest;
 
 /**
  * unit tests for {@link InstituteController}
@@ -67,7 +69,8 @@ public class InstituteControllerTest extends AbstractControllerTest {
       controller = appContext.getBean(InstituteController.class);
       Assert.assertTrue("Handler class is not supported for invoking methods", handlerAdapter.supports(controller));
     }
-    VenusSession vs = RestUtil.createVenusSession(null);
+    Institute inst = InstituteControllerTest.createTestInstitute("instCTest-" + getRandomString(), null);
+    VenusSession vs = RestUtil.createVenusSession(inst);
     RestUtil.setVenusSession(request, vs);
   }
   
@@ -88,7 +91,7 @@ public class InstituteControllerTest extends AbstractControllerTest {
     request.setMethod(HttpMethod.GET.toString());
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "institutes/home");
-    final InstituteResponse dr = assertAndReturnModelAttributeOfType(mav, "response", InstituteResponse.class);
+    final RestResponse dr = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", dr);
     Assert.assertFalse("The error", dr.getError());
   }
@@ -115,7 +118,7 @@ public class InstituteControllerTest extends AbstractControllerTest {
     final WebDataBinder binder = new WebDataBinder(br, "request");
     binder.bind(new MutablePropertyValues(request.getParameterMap()));
     
-    final ModelAndView mav = controller.getInstitute(name, br, binder.getBindingResult());
+    final ModelAndView mav = controller.getInstitute(name, br, binder.getBindingResult(), request);
     
     //final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "institutes/institute");
@@ -174,7 +177,7 @@ public class InstituteControllerTest extends AbstractControllerTest {
     /* create/update the institute now*/
     final ModelAndView mav = handlerAdapter.handle(request, response, controller);
     assertViewName(mav, "institutes/institute");
-    final InstituteResponse dr = assertAndReturnModelAttributeOfType(mav, "response", InstituteResponse.class);
+    final RestResponse dr = assertAndReturnModelAttributeOfType(mav, "response", RestResponse.class);
     Assert.assertNotNull("Didn't get the response", dr);
     Assert.assertFalse("The error", dr.getError());
   }
@@ -214,43 +217,11 @@ public class InstituteControllerTest extends AbstractControllerTest {
    * Create test institute
    */
   public static Institute createTestInstitute(String name, VenusSession vs) {
-    /* create mock requests, responses - different for each test */
-    request = new MockHttpServletRequest();
-    response = new MockHttpServletResponse();
-    if (controller == null) {
-      // Get the controller from the context
-      controller = appContext.getBean(InstituteController.class);
-      Assert.assertTrue("Handler class is not supported for invoking methods", handlerAdapter.supports(controller));
-    }
-
-    /* Login in as user who has role 'ROLE_ADMIN' */
-    Authentication authRequest = new UsernamePasswordAuthenticationToken("ignored", 
-        "ignored", AuthorityUtils.createAuthorityList("ROLE_ADMIN"));
-    SecurityContextHolder.getContext().setAuthentication(authRequest);
-    
-    /* should be POST method, with uri : /create */
-    request.setMethod(HttpMethod.POST.toString());
-    /* create new request object */
-    request.setRequestURI("/create");
-
-    String code = name + "-code";
-    request.setParameter("name", name);
-    request.setParameter("code", code);
-    request.setParameter("displayName", name + "-displayName");    
-    request.setParameter("description", name + "-description");
    
     /* create/update the institute now*/
     try {
-      final ModelAndView mav = handlerAdapter.handle(request, response, controller);
-      assertViewName(mav, "institutes/institute");
-      final InstituteResponse dr = assertAndReturnModelAttributeOfType(mav, "response", InstituteResponse.class);
-      //after creating the institute, clear the ctx
-      SecurityContextHolder.clearContext();
-      Assert.assertNotNull("Didn't get the response", dr);
-      Assert.assertFalse("The error", dr.getError());
-    
-
-      return controller.getInstituteService().getInstitute(name, null);
+      /* use the admin controller to create a top level institute */
+      return InstituteAdminControllerTest.createTestInstitute(name, vs);
     }
     catch (Exception e) {
       return null;

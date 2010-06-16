@@ -15,7 +15,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.stereotype.Controller;
 
 import com.venus.restapp.response.BaseResponse;
-import com.venus.restapp.response.InstituteResponse;
+import com.venus.restapp.response.RestResponse;
+import com.venus.restapp.response.ResponseBuilder;
+import com.venus.restapp.response.dto.InstituteDTO;
 import com.venus.restapp.util.RestUtil;
 
 import com.venus.util.VenusSession;
@@ -35,6 +37,7 @@ public class DefaultController {
   public ModelAndView defaultHandler(@PathVariable String name, HttpServletRequest request, HttpServletResponse response) {
     log.info("I am in default controller request handler, name: " + name + "....");
     VenusSession vs = RestUtil.getVenusSession(request);
-    return RestUtil.buildVenusResponse(name, InstituteResponse.populateInstitute(vs.getInstitute()));
+    RestResponse resp = ResponseBuilder.createResponse(vs.getInstitute(), new InstituteDTO());
+    return RestUtil.buildVenusResponse(name, resp);
   }
 }
