@@ -14,7 +14,7 @@
   </modules>
 
   <properties>
-    <junit.version>4.8.1</junit.version>
+    <junit.version>4.13.1</junit.version>
     <commons-lang.version>2.5</commons-lang.version>
     <log4j.version>1.2.16</log4j.version>
     <scala.version>2.7.7</scala.version>
