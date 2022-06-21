@@ -179,7 +179,7 @@
   </reporting>
   <properties>
     <org.hibernate.version>3.2.6.ga</org.hibernate.version>
-    <mysql-connector.version>5.0.4</mysql-connector.version>
+    <mysql-connector.version>8.0.28</mysql-connector.version>
   </properties>
 
 </project>
